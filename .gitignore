@@ -73,3 +73,7 @@ tmp/
 *.tmp
 .tempmediaStorage/
 .system_generated/
+
+# Media & Temporary Images
+WhatsApp Image*
+
