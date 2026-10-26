@@ -308,9 +308,6 @@ export const ShiftHandoverManager = () => {
           <h2 style={{ fontSize: '1.45rem', fontWeight: 900, color: '#0F172A', margin: 0, letterSpacing: '-0.02em' }}>
             Smart Digital Shift Handover
           </h2>
-          <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.88rem', color: '#64748B' }}>
-            Seamless shift transition. Auto-aggregates pending visitors, uncollected parcels, incidents & equipment tasks across shifts.
-          </p>
         </div>
 
         {/* Role Switcher & Action Button */}
@@ -716,9 +713,8 @@ export const ShiftHandoverManager = () => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-              Shift Task Continuity Register (தொடரும் பணிகள்)
+              Shift Task Continuity Register
             </h3>
-            <span className="badge badge-blue">{filteredTasks.length} Tasks Listed</span>
           </div>
           <span style={{ fontSize: '0.78rem', color: '#64748B' }}>
             Tasks remain active across subsequent shifts until formally resolved.
@@ -933,11 +929,8 @@ export const ShiftHandoverManager = () => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
           <div>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
-              Supervisor Audit & Shift Handover History (மேற்பார்வையாளர் தணிக்கை)
+              Supervisor Audit & Shift Handover History
             </h3>
-            <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: '#64748B' }}>
-              Permanent record of shift handovers, outgoing/incoming guard signatures, and supervisor reviews.
-            </p>
           </div>
           <span className="badge badge-blue">{allHandovers.length} Total Handovers</span>
         </div>
