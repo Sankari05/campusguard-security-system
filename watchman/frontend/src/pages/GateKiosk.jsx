@@ -277,7 +277,7 @@ export const GateKiosk = ({ setAppTab }) => {
           <div>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: '1fr auto auto',
+              gridTemplateColumns: '1fr auto',
               gap: '0.75rem',
               alignItems: 'center',
               marginBottom: '1.25rem'
@@ -310,30 +310,6 @@ export const GateKiosk = ({ setAppTab }) => {
               >
                 {loadingStudent ? t.searching : t.btnQuickLookup}
               </button>
-
-              {/* Sample Quick Click Tags for easy testing */}
-              <div style={{ display: 'flex', gap: '0.4rem' }}>
-                {['22CS101', '22CS102', '23ME045'].map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => {
-                      setRollNumberInput(r);
-                      handleStudentLookup(r);
-                    }}
-                    style={{
-                      padding: '0.85rem 0.75rem',
-                      borderRadius: '10px',
-                      backgroundColor: '#EFF6FF',
-                      border: '1px solid #BFDBFE',
-                      color: '#1D4ED8',
-                      fontWeight: 700,
-                      fontSize: '0.85rem'
-                    }}
-                  >
-                    +{r}
-                  </button>
-                ))}
-              </div>
             </div>
 
             {/* Student Preview Card */}
