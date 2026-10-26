@@ -144,112 +144,17 @@ export const PublicGateQrPortal = () => {
       padding: '2.5rem 1rem',
       fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
     }}>
-      {/* Top Header */}
-      <div style={{
-        maxWidth: '700px',
-        width: '100%',
-        textAlign: 'center',
-        marginBottom: '2rem'
-      }}>
-        <div style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '8px',
-          backgroundColor: '#EFF6FF',
-          border: '1.5px solid #BFDBFE',
-          borderRadius: '999px',
-          padding: '6px 16px',
-          fontSize: '0.8rem',
-          fontWeight: 800,
-          color: '#1D4ED8',
-          marginBottom: '1rem',
-          textTransform: 'uppercase',
-          letterSpacing: '0.05em',
-          boxShadow: '0 2px 8px rgba(37, 99, 235, 0.08)'
-        }}>
-          <ShieldCheck size={16} color="#2563EB" />
-          <span>College Main Gate &bull; Standalone Public Portal</span>
-        </div>
-
-        <h1 style={{
-          fontSize: '2.4rem',
-          fontWeight: 900,
-          margin: '0 0 0.5rem 0',
-          letterSpacing: '-0.02em',
-          color: '#0F172A'
-        }}>
-          CampusGuard Digital Self-Pass
-        </h1>
-
-        {/* Mode Switcher */}
-        <div style={{
-          display: 'inline-flex',
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          borderRadius: '14px',
-          padding: '5px',
-          marginTop: '1.25rem',
-          border: '1.5px solid #E2E8F0',
-          boxShadow: '0 4px 14px rgba(15, 23, 42, 0.05)'
-        }}>
-          <button
-            type="button"
-            onClick={() => switchMode('form')}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '10px',
-              border: 'none',
-              fontSize: '0.85rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              backgroundColor: activeMode === 'form' ? '#2563EB' : 'transparent',
-              color: activeMode === 'form' ? '#ffffff' : '#64748B',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.15s ease',
-              boxShadow: activeMode === 'form' ? '0 4px 12px rgba(37, 99, 235, 0.3)' : 'none'
-            }}
-          >
-            <Smartphone size={16} />
-            <span>Fill Visitor Form (Mobile View)</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => switchMode('poster')}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '10px',
-              border: 'none',
-              fontSize: '0.85rem',
-              fontWeight: 800,
-              cursor: 'pointer',
-              backgroundColor: activeMode === 'poster' ? '#2563EB' : 'transparent',
-              color: activeMode === 'poster' ? '#ffffff' : '#64748B',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.15s ease',
-              boxShadow: activeMode === 'poster' ? '0 4px 12px rgba(37, 99, 235, 0.3)' : 'none'
-            }}
-          >
-            <QrCode size={16} />
-            <span>Gate QR Poster (Physical Standee)</span>
-          </button>
-        </div>
-      </div>
-
-      {/* MODE 1: VISITOR SELF PASS FORM (Softnix-Style Dish/Menu Order Interface) */}
+      {/* MODE 1: VISITOR SELF PASS FORM (Opened in another tab when QR is scanned to collect details) */}
       {activeMode === 'form' && (
-        <div style={{ width: '100%', maxWidth: '580px' }}>
-          <VisitorSelfPass onBackToPoster={() => switchMode('poster')} />
+        <div style={{ width: '100%', maxWidth: '640px' }}>
+          <VisitorSelfPass />
         </div>
       )}
 
-      {/* MODE 2: PRINTABLE GATE QR POSTER (Softnix-Style Scan & Go Standee) */}
+      {/* MODE 2: GATE QR POSTER (Physical Standee - Only QR Code on /self-pass) */}
       {activeMode === 'poster' && (
         <div className="animate-fade-in" style={{
-          maxWidth: '460px',
+          maxWidth: '440px',
           width: '100%',
           backgroundColor: '#ffffff',
           borderRadius: '24px',
@@ -260,7 +165,7 @@ export const PublicGateQrPortal = () => {
           border: '2px solid #E2E8F0',
           position: 'relative'
         }}>
-          {/* Header matching Softnix Image 2: "Table T-3 · Scan & Go" */}
+          {/* Header matching Softnix: "Gate 1 · Scan & Go" */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -293,11 +198,12 @@ export const PublicGateQrPortal = () => {
               </h3>
             </div>
 
-            {/* Softnix Blue Close/Switch Button */}
-            <button
-              type="button"
-              onClick={() => switchMode('form')}
-              title="Open Mobile Pass Catalog"
+            {/* Open Form in New Tab */}
+            <a
+              href={portalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open Visitor Pass Form in New Tab"
               style={{
                 width: '34px',
                 height: '34px',
@@ -308,11 +214,12 @@ export const PublicGateQrPortal = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                textDecoration: 'none'
               }}
             >
               <ExternalLink size={17} />
-            </button>
+            </a>
           </div>
 
           {/* REAL SCANNABLE QR CODE CONTAINER */}
@@ -329,7 +236,7 @@ export const PublicGateQrPortal = () => {
             <RealQRCode text={portalUrl} size={230} />
           </div>
 
-          {/* ACTION BUTTONS: Matches Softnix Image 2 [Print QR] & [Open link] */}
+          {/* ACTION BUTTONS: [Print QR] & [Open link ↗] (Opens form in another tab) */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
             {/* Softnix Red Button: Print QR */}
             <button
@@ -356,10 +263,11 @@ export const PublicGateQrPortal = () => {
               <span>Print QR</span>
             </button>
 
-            {/* Softnix White Button: Open link */}
-            <button
-              type="button"
-              onClick={() => switchMode('form')}
+            {/* Softnix White Button: Open link in ANOTHER TAB */}
+            <a
+              href={portalUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 padding: '0.85rem 1rem',
                 borderRadius: '12px',
@@ -374,12 +282,13 @@ export const PublicGateQrPortal = () => {
                 justifyContent: 'center',
                 gap: '8px',
                 boxShadow: '0 2px 8px rgba(15, 23, 42, 0.05)',
-                transition: 'all 0.15s ease'
+                transition: 'all 0.15s ease',
+                textDecoration: 'none'
               }}
             >
               <ExternalLink size={18} color="#2563EB" />
-              <span>Open link</span>
-            </button>
+              <span>Open link ↗</span>
+            </a>
           </div>
         </div>
       )}
