@@ -53,12 +53,9 @@ export const OutPassManager = ({ setAppTab }) => {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.6rem', color: '#0F172A', fontWeight: 800 }}>
+          <h2 style={{ fontSize: '1.6rem', color: '#0F172A', fontWeight: 800, margin: 0 }}>
             {t.outpassTitle}
           </h2>
-          <p style={{ fontSize: '0.875rem', color: '#64748B' }}>
-            {t.outpassSubtitle}
-          </p>
         </div>
 
         {setAppTab && (
@@ -102,12 +99,9 @@ export const OutPassManager = ({ setAppTab }) => {
               <QrCode size={22} />
             </div>
             <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
                 {t.digitalVerifyTitle}
               </h3>
-              <p style={{ fontSize: '0.78rem', color: '#64748B' }}>
-                {t.digitalVerifyDesc}
-              </p>
             </div>
           </div>
 
@@ -135,16 +129,7 @@ export const OutPassManager = ({ setAppTab }) => {
             </button>
           </form>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginTop: '1rem', fontSize: '0.8rem', color: '#64748B' }}>
-            <span>{t.trySample}</span>
-            <button
-              type="button"
-              onClick={() => setPassCodeInput('OP-4592')}
-              style={{ background: 'none', color: '#2563EB', fontWeight: 800, textDecoration: 'underline' }}
-            >
-              OP-4592
-            </button>
-          </div>
+
 
           {verificationResult && (
             <div style={{
@@ -174,12 +159,9 @@ export const OutPassManager = ({ setAppTab }) => {
         <div className="card">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
                 {language === 'ta' ? 'அனுமதிக்கப்பட்ட பாஸ்கள்' : 'Active Approved Passes'}
               </h3>
-              <p style={{ fontSize: '0.78rem', color: '#64748B' }}>
-                {t.outpassSubtitle}
-              </p>
             </div>
 
             <div style={{ position: 'relative', width: '200px' }}>
