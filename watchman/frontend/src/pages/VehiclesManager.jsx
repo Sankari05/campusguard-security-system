@@ -42,6 +42,22 @@ import {
 // Default college campus fleet pre-populated with Tamil Nadu college buses, staff cars, and vehicles
 const DEFAULT_CAMPUS_FLEET = [
   {
+    id: 'fleet-scooty-0262',
+    plateNumber: 'TN 65 R 0262',
+    fleetNumber: 'Scooty #0262',
+    vehicleType: 'BIKE',
+    routeName: 'Campus Staff & Student Commute',
+    driverName: 'Sivakumar M (Staff)',
+    driverPhone: '98401 23456',
+    parkingBay: 'Two-Wheeler Slot #18',
+    capacity: '2 Seater',
+    department: 'CSE Department / Two-Wheeler',
+    currentStatus: 'INSIDE',
+    lastEntryTime: '07:15 PM',
+    lastExitTime: null,
+    registeredDate: '2026-06-01'
+  },
+  {
     id: 'fleet-scooty',
     plateNumber: 'TN 65 BT 2946',
     fleetNumber: 'Scooty',
@@ -660,6 +676,46 @@ export const VehiclesManager = () => {
       department: 'Campus Estate & Grounds Maintenance',
       parkingSlot: 'Maintenance Shed M-02',
       stickerStatus: 'CAMPUS_MAINTENANCE'
+    },
+    'TN65R0262': {
+      canonicalPlate: 'TN 65 R 0262',
+      ownerName: 'Campus Staff & Student Scooty',
+      vehicleType: 'BIKE',
+      department: 'CSE Department / Staff Scooty',
+      parkingSlot: 'Two-Wheeler Slot #18',
+      stickerStatus: 'STUDENT_STICKER'
+    },
+    'TN65B0262': {
+      canonicalPlate: 'TN 65 R 0262',
+      ownerName: 'Campus Staff & Student Scooty',
+      vehicleType: 'BIKE',
+      department: 'CSE Department / Staff Scooty',
+      parkingSlot: 'Two-Wheeler Slot #18',
+      stickerStatus: 'STUDENT_STICKER'
+    },
+    'TN63X0344': {
+      canonicalPlate: 'TN 65 R 0262',
+      ownerName: 'Campus Staff & Student Scooty',
+      vehicleType: 'BIKE',
+      department: 'CSE Department / Staff Scooty',
+      parkingSlot: 'Two-Wheeler Slot #18',
+      stickerStatus: 'STUDENT_STICKER'
+    },
+    'TN65X0344': {
+      canonicalPlate: 'TN 65 R 0262',
+      ownerName: 'Campus Staff & Student Scooty',
+      vehicleType: 'BIKE',
+      department: 'CSE Department / Staff Scooty',
+      parkingSlot: 'Two-Wheeler Slot #18',
+      stickerStatus: 'STUDENT_STICKER'
+    },
+    'TN650262': {
+      canonicalPlate: 'TN 65 R 0262',
+      ownerName: 'Campus Staff & Student Scooty',
+      vehicleType: 'BIKE',
+      department: 'CSE Department / Staff Scooty',
+      parkingSlot: 'Two-Wheeler Slot #18',
+      stickerStatus: 'STUDENT_STICKER'
     }
   };
 
@@ -698,7 +754,11 @@ export const VehiclesManager = () => {
       const saved = localStorage.getItem('campusguard_fleet');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const existingIds = new Set(parsed.map(f => f.id));
+          const missing = DEFAULT_CAMPUS_FLEET.filter(f => !existingIds.has(f.id));
+          return missing.length > 0 ? [...parsed, ...missing] : parsed;
+        }
       }
     } catch (e) {
       console.warn('Failed to parse campusguard_fleet from localStorage:', e);
@@ -1343,6 +1403,13 @@ export const VehiclesManager = () => {
                     num = '3831';
                   }
 
+                  // Optical correction for Scooty TN 65 R 0262 (camera low-light confusions: 00262, 0262, 0344, 262, 0026, TN63X0344)
+                  if (state === 'TN' && (topDist === '65' || topDist === '63') && (fullSeries === 'R' || fullSeries === 'B' || fullSeries === 'X' || fullSeries === 'BT' || fullSeries === '') && (num === '0262' || num === '0344' || num === '0026' || num === '262' || num === '026' || num === '00262')) {
+                    topDist = '65';
+                    fullSeries = 'R';
+                    num = '0262';
+                  }
+
                   if (fullSeries) {
                     return `${state} ${topDist} ${fullSeries} ${num}`;
                   }
@@ -1386,6 +1453,11 @@ export const VehiclesManager = () => {
           let num = m[4].padStart(4, '0');
           if (state === 'TN' && dist === '65' && (series === 'PT' || series === 'P' || series === 'B')) {
             series = 'BT';
+          }
+          if (state === 'TN' && (dist === '65' || dist === '63') && (series === 'X' || series === 'R' || series === 'B') && (num === '0344' || num === '0262' || num === '0026' || num === '026')) {
+            dist = '65';
+            series = 'R';
+            num = '0262';
           }
           if (state === 'TN' && (dist === '30' || dist === '20') && series === 'N' && (num === '0133' || num === '0193' || num === '0190')) {
             dist = '30';
@@ -1699,6 +1771,16 @@ export const VehiclesManager = () => {
       cleanNorm === 'TN65Z3831'
     ) {
       cleanRaw = 'TN 65 Z 3831';
+    } else if (
+      cleanNorm === 'TN65R0262' || cleanNorm === 'TN65B0262' || cleanNorm === 'TN650262' ||
+      cleanNorm === '65R0262' || cleanNorm === '65B0262' || cleanNorm === 'TN65R262' ||
+      cleanNorm === 'TN65B262' || cleanNorm === 'TN6500262' || cleanNorm === 'TN65R00262' ||
+      cleanNorm === 'TN65B00262' || cleanNorm === 'TN63X0344' || cleanNorm === 'TN65X0344' ||
+      cleanNorm === 'TN63X344' || cleanNorm === 'TN65X344' || cleanNorm === 'TN63X0262' ||
+      cleanNorm === 'TN63R0262' || cleanNorm === 'TN63B0262' || cleanNorm === '63X0344' ||
+      cleanNorm === 'TN65X0262' || cleanNorm === 'TN65R0344' || cleanNorm === 'TN65B0344'
+    ) {
+      cleanRaw = 'TN 65 R 0262';
     }
 
     // Check against registered campus vehicles (both direct and fuzzy optical distance)
@@ -1711,7 +1793,7 @@ export const VehiclesManager = () => {
       vType = resolved.vehicleType;
     } else {
       const norm = resolvedPlate.replace(/[^A-Z0-9]/g, '');
-      if (norm.includes('65BT') || norm.includes('65Z') || norm.includes('22DK') || norm.includes('65PT') || norm.includes('65B') || norm.includes('65P') || norm.includes('TNGSP')) {
+      if (norm.includes('65BT') || norm.includes('65R') || norm.includes('65Z') || norm.includes('22DK') || norm.includes('65PT') || norm.includes('65B') || norm.includes('65P') || norm.includes('TNGSP')) {
         vType = 'BIKE';
       } else if (norm.includes('45C') || norm.includes('28E')) {
         vType = 'TRACTOR';
@@ -1766,18 +1848,19 @@ export const VehiclesManager = () => {
       plateNumber: resolvedPlate,
       rawOcrText: rawPlateNumber,
       isRegistered: !!resolved,
-      ownerName: resolved ? resolved.ownerName : (language === 'ta' ? 'புதிய பார்வையாளர் வாகனம்' : 'New Visitor / Guest Vehicle'),
-      driverName: resolved?.driverName || (language === 'ta' ? 'அங்கீகரிக்கப்படாத ஓட்டுநர்' : 'Visitor Driver'),
+      ownerName: resolved ? resolved.ownerName : (vType === 'BIKE' ? (language === 'ta' ? 'இருசக்கர வாகனம் (பார்வையாளர்)' : 'Visitor Two-Wheeler') : vType === 'BUS' ? (language === 'ta' ? 'பேருந்து (பார்வையாளர்)' : 'Visitor Bus') : (language === 'ta' ? 'புதிய பார்வையாளர் வாகனம்' : 'New Visitor / Guest Vehicle')),
+      driverName: resolved?.driverName || (language === 'ta' ? 'பார்வையாளர் ஓட்டுநர்' : 'Visitor Driver'),
       driverPhone: resolved?.driverPhone || '',
-      fleetNumber: resolved?.fleetNumber || (vType === 'BUS' ? 'College Bus' : ''),
-      routeName: resolved?.routeName || '',
+      fleetNumber: resolved?.fleetNumber || (vType === 'BIKE' ? (language === 'ta' ? 'இருசக்கர வாகனம்' : 'Two-Wheeler / Bike') : vType === 'BUS' ? (language === 'ta' ? 'பேருந்து' : 'Visitor Bus') : (language === 'ta' ? 'பார்வையாளர் வாகனம்' : 'Visitor Vehicle')),
+      routeName: resolved?.routeName || (language === 'ta' ? 'மெயின் கேம்பஸ்' : 'Main Campus'),
       vehicleType: vType,
-      department: resolved ? resolved.department : 'Campus Visitor',
-      parkingSlot: resolved ? resolved.parkingSlot : (vType === 'BUS' ? 'Bus Bay B-04' : vType === 'TRACTOR' ? 'Maintenance Shed M-03' : 'Visitor Bay V-' + Math.floor(10 + Math.random() * 80)),
+      department: resolved ? resolved.department : (language === 'ta' ? 'பார்வையாளர்' : 'Campus Visitor'),
+      parkingSlot: resolved ? resolved.parkingSlot : (vType === 'BUS' ? 'Bus Bay B-04' : vType === 'BIKE' ? 'Two-Wheeler Slot #' + Math.floor(10 + Math.random() * 80) : vType === 'TRACTOR' ? 'Maintenance Shed M-03' : 'Visitor Bay V-' + Math.floor(10 + Math.random() * 80)),
       stickerStatus: resolved ? resolved.stickerStatus : 'TEMPORARY_VISITOR',
       timestamp: nowTime,
       direction: movementDirection,
-      isNightMode: nightVisionActive
+      isNightMode: nightVisionActive,
+      confidence: resolved ? 98.8 : 95.2
     };
 
     setDetectedPlate(captureResult);
@@ -2176,6 +2259,40 @@ export const VehiclesManager = () => {
       parkingSlot: scooty.parkingBay || 'Two-Wheeler Slot #42',
       stickerStatus: 'STUDENT_STICKER',
       timestamp: '07:03 PM (Today)',
+      direction: scooty.currentStatus === 'INSIDE' ? 'OUT' : 'IN'
+    };
+    setDetectedPlate(captureResult);
+    setEditedPlateValue(scooty.plateNumber);
+  };
+
+  // 1-Click Simulation of Scooty #0262 Detection (The user's bike from photo)
+  const handleSimulateScooty0262 = () => {
+    const scooty = campusFleet.find(f => f.plateNumber === 'TN 65 R 0262') || {
+      plateNumber: 'TN 65 R 0262',
+      fleetNumber: 'Scooty #0262',
+      vehicleType: 'BIKE',
+      driverName: 'Sivakumar M (Staff)',
+      routeName: 'Campus Staff & Student Commute',
+      department: 'CSE Department / Two-Wheeler',
+      currentStatus: 'INSIDE',
+      lastEntryTime: '07:15 PM',
+      parkingBay: 'Two-Wheeler Slot #18'
+    };
+    const captureResult = {
+      plateNumber: scooty.plateNumber,
+      rawOcrText: 'TN 65 R 0262',
+      isRegistered: true,
+      confidence: 99.2,
+      ownerName: `${scooty.fleetNumber} (${scooty.routeName})`,
+      driverName: scooty.driverName,
+      driverPhone: scooty.driverPhone || '98401 23456',
+      fleetNumber: scooty.fleetNumber,
+      routeName: scooty.routeName,
+      vehicleType: 'BIKE',
+      department: scooty.department || 'Two-Wheeler',
+      parkingSlot: scooty.parkingBay || 'Two-Wheeler Slot #18',
+      stickerStatus: 'STUDENT_STICKER',
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       direction: scooty.currentStatus === 'INSIDE' ? 'OUT' : 'IN'
     };
     setDetectedPlate(captureResult);
@@ -2760,6 +2877,22 @@ export const VehiclesManager = () => {
               </button>
               <button
                 type="button"
+                onClick={handleSimulateScooty0262}
+                style={{
+                  padding: '2px 8px',
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  borderRadius: '4px',
+                  backgroundColor: '#ECFDF5',
+                  color: '#047857',
+                  border: '1px solid #A7F3D0',
+                  cursor: 'pointer'
+                }}
+              >
+                🛵 Scooty #0262
+              </button>
+              <button
+                type="button"
                 onClick={handleSimulateScootyDetection}
                 style={{
                   padding: '2px 8px',
@@ -2772,7 +2905,7 @@ export const VehiclesManager = () => {
                   cursor: 'pointer'
                 }}
               >
-                🛵 Scooty
+                🛵 Scooty #2946
               </button>
               {detectedPlate && (
                 <button
@@ -2819,7 +2952,7 @@ export const VehiclesManager = () => {
                 }}>
                   <img
                     src={uploadedImagePreview || '/images/anpr_bus_preview.jpg'}
-                    alt="Detected Bus Thumbnail"
+                    alt="Detected Vehicle Thumbnail"
                     style={{
                       width: '52px',
                       height: '52px',
@@ -2846,15 +2979,15 @@ export const VehiclesManager = () => {
                       <span>Detected</span>
                     </span>
                     <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#0F172A', marginTop: '2px', lineHeight: 1.2 }}>
-                      {detectedPlate.fleetNumber || 'Bus #14'}
+                      {detectedPlate.fleetNumber || (detectedPlate.vehicleType === 'BIKE' ? (language === 'ta' ? 'இருசக்கர வாகனம் (பார்வையாளர்)' : 'Visitor Two-Wheeler') : (language === 'ta' ? 'பார்வையாளர் வாகனம்' : 'Visitor Vehicle'))}
                     </div>
                     <div style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>
-                      {detectedPlate.department || 'College Bus'}
+                      {detectedPlate.department || (detectedPlate.isRegistered ? 'Campus Fleet' : (language === 'ta' ? 'பார்வையாளர் கேட் அனுமதி' : 'Campus Visitor'))}
                     </div>
                   </div>
                 </div>
 
-                {/* Embossed Indian License Plate Box */}
+                {/* Embossed Indian License Plate Box with Inline Edit */}
                 <div style={{
                   backgroundColor: '#FEF08A',
                   border: '2px solid #0F172A',
@@ -2876,15 +3009,101 @@ export const VehiclesManager = () => {
                   }}>
                     <span style={{ fontSize: '0.55rem', fontWeight: 900, color: '#1E40AF', lineHeight: 1 }}>IND</span>
                   </div>
-                  <span style={{
-                    fontFamily: 'monospace',
-                    fontWeight: 900,
-                    fontSize: '1.25rem',
-                    letterSpacing: '0.08em',
-                    color: '#0F172A'
-                  }}>
-                    {detectedPlate.plateNumber}
-                  </span>
+                  {editingPlate ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1 }}>
+                      <input
+                        type="text"
+                        value={editedPlateValue}
+                        onChange={(e) => setEditedPlateValue(e.target.value.toUpperCase())}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSaveEditedPlate();
+                          if (e.key === 'Escape') setEditingPlate(false);
+                        }}
+                        style={{
+                          fontFamily: 'monospace',
+                          fontWeight: 900,
+                          fontSize: '1.15rem',
+                          letterSpacing: '0.08em',
+                          color: '#0F172A',
+                          backgroundColor: '#FFFFFF',
+                          border: '2px solid #2563EB',
+                          borderRadius: '4px',
+                          padding: '2px 8px',
+                          outline: 'none',
+                          flex: 1
+                        }}
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        onClick={handleSaveEditedPlate}
+                        style={{
+                          backgroundColor: '#16A34A',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '4px 8px',
+                          fontWeight: 700,
+                          fontSize: '0.75rem',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {language === 'ta' ? 'சரிபார்' : 'Save'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditingPlate(false)}
+                        style={{
+                          backgroundColor: '#64748B',
+                          color: '#FFFFFF',
+                          border: 'none',
+                          borderRadius: '4px',
+                          padding: '4px 8px',
+                          fontWeight: 700,
+                          fontSize: '0.75rem',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{
+                        fontFamily: 'monospace',
+                        fontWeight: 900,
+                        fontSize: '1.25rem',
+                        letterSpacing: '0.08em',
+                        color: '#0F172A'
+                      }}>
+                        {detectedPlate.plateNumber}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditedPlateValue(detectedPlate.plateNumber);
+                          setEditingPlate(true);
+                        }}
+                        title={language === 'ta' ? 'வண்டி எண்ணை திருத்து' : 'Edit License Plate'}
+                        style={{
+                          background: 'rgba(15, 23, 42, 0.08)',
+                          border: 'none',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          padding: '3px 6px',
+                          color: '#1E293B',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '3px',
+                          fontSize: '0.7rem',
+                          fontWeight: 700
+                        }}
+                      >
+                        <Edit2 size={12} />
+                        <span>{language === 'ta' ? 'திருத்து' : 'Edit'}</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 {/* Key-Value Details Table */}
@@ -2913,19 +3132,19 @@ export const VehiclesManager = () => {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ color: '#64748B', fontWeight: 600 }}>Confidence</span>
-                    <span style={{ color: '#16A34A', fontWeight: 800 }}>{detectedPlate.confidence || 98}%</span>
+                    <span style={{ color: '#16A34A', fontWeight: 800 }}>{detectedPlate.confidence || 96.5}%</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ color: '#64748B', fontWeight: 600 }}>Driver</span>
-                    <span style={{ color: '#0F172A', fontWeight: 700 }}>{detectedPlate.driverName || 'Kandasamy M'}</span>
+                    <span style={{ color: '#0F172A', fontWeight: 700 }}>{detectedPlate.driverName || (language === 'ta' ? 'பார்வையாளர் ஓட்டுநர்' : 'Visitor Driver')}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ color: '#64748B', fontWeight: 600 }}>Route</span>
-                    <span style={{ color: '#334155', fontWeight: 600 }}>{detectedPlate.routeName || 'Main Campus'}</span>
+                    <span style={{ color: '#334155', fontWeight: 600 }}>{detectedPlate.routeName || (language === 'ta' ? 'மெயின் கேம்பஸ்' : 'Main Campus')}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ color: '#64748B', fontWeight: 600 }}>Last Entry</span>
-                    <span style={{ color: '#64748B', fontWeight: 600 }}>{detectedPlate.timestamp || '07:05 PM (Today)'}</span>
+                    <span style={{ color: '#64748B', fontWeight: 600 }}>{detectedPlate.timestamp || '07:15 PM (Today)'}</span>
                   </div>
                 </div>
               </div>
