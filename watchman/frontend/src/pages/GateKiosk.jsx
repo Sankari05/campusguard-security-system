@@ -435,14 +435,11 @@ export const GateKiosk = ({ setAppTab }) => {
             }}>
               <QrCode size={32} />
             </div>
-            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A', marginBottom: '0.35rem' }}>
+            <h3 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#0F172A', marginBottom: '1.25rem' }}>
               {t.digitalVerifyTitle}
             </h3>
-            <p style={{ fontSize: '0.85rem', color: '#64748B', marginBottom: '1.5rem' }}>
-              {t.digitalVerifyDesc}
-            </p>
 
-            <form onSubmit={handleVerifyPassCode} style={{ display: 'flex', gap: '0.65rem', marginBottom: '1rem' }}>
+            <form onSubmit={handleVerifyPassCode} style={{ display: 'flex', gap: '0.65rem', marginBottom: '0' }}>
               <input
                 type="text"
                 className="input-field"
@@ -455,17 +452,6 @@ export const GateKiosk = ({ setAppTab }) => {
                 {t.btnVerifyOpen}
               </button>
             </form>
-
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', fontSize: '0.8rem', color: '#64748B' }}>
-              <span>{t.trySample}</span>
-              <button
-                type="button"
-                onClick={() => setPassCodeInput('OP-4592')}
-                style={{ background: 'none', color: '#2563EB', fontWeight: 700, textDecoration: 'underline' }}
-              >
-                OP-4592
-              </button>
-            </div>
 
             {passVerificationResult && (
               <div style={{
@@ -499,9 +485,6 @@ export const GateKiosk = ({ setAppTab }) => {
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#0F172A' }}>
               {t.logbookTitle}
             </h3>
-            <p style={{ fontSize: '0.8rem', color: '#64748B' }}>
-              {t.logbookSubtitle}
-            </p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             {gateLogs && gateLogs.length > 0 && clearGateLogs && (
@@ -625,11 +608,6 @@ export const GateKiosk = ({ setAppTab }) => {
                     </div>
                     <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#334155' }}>
                       {language === 'ta' ? 'இன்றைய கேட் பதிவுகள் ஏதுமில்லை (சுத்தமான நிலை)' : 'No Gate Log Entries Recorded Yet (Clean State)'}
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: '#94A3B8', marginTop: '0.35rem' }}>
-                      {language === 'ta'
-                        ? 'மாணவர் வருகை அல்லது வாகனங்கள் கேட்டை கடக்கும்போது மட்டுமே தானாக இங்கே பதிவாகும்.'
-                        : 'Real-time entries will appear here automatically as students or vehicles pass the gate.'}
                     </div>
                   </td>
                 </tr>
