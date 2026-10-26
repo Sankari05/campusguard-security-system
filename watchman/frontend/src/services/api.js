@@ -1,8 +1,18 @@
 import axios from 'axios';
 
-// Base Axios instance pointing to the Spring Boot REST Backend
+// Dynamic API Base URL: When mobile phones or tunnels access Vite, relative '/api' routes
+// through Vite proxy to http://127.0.0.1:8080 without CORS or localhost issues!
+const getApiBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      return '/api';
+    }
+  }
+  return 'http://localhost:8080/api';
+};
+
 const apiClient = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: getApiBaseUrl(),
   timeout: 4000,
   headers: {
     'Content-Type': 'application/json',
