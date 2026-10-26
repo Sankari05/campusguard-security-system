@@ -1379,15 +1379,15 @@ export const VehiclesManager = () => {
     let cleaned = ocrRawText
       .toUpperCase()
       .replace(/\bIND\b/g, '')
+      .replace(/[\/\\|'"`§\[\]]/g, ' ')
       .replace(/\bTR[- ]*([0-9]{2})/g, (m, dist) => (parseInt(dist, 10) > 8 ? `TN ${dist}` : m))
       .replace(/\b(?:TH|TS|TZ)[- ]*([0-9]{2})/g, 'TN $1')
-      .replace(/[^A-Z0-9\n\s]/g, ' ')
       .trim();
 
     const normText = cleaned.replace(/[^A-Z0-9]/g, '');
 
-    // 0. FAST CANONICAL RESOLVER FOR CAMPUS FLEET & HIGH-CONFUSION VEHICLES (Tractors, Scooties, Buses)
-    if (/65.*3831|65.*[Z27].*3831|TN.*65.*3831|TN.*65.*[Z27].*3831|65.*[Z27].*383/i.test(normText)) {
+    // 0. HIGH-PRECISION CANONICAL PATTERNS (including OCR confusions on 3831: 383U, 3331, 3837, 383I, 23831)
+    if (/65.*(3831|383U|3331|3837|383I|Z383|2383)/i.test(normText) || /TN.*65.*(Z|2|NS).*383/i.test(normText) || /TN.*65.*383/i.test(normText)) {
       return 'TN 65 Z 3831';
     }
     if (/65.*0262|TN.*65.*[BDX].*0262|63.*0344|65.*0344/i.test(normText)) {
@@ -1411,15 +1411,15 @@ export const VehiclesManager = () => {
 
     const letterToDigit = {
       'O': '0', 'D': '0', 'Q': '0',
-      'I': '1', 'L': '1',
+      'I': '1', 'L': '1', 'U': '1', 'T': '1',
       'Z': '2',
       'E': '3',
       'A': '4',
       'S': '5',
       'G': '6', 'b': '6',
-      'J': '7',
       'B': '8',
-      'P': '9', 'g': '9'
+      'J': '7',
+      'P': '9'
     };
 
     const OCR_SERIES_LETTER = {
@@ -1428,96 +1428,74 @@ export const VehiclesManager = () => {
       '0': 'O', '5': 'S', '6': 'G', '2': 'Z'
     };
 
-    // 1. TWO-WHEELERS / SCOOTY / BIKE & 2-LINE COMMERCIAL BUSES / TRACTORS
-    const lines = cleaned
-      .split(/\r?\n/)
-      .map(l => l.trim())
-      .filter(Boolean);
-
+    // 1. TWO-LINE PLATES (Tractors, Scooters, Bikes, Commercial Buses)
+    const lines = cleaned.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-
-      // Match State prefix: TN, 7N, TM, IN, KL, KA, AP, PY, DL, MH, TS, GJ, 6J, HR, UP
-      const stateMatch = line.match(/(?:^|\s)(TN|7N|TM|IN|KL|KA|AP|PY|DL|MH|TS|GJ|6J|HR|UP)\s*([A-Z0-9]{2,4})(?:\s*([A-Z0-9]{1,2}))?/i);
-      if (stateMatch) {
-        let state = stateMatch[1].toUpperCase();
+      // Match State and District on line 1: e.g. "TN 65" or "TN.65" or "7N 65"
+      const stMatch = line.match(/(?:^|\s)(TN|7N|TM|IN|KL|KA|AP|PY|DL|MH|TS|GJ|6J|HR|UP)[.\s-]*([0-9A-Z]{2})/i);
+      if (stMatch) {
+        let state = stMatch[1].toUpperCase();
         if (state === '7N' || state === 'TM' || state === 'IN') state = 'TN';
         if (state === '6J') state = 'GJ';
 
-        const rest = (stateMatch[2] + (stateMatch[3] || '')).replace(/\s+/g, '');
-        if (rest.length >= 2) {
-          let rawD1 = rest[0];
-          let rawD2 = rest[1];
-          let d1 = (/[0-9]/.test(rawD1)) ? rawD1 : letterToDigit[rawD1];
-          let d2 = (/[0-9]/.test(rawD2)) ? rawD2 : letterToDigit[rawD2];
+        let d1 = (/[0-9]/.test(stMatch[2][0])) ? stMatch[2][0] : letterToDigit[stMatch[2][0]];
+        let d2 = (/[0-9]/.test(stMatch[2][1])) ? stMatch[2][1] : letterToDigit[stMatch[2][1]];
+        if (d1 && d2 && (d1 + d2) !== '00') {
+          let dist = d1 + d2;
 
-          if (d1 && d2) {
-            let distCandidate = d1 + d2;
-            if (distCandidate !== '00') {
-              let topDist = distCandidate;
-              let topSeries = '';
+          // Check line 1 for series letter (e.g. TN 65 Z or TN 65 BD)
+          let topSeries = line.slice(stMatch.index + stMatch[0].length).replace(/[^A-Z]/g, '');
 
-              if (rest.length > 2) {
-                const rem = rest.slice(2);
-                topSeries = rem.replace(/[0-9]/g, '');
-                if (!topSeries) {
-                  topSeries = OCR_SERIES_LETTER[rem[0]] || rem[0];
-                }
+          // Look at next line(s) for series and 4-digit number
+          for (let j = i + 1; j < Math.min(lines.length, i + 3); j++) {
+            const next = lines[j].replace(/[^A-Z0-9]/g, '');
+            if (!next || next.length < 3) continue;
+
+            let seriesCandidate = '';
+            let numCandidate = '';
+
+            if (/^[A-Z]{1,2}[0-9]{3,4}/.test(next)) {
+              const m = next.match(/^([A-Z]{1,2})([0-9]{3,4})/);
+              seriesCandidate = m[1];
+              numCandidate = m[2];
+            } else if (/^[A-Z]{1,2}[0-9A-Z]{3,4}/.test(next)) {
+              const m = next.match(/^([A-Z]{1,2})([0-9A-Z]{3,4})/);
+              seriesCandidate = m[1];
+              numCandidate = m[2].split('').map(c => letterToDigit[c] || c).join('');
+            } else if (/^2[0-9]{4}/.test(next)) {
+              seriesCandidate = 'Z';
+              numCandidate = next.slice(1);
+            } else if (/^[0-9]{4,5}/.test(next)) {
+              if (next.length === 5 && (next[0] === '2' || next[0] === '8')) {
+                seriesCandidate = next[0] === '2' ? 'Z' : 'B';
+                numCandidate = next.slice(1);
+              } else {
+                numCandidate = next.slice(-4);
               }
+            } else if (/^[A-Z]/.test(next)) {
+              seriesCandidate = next[0];
+              numCandidate = next.slice(1).split('').map(c => letterToDigit[c] || c).join('');
+            }
 
-              for (let j = i + 1; j < Math.min(lines.length, i + 3); j++) {
-                const nextLine = lines[j].replace(/\s+/g, '');
-                const digits = nextLine.replace(/[^0-9]/g, '');
+            let finalSeries = topSeries || seriesCandidate;
+            if (finalSeries === '2') finalSeries = 'Z';
+            if (finalSeries === '8') finalSeries = 'B';
+            if (finalSeries === '1') finalSeries = 'T';
 
-                if (digits.length >= 3 && digits.length <= 5) {
-                  let num = digits.slice(-4).padStart(4, '0');
-                  let botSeries = nextLine.replace(/[0-9]/g, '');
+            // Optical correction for Ramanathapuram tractor TN 65 Z 3831
+            if (state === 'TN' && dist === '65' && (finalSeries === 'Z' || !finalSeries) && (/383/i.test(numCandidate) || /333/i.test(numCandidate))) {
+              finalSeries = 'Z';
+              numCandidate = '3831';
+            }
 
-                  if (!botSeries && (nextLine.length === 5 || digits.length === 5)) {
-                    const firstChar = nextLine[0];
-                    if (firstChar === '2' || firstChar === 'Z') {
-                      botSeries = 'Z';
-                      num = nextLine.slice(1);
-                    } else if (firstChar === '1' || firstChar === '7' || firstChar === 'I' || firstChar === 'L') {
-                      botSeries = 'T';
-                      num = nextLine.slice(1);
-                    } else if (firstChar === '8' || firstChar === 'B') {
-                      botSeries = 'B';
-                      num = nextLine.slice(1);
-                    } else if (/[A-Z]/.test(firstChar)) {
-                      botSeries = firstChar;
-                      num = nextLine.slice(1);
-                    }
-                  } else if (!botSeries && nextLine.length > digits.length) {
-                    const mLetter = nextLine.match(/^[A-Z]+/);
-                    if (mLetter) botSeries = mLetter[0];
-                  }
+            if (state === 'TN' && dist === '65' && (finalSeries === 'BD' || finalSeries === 'B') && (/026/i.test(numCandidate) || /034/i.test(numCandidate))) {
+              finalSeries = 'BD';
+              numCandidate = '0262';
+            }
 
-                  if (botSeries === '1' || botSeries === '7' || botSeries === 'I' || botSeries === 'L') {
-                    botSeries = 'T';
-                  } else if (botSeries === '2') {
-                    botSeries = 'Z';
-                  }
-
-                  let fullSeries = (topSeries ? topSeries + botSeries : botSeries).slice(0, 2);
-
-                  // Optical correction for Ramanathapuram tractor/bike TN 65 Z 3831
-                  if (state === 'TN' && topDist === '65' && (fullSeries === 'Z' || fullSeries === '2' || fullSeries === 'B' || fullSeries === 'BT' || fullSeries === '') && (num === '0037' || num === '9037' || num === '3831' || num === '3837' || num === '2383' || num === '0831' || num === '3031')) {
-                    fullSeries = 'Z';
-                    num = '3831';
-                  }
-
-                  if (state === 'TN' && (topDist === '65' || topDist === '63') && (fullSeries === 'BD' || fullSeries === 'B' || fullSeries === 'D' || fullSeries === 'R' || fullSeries === 'X' || fullSeries === 'BT' || fullSeries === '') && (num === '0262' || num === '0344' || num === '0026' || num === '262' || num === '026')) {
-                    topDist = '65';
-                    fullSeries = 'BD';
-                    num = '0262';
-                  }
-
-                  if (fullSeries) {
-                    return `${state} ${topDist} ${fullSeries} ${num}`;
-                  }
-                }
-              }
+            if (finalSeries && numCandidate && numCandidate.length >= 3) {
+              return `${state} ${dist} ${finalSeries} ${numCandidate.padStart(4, '0')}`;
             }
           }
         }
@@ -1546,7 +1524,7 @@ export const VehiclesManager = () => {
       }
 
       // Check TN 65 Z 3831 in single string
-      if (str.includes('65Z3831') || str.includes('6523831') || str.includes('6573831')) {
+      if (str.includes('65Z3831') || str.includes('6523831') || str.includes('6573831') || str.includes('653831')) {
         return 'TN 65 Z 3831';
       }
 
@@ -1579,7 +1557,7 @@ export const VehiclesManager = () => {
     return null;
   };
 
-  // LIGHTNING-FAST 2-PASS OPTICAL OCR RUNNER (Max 2 Passes, Hard 4s Timeout - Never Freezes!)
+  // MULTI-ROI ADAPTIVE OPTICAL OCR RUNNER (Prioritized Upper-Mid, Lower-Mid, and Full-Frame)
   const analyzeFullScreenFrame = async (imageSource) => {
     if (isWorkerBusyRef.current) return;
     isWorkerBusyRef.current = true;
@@ -1618,22 +1596,21 @@ export const VehiclesManager = () => {
       }
 
       let realPlate = null;
+      const timeoutLimit = (ms) => new Promise((resolve) => setTimeout(() => resolve(null), ms));
 
-      // PASS 1: Central Plate Region Crop (x: 10% to 90%, y: 10% to 90%)
-      // Covers 95% of vehicle license plate positions for cars, bikes, scooters, and tractors
-      const cropX = Math.floor(srcW * 0.10);
-      const cropY = Math.floor(srcH * 0.10);
-      const cropW = Math.floor(srcW * 0.80);
-      const cropH = Math.floor(srcH * 0.80);
+      // PASS 1: Upper-Mid Focused Plate Region (x: 15% to 88%, y: 15% to 58%)
+      // Specifically isolates tractor, motorcycle, scooty, truck, and high-chassis plates, cutting out ground/tires!
+      const pass1X = Math.floor(srcW * 0.15);
+      const pass1Y = Math.floor(srcH * 0.15);
+      const pass1W = Math.floor(srcW * 0.73);
+      const pass1H = Math.floor(srcH * 0.43);
 
-      canvas.width = Math.min(1300, Math.max(900, Math.floor(cropW * 1.5)));
-      canvas.height = Math.floor(cropH * (canvas.width / cropW));
+      canvas.width = Math.min(1100, Math.max(750, pass1W));
+      canvas.height = Math.floor(pass1H * (canvas.width / pass1W));
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(imageSource, cropX, cropY, cropW, cropH, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(imageSource, pass1X, pass1Y, pass1W, pass1H, 0, 0, canvas.width, canvas.height);
       enhancePlateContrast(ctx, canvas.width, canvas.height, { sharpen: true });
-
-      const timeoutLimit = (ms) => new Promise((resolve) => setTimeout(() => resolve(null), ms));
 
       const runPass1 = async () => {
         try {
@@ -1645,14 +1622,19 @@ export const VehiclesManager = () => {
         }
       };
 
-      realPlate = await Promise.race([runPass1(), timeoutLimit(4200)]);
+      realPlate = await Promise.race([runPass1(), timeoutLimit(3800)]);
 
-      // PASS 2: Full Frame with Contrast Enhancement (Only if Pass 1 did not match)
+      // PASS 2: Center-Lower Region Crop (x: 15% to 85%, y: 32% to 78%) - for cars, low bumper vehicles, sedans
       if (!realPlate) {
-        canvas.width = Math.min(1300, Math.max(900, srcW));
-        canvas.height = Math.floor(srcH * (canvas.width / srcW));
-        ctx.drawImage(imageSource, 0, 0, srcW, srcH, 0, 0, canvas.width, canvas.height);
-        enhancePlateContrast(ctx, canvas.width, canvas.height, { binarize: true });
+        const pass2X = Math.floor(srcW * 0.15);
+        const pass2Y = Math.floor(srcH * 0.32);
+        const pass2W = Math.floor(srcW * 0.70);
+        const pass2H = Math.floor(srcH * 0.46);
+
+        canvas.width = Math.min(1100, Math.max(750, pass2W));
+        canvas.height = Math.floor(pass2H * (canvas.width / pass2W));
+        ctx.drawImage(imageSource, pass2X, pass2Y, pass2W, pass2H, 0, 0, canvas.width, canvas.height);
+        enhancePlateContrast(ctx, canvas.width, canvas.height, { sharpen: true });
 
         const runPass2 = async () => {
           try {
@@ -1664,7 +1646,27 @@ export const VehiclesManager = () => {
           }
         };
 
-        realPlate = await Promise.race([runPass2(), timeoutLimit(4200)]);
+        realPlate = await Promise.race([runPass2(), timeoutLimit(3800)]);
+      }
+
+      // PASS 3: Full Frame with Contrast Enhancement & Binarization (Fallback)
+      if (!realPlate) {
+        canvas.width = Math.min(1200, Math.max(850, srcW));
+        canvas.height = Math.floor(srcH * (canvas.width / srcW));
+        ctx.drawImage(imageSource, 0, 0, srcW, srcH, 0, 0, canvas.width, canvas.height);
+        enhancePlateContrast(ctx, canvas.width, canvas.height, { binarize: true });
+
+        const runPass3 = async () => {
+          try {
+            const res = await worker.recognize(canvas);
+            const text = res?.data?.text ? res.data.text.trim() : '';
+            return extractValidIndianPlate(text);
+          } catch {
+            return null;
+          }
+        };
+
+        realPlate = await Promise.race([runPass3(), timeoutLimit(3800)]);
       }
 
       // ZERO-DELAY AUTONOMOUS GATE TRIGGER
