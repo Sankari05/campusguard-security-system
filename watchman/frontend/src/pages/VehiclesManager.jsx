@@ -1016,7 +1016,6 @@ export const VehiclesManager = () => {
   const [cameraError, setCameraError] = useState('');
   const [ocrScanningStatus, setOcrScanningStatus] = useState('');
   const [nightVisionActive, setNightVisionActive] = useState(false);
-  const [manualPlateInput, setManualPlateInput] = useState('');
 
   // Refs for Video, Hidden Canvas, File Input, Processing Locks, and Persistent Tesseract Worker
   const videoRef = useRef(null);
@@ -2284,14 +2283,6 @@ export const VehiclesManager = () => {
     registerDetectedPlate('TN 65 Z 3831');
   };
 
-  // Quick manual plate entry handler
-  const handleQuickManualPlateSubmit = (e) => {
-    if (e) e.preventDefault();
-    if (!manualPlateInput.trim()) return;
-    registerDetectedPlate(manualPlateInput.trim());
-    setManualPlateInput('');
-  };
-
   // Clear detected plate (Removes data when vehicle leaves or no vehicle detected)
   const handleClearDetection = () => {
     setDetectedPlate(null);
@@ -2936,56 +2927,6 @@ export const VehiclesManager = () => {
                 </button>
               )}
             </div>
-
-            {/* Quick Manual Plate Entry Fallback Bar */}
-            <form
-              onSubmit={handleQuickManualPlateSubmit}
-              style={{
-                display: 'flex',
-                gap: '0.5rem',
-                alignItems: 'center',
-                backgroundColor: '#F8FAFC',
-                padding: '0.45rem 0.65rem',
-                borderRadius: '8px',
-                border: '1px solid #E2E8F0'
-              }}
-            >
-              <input
-                type="text"
-                placeholder={language === 'ta' ? 'வாகன எண் உள்ளிடவும் (e.g. TN 65 Z 3831)' : 'Quick Enter Plate (e.g. TN 65 Z 3831)'}
-                value={manualPlateInput}
-                onChange={(e) => setManualPlateInput(e.target.value.toUpperCase())}
-                style={{
-                  flex: 1,
-                  padding: '0.4rem 0.65rem',
-                  borderRadius: '6px',
-                  border: '1px solid #CBD5E1',
-                  fontSize: '0.82rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase',
-                  outline: 'none',
-                  backgroundColor: '#FFFFFF',
-                  color: '#0F172A'
-                }}
-              />
-              <button
-                type="submit"
-                style={{
-                  padding: '0.4rem 0.85rem',
-                  backgroundColor: '#1E293B',
-                  color: '#FFFFFF',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontSize: '0.8rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap'
-                }}
-              >
-                {language === 'ta' ? 'கண்டுபிடி & திற' : 'Detect & Open'}
-              </button>
-            </form>
           </div>
 
           {/* COLUMN 2: Detected Vehicle Details Card (Only shows when vehicle detected; clears when none) */}
