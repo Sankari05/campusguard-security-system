@@ -8,7 +8,6 @@ import {
   AlertTriangle,
   Clock,
   ShieldCheck,
-  RefreshCw,
   MapPin,
   Camera,
   Play
@@ -71,21 +70,9 @@ export const PatrolManager = () => {
               <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
                 {language === 'ta' ? 'ஸ்மார்ட் ரோந்து & கியூஆர் சரிபார்ப்பு' : 'Smart Campus Patrolling & Missed Checkpoint Alert'}
               </h1>
-              <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0.2rem 0 0' }}>
-                {language === 'ta' ? 'கல்லூரி பாதுகாப்பு ரோந்து, கியூஆர் ஸ்கேன், தவறவிடப்பட்ட சோதனை எச்சரிக்கைகள் (Pillar 10)' : 'Pillar 10: QR-based route completion, scheduled patrol verification, and supervisor alert'}
-              </p>
             </div>
           </div>
         </div>
-
-        <button
-          onClick={fetchPatrolData}
-          className="btn btn-secondary"
-          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700 }}
-        >
-          <RefreshCw size={16} className={loading ? 'spin' : ''} />
-          {language === 'ta' ? 'புதுப்பி' : 'Refresh Patrol'}
-        </button>
       </div>
 
       {successBanner && (
