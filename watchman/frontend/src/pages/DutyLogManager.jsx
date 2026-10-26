@@ -78,9 +78,6 @@ export const DutyLogManager = () => {
               <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
                 {language === 'ta' ? 'வாட்ச்மேன் பணி வருகை & பணி பதிவு' : 'Smart Duty Attendance & Work Log'}
               </h1>
-              <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0.2rem 0 0' }}>
-                {language === 'ta' ? 'பணி தொடக்கம் / முடிவு நேரம், ரோந்து சுழற்சிகள், மேற்பார்வையாளர் அறிக்கை (Pillar 7)' : 'Pillar 7: Digital guard duty timestamping, active shift logs, and supervisor work audit'}
-              </p>
             </div>
           </div>
         </div>
