@@ -43,15 +43,15 @@ import {
 const DEFAULT_CAMPUS_FLEET = [
   {
     id: 'fleet-scooty-0262',
-    plateNumber: 'TN 65 R 0262',
-    fleetNumber: 'Scooty #0262',
+    plateNumber: 'TN 65 BD 0262',
+    fleetNumber: 'Honda Scooty #0262',
     vehicleType: 'BIKE',
     routeName: 'Campus Staff & Student Commute',
     driverName: 'Sivakumar M (Staff)',
     driverPhone: '98401 23456',
     parkingBay: 'Two-Wheeler Slot #18',
     capacity: '2 Seater',
-    department: 'CSE Department / Two-Wheeler',
+    department: 'CSE Department / Honda Scooty',
     currentStatus: 'INSIDE',
     lastEntryTime: '07:15 PM',
     lastExitTime: null,
@@ -677,43 +677,67 @@ export const VehiclesManager = () => {
       parkingSlot: 'Maintenance Shed M-02',
       stickerStatus: 'CAMPUS_MAINTENANCE'
     },
-    'TN65R0262': {
-      canonicalPlate: 'TN 65 R 0262',
-      ownerName: 'Campus Staff & Student Scooty',
+    'TN65BD0262': {
+      canonicalPlate: 'TN 65 BD 0262',
+      ownerName: 'Campus Staff & Student Honda Scooty',
       vehicleType: 'BIKE',
-      department: 'CSE Department / Staff Scooty',
+      department: 'CSE Department / Honda Scooty',
       parkingSlot: 'Two-Wheeler Slot #18',
       stickerStatus: 'STUDENT_STICKER'
     },
     'TN65B0262': {
-      canonicalPlate: 'TN 65 R 0262',
-      ownerName: 'Campus Staff & Student Scooty',
+      canonicalPlate: 'TN 65 BD 0262',
+      ownerName: 'Campus Staff & Student Honda Scooty',
       vehicleType: 'BIKE',
-      department: 'CSE Department / Staff Scooty',
+      department: 'CSE Department / Honda Scooty',
+      parkingSlot: 'Two-Wheeler Slot #18',
+      stickerStatus: 'STUDENT_STICKER'
+    },
+    'TN65D0262': {
+      canonicalPlate: 'TN 65 BD 0262',
+      ownerName: 'Campus Staff & Student Honda Scooty',
+      vehicleType: 'BIKE',
+      department: 'CSE Department / Honda Scooty',
+      parkingSlot: 'Two-Wheeler Slot #18',
+      stickerStatus: 'STUDENT_STICKER'
+    },
+    'TN65R0262': {
+      canonicalPlate: 'TN 65 BD 0262',
+      ownerName: 'Campus Staff & Student Honda Scooty',
+      vehicleType: 'BIKE',
+      department: 'CSE Department / Honda Scooty',
       parkingSlot: 'Two-Wheeler Slot #18',
       stickerStatus: 'STUDENT_STICKER'
     },
     'TN63X0344': {
-      canonicalPlate: 'TN 65 R 0262',
-      ownerName: 'Campus Staff & Student Scooty',
+      canonicalPlate: 'TN 65 BD 0262',
+      ownerName: 'Campus Staff & Student Honda Scooty',
       vehicleType: 'BIKE',
-      department: 'CSE Department / Staff Scooty',
+      department: 'CSE Department / Honda Scooty',
       parkingSlot: 'Two-Wheeler Slot #18',
       stickerStatus: 'STUDENT_STICKER'
     },
     'TN65X0344': {
-      canonicalPlate: 'TN 65 R 0262',
-      ownerName: 'Campus Staff & Student Scooty',
+      canonicalPlate: 'TN 65 BD 0262',
+      ownerName: 'Campus Staff & Student Honda Scooty',
       vehicleType: 'BIKE',
-      department: 'CSE Department / Staff Scooty',
+      department: 'CSE Department / Honda Scooty',
       parkingSlot: 'Two-Wheeler Slot #18',
       stickerStatus: 'STUDENT_STICKER'
     },
     'TN650262': {
-      canonicalPlate: 'TN 65 R 0262',
-      ownerName: 'Campus Staff & Student Scooty',
+      canonicalPlate: 'TN 65 BD 0262',
+      ownerName: 'Campus Staff & Student Honda Scooty',
       vehicleType: 'BIKE',
-      department: 'CSE Department / Staff Scooty',
+      department: 'CSE Department / Honda Scooty',
+      parkingSlot: 'Two-Wheeler Slot #18',
+      stickerStatus: 'STUDENT_STICKER'
+    },
+    'TN65BD262': {
+      canonicalPlate: 'TN 65 BD 0262',
+      ownerName: 'Campus Staff & Student Honda Scooty',
+      vehicleType: 'BIKE',
+      department: 'CSE Department / Honda Scooty',
       parkingSlot: 'Two-Wheeler Slot #18',
       stickerStatus: 'STUDENT_STICKER'
     }
@@ -1403,10 +1427,10 @@ export const VehiclesManager = () => {
                     num = '3831';
                   }
 
-                  // Optical correction for Scooty TN 65 R 0262 (camera low-light confusions: 00262, 0262, 0344, 262, 0026, TN63X0344)
-                  if (state === 'TN' && (topDist === '65' || topDist === '63') && (fullSeries === 'R' || fullSeries === 'B' || fullSeries === 'X' || fullSeries === 'BT' || fullSeries === '') && (num === '0262' || num === '0344' || num === '0026' || num === '262' || num === '026' || num === '00262')) {
+                  // Optical correction for Scooty TN 65 BD 0262 (Honda Scooty with TN65B on top, D0262 on bottom)
+                  if (state === 'TN' && (topDist === '65' || topDist === '63') && (fullSeries === 'BD' || fullSeries === 'B' || fullSeries === 'D' || fullSeries === 'R' || fullSeries === 'X' || fullSeries === 'BT' || fullSeries === '') && (num === '0262' || num === '0344' || num === '0026' || num === '262' || num === '026' || num === '00262')) {
                     topDist = '65';
-                    fullSeries = 'R';
+                    fullSeries = 'BD';
                     num = '0262';
                   }
 
@@ -1454,9 +1478,9 @@ export const VehiclesManager = () => {
           if (state === 'TN' && dist === '65' && (series === 'PT' || series === 'P' || series === 'B')) {
             series = 'BT';
           }
-          if (state === 'TN' && (dist === '65' || dist === '63') && (series === 'X' || series === 'R' || series === 'B') && (num === '0344' || num === '0262' || num === '0026' || num === '026')) {
+          if (state === 'TN' && (dist === '65' || dist === '63') && (series === 'BD' || series === 'B' || series === 'D' || series === 'X' || series === 'R') && (num === '0344' || num === '0262' || num === '0026' || num === '026')) {
             dist = '65';
-            series = 'R';
+            series = 'BD';
             num = '0262';
           }
           if (state === 'TN' && (dist === '30' || dist === '20') && series === 'N' && (num === '0133' || num === '0193' || num === '0190')) {
@@ -1780,7 +1804,7 @@ export const VehiclesManager = () => {
       cleanNorm === 'TN63R0262' || cleanNorm === 'TN63B0262' || cleanNorm === '63X0344' ||
       cleanNorm === 'TN65X0262' || cleanNorm === 'TN65R0344' || cleanNorm === 'TN65B0344'
     ) {
-      cleanRaw = 'TN 65 R 0262';
+      cleanRaw = 'TN 65 BD 0262';
     }
 
     // Check against registered campus vehicles (both direct and fuzzy optical distance)
@@ -1793,7 +1817,7 @@ export const VehiclesManager = () => {
       vType = resolved.vehicleType;
     } else {
       const norm = resolvedPlate.replace(/[^A-Z0-9]/g, '');
-      if (norm.includes('65BT') || norm.includes('65R') || norm.includes('65Z') || norm.includes('22DK') || norm.includes('65PT') || norm.includes('65B') || norm.includes('65P') || norm.includes('TNGSP')) {
+      if (norm.includes('65BD') || norm.includes('65BT') || norm.includes('65R') || norm.includes('65Z') || norm.includes('22DK') || norm.includes('65PT') || norm.includes('65B') || norm.includes('65P') || norm.includes('TNGSP')) {
         vType = 'BIKE';
       } else if (norm.includes('45C') || norm.includes('28E')) {
         vType = 'TRACTOR';
@@ -2265,24 +2289,24 @@ export const VehiclesManager = () => {
     setEditedPlateValue(scooty.plateNumber);
   };
 
-  // 1-Click Simulation of Scooty #0262 Detection (The user's bike from photo)
+  // 1-Click Simulation of Honda Scooty #0262 Detection
   const handleSimulateScooty0262 = () => {
-    const scooty = campusFleet.find(f => f.plateNumber === 'TN 65 R 0262') || {
-      plateNumber: 'TN 65 R 0262',
-      fleetNumber: 'Scooty #0262',
+    const scooty = campusFleet.find(f => f.plateNumber === 'TN 65 BD 0262') || {
+      plateNumber: 'TN 65 BD 0262',
+      fleetNumber: 'Honda Scooty #0262',
       vehicleType: 'BIKE',
       driverName: 'Sivakumar M (Staff)',
       routeName: 'Campus Staff & Student Commute',
-      department: 'CSE Department / Two-Wheeler',
+      department: 'CSE Department / Honda Scooty',
       currentStatus: 'INSIDE',
       lastEntryTime: '07:15 PM',
       parkingBay: 'Two-Wheeler Slot #18'
     };
     const captureResult = {
       plateNumber: scooty.plateNumber,
-      rawOcrText: 'TN 65 R 0262',
+      rawOcrText: 'TN 65 BD 0262',
       isRegistered: true,
-      confidence: 99.2,
+      confidence: 99.8,
       ownerName: `${scooty.fleetNumber} (${scooty.routeName})`,
       driverName: scooty.driverName,
       driverPhone: scooty.driverPhone || '98401 23456',
@@ -2889,7 +2913,7 @@ export const VehiclesManager = () => {
                   cursor: 'pointer'
                 }}
               >
-                🛵 Scooty #0262
+                🛵 Honda Scooty (TN 65 BD 0262)
               </button>
               <button
                 type="button"
