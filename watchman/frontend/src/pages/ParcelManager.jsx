@@ -69,9 +69,6 @@ export const ParcelManager = () => {
         <h2 style={{ fontSize: '1.6rem', color: '#0F172A', fontWeight: 800 }}>
           {t.parcelsTitle}
         </h2>
-        <p style={{ fontSize: '0.875rem', color: '#64748B' }}>
-          {t.parcelsSubtitle}
-        </p>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '1.5rem' }}>
@@ -94,9 +91,6 @@ export const ParcelManager = () => {
               <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>
                 {t.logPackageTitle}
               </h3>
-              <p style={{ fontSize: '0.78rem', color: '#64748B' }}>
-                {t.logPackageDesc}
-              </p>
             </div>
           </div>
 
@@ -177,9 +171,6 @@ export const ParcelManager = () => {
               <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0F172A' }}>
                 {t.parcelsAtDeskTitle}
               </h3>
-              <p style={{ fontSize: '0.78rem', color: '#64748B' }}>
-                {t.parcelsAtDeskDesc}
-              </p>
             </div>
 
             <div style={{ position: 'relative', width: '200px' }}>
