@@ -1718,9 +1718,6 @@ export const VisitorPassManager = () => {
             <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#0F172A', margin: 0 }}>
               Currently Inside Campus ({activeVisitors.length})
             </h3>
-            <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
-              (வளாகத்தில் உள்ள நபர்கள்)
-            </span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
