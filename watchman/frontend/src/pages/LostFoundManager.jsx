@@ -7,7 +7,6 @@ import {
   PackageCheck,
   Search,
   Plus,
-  RefreshCw,
   Phone,
   User,
   MapPin,
@@ -106,22 +105,11 @@ export const LostFoundManager = () => {
               <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
                 {language === 'ta' ? 'ஸ்மார்ட் தொலைந்தவை & கண்டெடுக்கப்பட்டவை' : 'Smart Campus Lost and Found Repository'}
               </h1>
-              <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0.2rem 0 0' }}>
-                {language === 'ta' ? 'பொருட்கள் பதிவு, தானியங்கி மேட்சிங் & உரிமையாளர் சரிபார்ப்பு (Pillar 9)' : 'Pillar 9: AI/Tag-based matching suggestion, student claim verification, and gate locker custody'}
-              </p>
             </div>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button
-            onClick={fetchData}
-            className="btn btn-secondary"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700 }}
-          >
-            <RefreshCw size={16} className={loading ? 'spin' : ''} />
-            {language === 'ta' ? 'புதுப்பி' : 'Refresh'}
-          </button>
           <button
             onClick={() => setShowFoundModal(true)}
             className="btn btn-primary"
