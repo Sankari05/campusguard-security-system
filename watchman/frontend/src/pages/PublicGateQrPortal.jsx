@@ -246,10 +246,10 @@ export const PublicGateQrPortal = () => {
         </div>
       )}
 
-      {/* MODE 2: PRINTABLE GATE QR POSTER (Softnix-Style Scan & Go Modal) */}
+      {/* MODE 2: PRINTABLE GATE QR POSTER (Softnix-Style Scan & Go Standee) */}
       {activeMode === 'poster' && (
         <div className="animate-fade-in" style={{
-          maxWidth: '540px',
+          maxWidth: '460px',
           width: '100%',
           backgroundColor: '#ffffff',
           borderRadius: '24px',
@@ -265,37 +265,32 @@ export const PublicGateQrPortal = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginBottom: '1.25rem',
-            paddingBottom: '0.75rem',
+            marginBottom: '1.5rem',
+            paddingBottom: '0.85rem',
             borderBottom: '1px solid #F1F5F9'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', textAlign: 'left' }}>
               <div style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '8px',
+                width: '36px',
+                height: '36px',
+                borderRadius: '10px',
                 backgroundColor: '#EFF6FF',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#2563EB'
               }}>
-                <Building size={18} />
+                <Building size={20} />
               </div>
-              <div>
-                <h3 style={{
-                  fontSize: '1.18rem',
-                  fontWeight: 900,
-                  color: '#0F172A',
-                  margin: 0,
-                  letterSpacing: '-0.01em'
-                }}>
-                  Gate 1 &bull; Scan &amp; Go
-                </h3>
-                <span style={{ fontSize: '0.75rem', color: '#64748B', fontWeight: 600 }}>
-                  Smart Digital Pass &bull; மொபைல் மூலம் ஸ்கேன் செய்க
-                </span>
-              </div>
+              <h3 style={{
+                fontSize: '1.25rem',
+                fontWeight: 900,
+                color: '#0F172A',
+                margin: 0,
+                letterSpacing: '-0.01em'
+              }}>
+                Gate 1 &bull; Scan &amp; Go
+              </h3>
             </div>
 
             {/* Softnix Blue Close/Switch Button */}
@@ -304,8 +299,8 @@ export const PublicGateQrPortal = () => {
               onClick={() => switchMode('form')}
               title="Open Mobile Pass Catalog"
               style={{
-                width: '32px',
-                height: '32px',
+                width: '34px',
+                height: '34px',
                 borderRadius: '8px',
                 border: '1.5px solid #BFDBFE',
                 backgroundColor: '#EFF6FF',
@@ -316,377 +311,74 @@ export const PublicGateQrPortal = () => {
                 cursor: 'pointer'
               }}
             >
-              <ExternalLink size={16} />
+              <ExternalLink size={17} />
             </button>
-          </div>
-
-          {/* NETWORK SCANNING SELECTOR: Real Phone Camera Target */}
-          <div style={{
-            backgroundColor: '#F8FAFC',
-            border: '1.5px solid #E2E8F0',
-            borderRadius: '16px',
-            padding: '0.85rem',
-            marginBottom: '1.35rem',
-            textAlign: 'left'
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '0.55rem',
-              flexWrap: 'wrap',
-              gap: '4px'
-            }}>
-              <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#1E293B', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <Wifi size={14} color="#2563EB" />
-                <span>QR Scanner Network Mode (போன் ஸ்கேனிங்):</span>
-              </span>
-              <span style={{
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                color: networkMode === 'wifi' ? '#15803D' : '#2563EB',
-                backgroundColor: networkMode === 'wifi' ? '#DCFCE7' : '#EFF6FF',
-                padding: '2px 8px',
-                borderRadius: '999px',
-                border: networkMode === 'wifi' ? '1px solid #86EFAC' : '1px solid #BFDBFE'
-              }}>
-                {networkMode === 'wifi' ? '🟢 Phone Camera Ready' : networkMode === 'tunnel' ? '🌐 Public Online' : '💻 Local PC'}
-              </span>
-            </div>
-
-            {/* Mode Switcher Tabs */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr 1fr',
-              gap: '4px',
-              backgroundColor: '#EDF2F7',
-              borderRadius: '10px',
-              padding: '3px',
-              marginBottom: '0.65rem'
-            }}>
-              <button
-                type="button"
-                onClick={() => setNetworkMode('wifi')}
-                style={{
-                  padding: '6px 4px',
-                  borderRadius: '7px',
-                  border: 'none',
-                  fontSize: '0.73rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  backgroundColor: networkMode === 'wifi' ? '#2563EB' : 'transparent',
-                  color: networkMode === 'wifi' ? '#ffffff' : '#475569',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                📱 Wi-Fi / Hotspot
-              </button>
-              <button
-                type="button"
-                onClick={() => setNetworkMode('tunnel')}
-                style={{
-                  padding: '6px 4px',
-                  borderRadius: '7px',
-                  border: 'none',
-                  fontSize: '0.73rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  backgroundColor: networkMode === 'tunnel' ? '#2563EB' : 'transparent',
-                  color: networkMode === 'tunnel' ? '#ffffff' : '#475569',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                🌐 Public Tunnel
-              </button>
-              <button
-                type="button"
-                onClick={() => setNetworkMode('local')}
-                style={{
-                  padding: '6px 4px',
-                  borderRadius: '7px',
-                  border: 'none',
-                  fontSize: '0.73rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  backgroundColor: networkMode === 'local' ? '#2563EB' : 'transparent',
-                  color: networkMode === 'local' ? '#ffffff' : '#475569',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                💻 Localhost
-              </button>
-            </div>
-
-            {/* Mode Explanations & Inputs */}
-            {networkMode === 'wifi' && (
-              <div style={{ fontSize: '0.75rem', color: '#475569' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span>
-                    IP முகவரி: <strong style={{ color: '#0F172A', fontFamily: 'monospace' }}>{lanIp}:{lanPort}</strong>
-                  </span>
-                  {!editingIp ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setTempIpInput(lanIp);
-                        setEditingIp(true);
-                      }}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: '#2563EB',
-                        cursor: 'pointer',
-                        fontSize: '0.72rem',
-                        fontWeight: 700,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '2px'
-                      }}
-                    >
-                      <Edit2 size={11} />
-                      <span>மாற்று</span>
-                    </button>
-                  ) : null}
-                </div>
-
-                {editingIp && (
-                  <div style={{ display: 'flex', gap: '4px', marginBottom: '6px' }}>
-                    <input
-                      type="text"
-                      value={tempIpInput}
-                      onChange={(e) => setTempIpInput(e.target.value)}
-                      placeholder="e.g. 192.168.43.69"
-                      style={{
-                        flex: 1,
-                        padding: '4px 8px',
-                        fontSize: '0.75rem',
-                        borderRadius: '6px',
-                        border: '1.5px solid #2563EB',
-                        outline: 'none',
-                        fontFamily: 'monospace'
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (tempIpInput.trim()) setLanIp(tempIpInput.trim());
-                        setEditingIp(false);
-                      }}
-                      style={{
-                        backgroundColor: '#16A34A',
-                        color: '#ffffff',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '4px 8px',
-                        fontSize: '0.72rem',
-                        fontWeight: 700,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Save
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setEditingIp(false)}
-                      style={{
-                        backgroundColor: '#64748B',
-                        color: '#ffffff',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '4px 8px',
-                        fontSize: '0.72rem',
-                        fontWeight: 700,
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
-
-                <div style={{
-                  backgroundColor: '#EFF6FF',
-                  padding: '6px 10px',
-                  borderRadius: '8px',
-                  border: '1px solid #BFDBFE',
-                  fontSize: '0.72rem',
-                  color: '#1E40AF',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px'
-                }}>
-                  <Smartphone size={14} color="#2563EB" />
-                  <span>
-                    <strong>போன் மூலம் ஸ்கேன் செய்ய:</strong> உங்கள் மொபைலை லேப்டாப்பின் அதே Wi-Fi அல்லது மொபைல் ஹாட்ஸ்பாட்டில் இணைக்கவும்.
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {networkMode === 'tunnel' && (
-              <div style={{ fontSize: '0.75rem' }}>
-                <label style={{ display: 'block', fontWeight: 700, color: '#334155', marginBottom: '4px' }}>
-                  Softnix போன்ற ஆன்லைன் Cloud URL (Mobile 4G/5G-ல் வேலை செய்யும்):
-                </label>
-                <input
-                  type="text"
-                  value={tunnelUrl}
-                  onChange={(e) => setTunnelUrl(e.target.value)}
-                  placeholder="e.g. https://sample.softnix.in/pass or https://xyz.loca.lt"
-                  style={{
-                    width: '100%',
-                    padding: '6px 10px',
-                    fontSize: '0.75rem',
-                    borderRadius: '8px',
-                    border: '1.5px solid #CBD5E1',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                    fontFamily: 'monospace'
-                  }}
-                />
-              </div>
-            )}
-
-            {networkMode === 'local' && (
-              <div style={{ fontSize: '0.72rem', color: '#64748B' }}>
-                கம்ப்யூட்டர் உலாவிக்கான முகவரி (Localhost). மொபைல் கேமரா மூலம் ஸ்கேன் செய்ய மேலே உள்ள <strong>Wi-Fi / Hotspot</strong> தேர்வை அழுத்தவும்.
-              </div>
-            )}
-
-            {/* Target URL Preview */}
-            <div style={{ marginTop: '0.55rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#64748B' }}>ENCODED URL:</span>
-              <code style={{
-                fontSize: '0.72rem',
-                color: '#2563EB',
-                backgroundColor: '#ffffff',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                border: '1px solid #CBD5E1',
-                flex: 1,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'
-              }}>
-                {portalUrl}
-              </code>
-            </div>
           </div>
 
           {/* REAL SCANNABLE QR CODE CONTAINER */}
           <div style={{
             display: 'inline-block',
-            padding: '16px',
+            padding: '20px',
             backgroundColor: '#ffffff',
             borderRadius: '20px',
             border: '3px solid #0F172A',
             boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)',
-            marginBottom: '1rem',
+            marginBottom: '1.75rem',
             position: 'relative'
           }}>
-            <RealQRCode text={portalUrl} size={220} />
-            <div style={{
-              marginTop: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '4px',
-              fontSize: '0.72rem',
-              fontWeight: 800,
-              color: '#16A34A'
-            }}>
-              <CheckCircle2 size={13} strokeWidth={3} />
-              <span>Camera Scannable &bull; Real-Time</span>
-            </div>
+            <RealQRCode text={portalUrl} size={230} />
           </div>
 
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#0F172A', margin: '0 0 0.35rem 0' }}>
-            SCAN WITH PHONE CAMERA TO ENTER
-          </h3>
-          <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '0 0 1.25rem 0', fontWeight: 600 }}>
-            மொபைல் கேமரா மூலம் QR-ஐ ஸ்கேன் செய்து டிஜிட்டல் பாஸ் பெறவும்
-          </p>
-
           {/* ACTION BUTTONS: Matches Softnix Image 2 [Print QR] & [Open link] */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-              {/* Softnix Red Button: Print QR */}
-              <button
-                type="button"
-                onClick={() => window.print()}
-                style={{
-                  padding: '0.85rem 1rem',
-                  borderRadius: '12px',
-                  backgroundColor: '#C8372D', // Softnix Red
-                  color: '#ffffff',
-                  fontSize: '0.95rem',
-                  fontWeight: 800,
-                  border: 'none',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  boxShadow: '0 4px 14px rgba(200, 55, 45, 0.35)',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <Printer size={18} />
-                <span>Print QR</span>
-              </button>
-
-              {/* Softnix White Button: Open link */}
-              <button
-                type="button"
-                onClick={() => switchMode('form')}
-                style={{
-                  padding: '0.85rem 1rem',
-                  borderRadius: '12px',
-                  backgroundColor: '#ffffff',
-                  color: '#0F172A',
-                  fontSize: '0.95rem',
-                  fontWeight: 800,
-                  border: '1.5px solid #E2E8F0',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                  boxShadow: '0 2px 8px rgba(15, 23, 42, 0.05)',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                <ExternalLink size={18} color="#2563EB" />
-                <span>Open link</span>
-              </button>
-            </div>
-
-            {/* Quick Copy Link Bar */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+            {/* Softnix Red Button: Print QR */}
             <button
               type="button"
-              onClick={() => {
-                navigator.clipboard?.writeText(portalUrl);
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
-              }}
+              onClick={() => window.print()}
               style={{
-                width: '100%',
-                padding: '0.65rem 1rem',
-                borderRadius: '10px',
-                backgroundColor: '#F8FAFC',
-                color: '#475569',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                border: '1px solid #CBD5E1',
+                padding: '0.85rem 1rem',
+                borderRadius: '12px',
+                backgroundColor: '#C8372D', // Softnix Red
+                color: '#ffffff',
+                fontSize: '0.95rem',
+                fontWeight: 800,
+                border: 'none',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '6px'
+                gap: '8px',
+                boxShadow: '0 4px 14px rgba(200, 55, 45, 0.35)',
+                transition: 'all 0.15s ease'
               }}
             >
-              {copied ? <Check size={15} color="#16A34A" /> : <Copy size={15} />}
-              <span>{copied ? 'Mobile URL Copied to Clipboard!' : 'Copy Mobile URL for Testing'}</span>
+              <Printer size={18} />
+              <span>Print QR</span>
+            </button>
+
+            {/* Softnix White Button: Open link */}
+            <button
+              type="button"
+              onClick={() => switchMode('form')}
+              style={{
+                padding: '0.85rem 1rem',
+                borderRadius: '12px',
+                backgroundColor: '#ffffff',
+                color: '#0F172A',
+                fontSize: '0.95rem',
+                fontWeight: 800,
+                border: '1.5px solid #E2E8F0',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                boxShadow: '0 2px 8px rgba(15, 23, 42, 0.05)',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <ExternalLink size={18} color="#2563EB" />
+              <span>Open link</span>
             </button>
           </div>
         </div>
