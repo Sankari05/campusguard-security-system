@@ -311,11 +311,6 @@ export const GuardCoPilot = () => {
             <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#0F172A', margin: 0, letterSpacing: '-0.02em' }}>
               {language === 'ta' ? 'AI கார்டு கோ-பைலட் & நிலைமை ரேடார்' : 'AI Guard Co-Pilot & Situation Radar'}
             </h1>
-            <p style={{ margin: '2px 0 0 0', fontSize: '0.825rem', color: '#64748B', fontWeight: 500 }}>
-              {language === 'ta'
-                ? 'அறிவார்ந்த பாதுகாப்பு உதவி, நேரலை நிலைமை எச்சரிக்கைகள் மற்றும் AI நுண்ணறிவுகள்.'
-                : 'Cognitive security assistance, live situation alerts, and AI-powered insights.'}
-            </p>
           </div>
         </div>
 
