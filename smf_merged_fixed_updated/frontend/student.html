@@ -95,6 +95,10 @@ input::-ms-clear {
       <button class="nav-item" data-panel="od">
         <span class="nav-icon">🎓</span><span class="nav-label">OD Request</span>
       </button>
+      <button class="nav-item" data-panel="gatepass">
+        <span class="nav-icon">🚪</span><span class="nav-label">Gate Pass</span>
+        <span class="nav-badge dn" id="navGatepassBadge" style="background:#10b981;color:#fff;">OTP</span>
+      </button>
       <button class="nav-item" data-panel="tracker">
         <span class="nav-icon">📌</span><span class="nav-label">Request Tracker</span>
       </button>
@@ -406,6 +410,116 @@ input::-ms-clear {
           <h3>OD History</h3>
           <div id="odHistory" class="request-list">
             <p class="placeholder-text">Loading OD history…</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ GATE PASS PANEL ============ -->
+      <section class="panel dn" id="panel-gatepass">
+        <h2 class="page-title">🚪 Student Gate Pass</h2>
+        <p class="page-sub">Apply for campus exit permission. Once Class Incharge & HOD approve, present your 6-digit OTP to the Watchman at the Main Gate.</p>
+
+        <!-- Active Gate Pass Card (Shown when an approved pass exists) -->
+        <div id="gpActiveCard" class="card dn" style="border: 2px solid #10b981; background: linear-gradient(135deg, #f0fdf4, #ffffff); margin-bottom: 24px; position: relative; overflow: hidden;">
+          <div style="position: absolute; right: -20px; top: -20px; width: 100px; height: 100px; background: rgba(16, 185, 129, 0.12); border-radius: 50%;"></div>
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+            <div>
+              <span style="display:inline-block; padding: 4px 12px; background:#10b981; color:#fff; border-radius: 99px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;">
+                🟢 GATE PASS APPROVED — READY FOR EXIT
+              </span>
+              <h3 style="font-size: 1.3rem; margin: 10px 0 4px; color:#065f46;">Main Gate Exit Pass</h3>
+              <p style="font-size: 0.88rem; color:#047857;" id="gpActiveReason">—</p>
+            </div>
+            <div style="text-align:right;">
+              <span style="font-size: 0.78rem; color:#6b7280; font-weight: 600;">Valid on:</span>
+              <div id="gpActiveDate" style="font-weight: 800; color:#111827; font-size: 1rem;">—</div>
+            </div>
+          </div>
+
+          <!-- Big OTP Display Box -->
+          <div style="margin: 20px 0; background: #ffffff; border: 2px dashed #059669; border-radius: 14px; padding: 18px 24px; text-align: center; box-shadow: 0 4px 12px rgba(16,185,129,0.08);">
+            <div style="font-size: 0.82rem; font-weight: 700; color:#047857; letter-spacing: 0.05em; text-transform: uppercase;">
+              📢 TELL THIS 6-DIGIT OTP TO WATCHMAN AT GATE
+            </div>
+            <div id="gpActiveOtp" style="font-size: 2.8rem; font-weight: 900; letter-spacing: 12px; color: #065f46; font-family: 'JetBrains Mono', monospace; margin: 10px 0;">
+              ------
+            </div>
+            <div style="font-size: 0.8rem; color:#6b7280;">
+              Watchman will verify this code in the Security Portal and grant your exit.
+            </div>
+          </div>
+
+          <!-- Approval Trail and QR Code Container -->
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; border-top: 1px solid #d1fae5; padding-top: 14px;">
+            <div style="font-size: 0.82rem; color:#065f46; line-height: 1.5;">
+              <div><strong>👨‍🏫 Class Incharge:</strong> <span id="gpActiveFaculty">—</span></div>
+              <div><strong>👨‍💼 HOD Approval:</strong> <span id="gpActiveHod">—</span></div>
+              <div><strong>⏰ Out Time:</strong> <span id="gpActiveOutTime">—</span></div>
+            </div>
+            <div id="gpQrContainer" style="text-align:center;">
+              <!-- Dynamic QR code rendering target -->
+              <div id="gpQrCanvas" style="padding:6px; background:#fff; border-radius:8px; border:1px solid #a7f3d0; display:inline-block;"></div>
+              <div style="font-size: 0.72rem; color:#059669; margin-top: 4px; font-weight:600;">Gate QR Token</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Apply Gate Pass Card -->
+        <div class="card" id="gpApplyCard">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+            <h3 style="margin:0;">📝 Apply for Gate Pass</h3>
+            <button type="button" id="btnScanGateQr" class="btn-secondary" style="font-size:0.8rem; display:flex; align-items:center; gap:6px;">
+              <span>📷 Scan Gate QR</span>
+            </button>
+          </div>
+
+          <!-- QR Scanner Modal / Box (Hidden by default) -->
+          <div id="gpScannerBox" class="dn" style="margin-bottom:16px; padding:14px; background:#f0f9ff; border:1.5px dashed #0284c7; border-radius:10px; text-align:center;">
+            <p style="font-size:0.85rem; color:#0369a1; margin-bottom:8px; font-weight:600;">Simulated Campus / Kiosk QR Scanner</p>
+            <input type="text" id="gpScannedPayload" placeholder="Scan or enter QR Code payload..." style="width:100%; max-width:320px; padding:8px 12px; font-size:0.85rem; border:1px solid #93c5fd; border-radius:6px; margin-bottom:8px;">
+            <div style="display:flex; gap:8px; justify-content:center;">
+              <button type="button" class="btn-primary" id="btnApplyScannedQr" style="padding:6px 16px; font-size:0.8rem; width:auto; margin:0;">Use Scanned QR</button>
+              <button type="button" class="btn-secondary" id="btnCloseScanner" style="padding:6px 14px; font-size:0.8rem;">Cancel</button>
+            </div>
+          </div>
+
+          <form id="gatepassForm">
+            <label>Pass Type</label>
+            <select id="gpPassType" style="width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:var(--r-sm); font-size:14.5px; background:var(--white);">
+              <option value="Gate Pass">Standard Gate Pass (Personal / Work)</option>
+              <option value="OD Pass">OD / On-Duty Gate Pass (Symposium / Project / Sports)</option>
+              <option value="Medical Pass">Medical / Hospital Emergency</option>
+              <option value="Hostel Outpass">Hostel Outing Pass</option>
+            </select>
+
+            <label>Reason / Destination <span style="color:#ef4444">*</span></label>
+            <textarea id="gpReason" rows="3" maxlength="500" required placeholder="Specify why you need to leave the campus and destination"></textarea>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-top:4px;">
+              <div>
+                <label>Date <span style="color:#ef4444">*</span></label>
+                <input type="date" id="gpEventDate" required>
+              </div>
+              <div>
+                <label>Leaving Time (Out) <span style="color:#ef4444">*</span></label>
+                <input type="time" id="gpOutTime" required>
+              </div>
+              <div>
+                <label>Expected Return Time</label>
+                <input type="time" id="gpExpectedInTime">
+              </div>
+            </div>
+
+            <div id="gpMsg" class="msg dn"></div>
+            <button type="submit" class="btn-primary" id="btnSubmitGatepass">🚀 Submit for Gate Pass</button>
+          </form>
+        </div>
+
+        <!-- Gate Pass History Card -->
+        <div class="card" style="margin-top:20px">
+          <h3>📋 Gate Pass History</h3>
+          <div id="gpHistory" class="request-list">
+            <p class="placeholder-text">Loading Gate Pass history…</p>
           </div>
         </div>
       </section>

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Tesseract from 'tesseract.js';
+import apiClient from '../services/api';
 import {
   Car,
   Search,
@@ -1028,6 +1029,7 @@ export const VehiclesManager = () => {
   const pendingDetectionRef = useRef(null);
   const pendingHitsRef = useRef(0);
   const noVehicleCounterRef = useRef(0);
+  const temporalConsensusBufferRef = useRef([]);
 
   // Filter & Search states
   const [search, setSearch] = useState('');
@@ -1598,31 +1600,53 @@ export const VehiclesManager = () => {
       let realPlate = null;
       const timeoutLimit = (ms) => new Promise((resolve) => setTimeout(() => resolve(null), ms));
 
+      // TIER 1: Server-Side Dynamic ANPR Localization (FastAPI + OpenCV)
+      try {
+        canvas.width = Math.min(1000, Math.max(700, srcW));
+        canvas.height = Math.floor(srcH * (canvas.width / srcW));
+        ctx.drawImage(imageSource, 0, 0, srcW, srcH, 0, 0, canvas.width, canvas.height);
+        const frameDataUrl = canvas.toDataURL('image/jpeg', 0.80);
+        const beRes = await Promise.race([
+          apiClient.post('/gate/anpr/recognize', {
+            image: frameDataUrl,
+            source: imageSource instanceof HTMLImageElement ? 'upload' : 'camera'
+          }),
+          timeoutLimit(2500)
+        ]);
+        if (beRes?.data?.success && beRes.data.plate) {
+          realPlate = beRes.data.plate;
+        }
+      } catch {
+        // Backend offline -> seamless fallback to local client multi-ROI OCR
+      }
+
       // PASS 1: Upper-Mid Focused Plate Region (x: 15% to 88%, y: 15% to 58%)
       // Specifically isolates tractor, motorcycle, scooty, truck, and high-chassis plates, cutting out ground/tires!
-      const pass1X = Math.floor(srcW * 0.15);
-      const pass1Y = Math.floor(srcH * 0.15);
-      const pass1W = Math.floor(srcW * 0.73);
-      const pass1H = Math.floor(srcH * 0.43);
+      if (!realPlate) {
+        const pass1X = Math.floor(srcW * 0.15);
+        const pass1Y = Math.floor(srcH * 0.15);
+        const pass1W = Math.floor(srcW * 0.73);
+        const pass1H = Math.floor(srcH * 0.43);
 
-      canvas.width = Math.min(1100, Math.max(750, pass1W));
-      canvas.height = Math.floor(pass1H * (canvas.width / pass1W));
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(imageSource, pass1X, pass1Y, pass1W, pass1H, 0, 0, canvas.width, canvas.height);
-      enhancePlateContrast(ctx, canvas.width, canvas.height, { sharpen: true });
+        canvas.width = Math.min(1100, Math.max(750, pass1W));
+        canvas.height = Math.floor(pass1H * (canvas.width / pass1W));
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(imageSource, pass1X, pass1Y, pass1W, pass1H, 0, 0, canvas.width, canvas.height);
+        enhancePlateContrast(ctx, canvas.width, canvas.height, { sharpen: true });
 
-      const runPass1 = async () => {
-        try {
-          const res = await worker.recognize(canvas);
-          const text = res?.data?.text ? res.data.text.trim() : '';
-          return extractValidIndianPlate(text);
-        } catch {
-          return null;
-        }
-      };
+        const runPass1 = async () => {
+          try {
+            const res = await worker.recognize(canvas);
+            const text = res?.data?.text ? res.data.text.trim() : '';
+            return extractValidIndianPlate(text);
+          } catch {
+            return null;
+          }
+        };
 
-      realPlate = await Promise.race([runPass1(), timeoutLimit(3800)]);
+        realPlate = await Promise.race([runPass1(), timeoutLimit(3800)]);
+      }
 
       // PASS 2: Center-Lower Region Crop (x: 15% to 85%, y: 32% to 78%) - for cars, low bumper vehicles, sedans
       if (!realPlate) {
@@ -1669,14 +1693,26 @@ export const VehiclesManager = () => {
         realPlate = await Promise.race([runPass3(), timeoutLimit(3800)]);
       }
 
-      // ZERO-DELAY AUTONOMOUS GATE TRIGGER
+      // MULTI-FRAME TEMPORAL CONSENSUS (ANPR v2)
       if (realPlate) {
-        noVehicleCounterRef.current = 0;
-        if (cooldownPlateRef.current !== realPlate) {
-          cooldownPlateRef.current = realPlate;
-          pendingDetectionRef.current = null;
-          pendingHitsRef.current = 0;
-          registerDetectedPlate(realPlate);
+        const buffer = temporalConsensusBufferRef.current || [];
+        buffer.push(realPlate);
+        if (buffer.length > 4) buffer.shift();
+        temporalConsensusBufferRef.current = buffer;
+
+        const isImageUpload = imageSource instanceof HTMLImageElement;
+        const matchCount = buffer.filter(p => p === realPlate).length;
+        const hasConsensus = isImageUpload || matchCount >= 2;
+
+        if (hasConsensus) {
+          noVehicleCounterRef.current = 0;
+          if (cooldownPlateRef.current !== realPlate) {
+            cooldownPlateRef.current = realPlate;
+            pendingDetectionRef.current = null;
+            pendingHitsRef.current = 0;
+            temporalConsensusBufferRef.current = [];
+            registerDetectedPlate(realPlate);
+          }
         }
       } else {
         if (imageSource instanceof HTMLVideoElement) {

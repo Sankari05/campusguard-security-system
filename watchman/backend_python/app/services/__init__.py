@@ -6,6 +6,7 @@ Decouples business rules from HTTP framework (FastAPI).
 Pattern used by: Amazon, Qualcomm, Microsoft enterprise architectures.
 """
 
+from app.services.anpr_service import ANPRService
 from app.services.auth_service import AuthService
 from app.services.emergency_service import EmergencyService
 from app.services.gate_service import GateService
@@ -15,6 +16,7 @@ from app.services.student_service import StudentService
 from app.services.visitor_service import VisitorService
 
 __all__ = [
+    "ANPRService",
     "AuthService",
     "GateService",
     "StudentService",
@@ -23,3 +25,4 @@ __all__ = [
     "EmergencyService",
     "HandoverService",
 ]
+

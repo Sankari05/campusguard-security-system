@@ -26,9 +26,20 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Request
 from pydantic import BaseModel, Field
 
-import config
-import student_portal_db as spdb
-from auth_utils import create_access_token, decode_token
+try:
+    import config
+except ImportError:
+    from app.core import config
+
+try:
+    import student_portal_db as spdb
+except ImportError:
+    from app.database import student_portal_db as spdb
+
+try:
+    from auth_utils import create_access_token, decode_token
+except ImportError:
+    from app.core.auth_utils import create_access_token, decode_token
 
 log = logging.getLogger(__name__)
 router = APIRouter()

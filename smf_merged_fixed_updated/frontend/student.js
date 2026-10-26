@@ -103,6 +103,7 @@ async function loadDashboard() {
 
   loadDashboardSummary(profile.name);
   refreshNotifBadges();
+  loadActiveGatepass();
 }
 
 // ── Load dashboard home summary (attendance %, semester, etc.) ──
@@ -250,6 +251,187 @@ document.getElementById("odForm").addEventListener("submit", async (e) => {
   }
 });
 
+// ── Gate Pass Request form & panel logic ─────────────────────
+(function initGatepassDefaults() {
+  const dateEl = document.getElementById("gpEventDate");
+  if (dateEl) {
+    const today = todayISO();
+    dateEl.min = today;
+    dateEl.value = today;
+  }
+  const outTimeEl = document.getElementById("gpOutTime");
+  if (outTimeEl) {
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    outTimeEl.value = `${hh}:${mm}`;
+  }
+})();
+
+const btnScanGateQr = document.getElementById("btnScanGateQr");
+if (btnScanGateQr) {
+  btnScanGateQr.addEventListener("click", () => {
+    document.getElementById("gpScannerBox").classList.toggle("dn");
+  });
+}
+const btnCloseScanner = document.getElementById("btnCloseScanner");
+if (btnCloseScanner) {
+  btnCloseScanner.addEventListener("click", () => {
+    document.getElementById("gpScannerBox").classList.add("dn");
+  });
+}
+const btnApplyScannedQr = document.getElementById("btnApplyScannedQr");
+if (btnApplyScannedQr) {
+  btnApplyScannedQr.addEventListener("click", () => {
+    const scanned = document.getElementById("gpScannedPayload").value.trim();
+    if (scanned) {
+      document.getElementById("gpReason").value = `[Gate QR: ${scanned}] ` + document.getElementById("gpReason").value;
+      document.getElementById("gpScannerBox").classList.add("dn");
+      showMsg(document.getElementById("gpMsg"), "Scanned QR data applied.", true);
+    }
+  });
+}
+
+const gatepassForm = document.getElementById("gatepassForm");
+if (gatepassForm) {
+  gatepassForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const msgEl = document.getElementById("gpMsg");
+    const payload = {
+      pass_type: document.getElementById("gpPassType").value,
+      reason: document.getElementById("gpReason").value.trim(),
+      event_date: document.getElementById("gpEventDate").value,
+      out_time: document.getElementById("gpOutTime").value,
+      expected_in_time: document.getElementById("gpExpectedInTime").value,
+      qr_payload: document.getElementById("gpScannedPayload") ? document.getElementById("gpScannedPayload").value.trim() : "",
+    };
+    if (!payload.reason || !payload.event_date || !payload.out_time) {
+      showMsg(msgEl, "Please fill in all required fields (*).", false);
+      return;
+    }
+    const today = todayISO();
+    if (payload.event_date < today) {
+      showMsg(msgEl, "Event date cannot be in the past.", false);
+      return;
+    }
+    try {
+      await api("/api/student/gatepass", { method: "POST", body: JSON.stringify(payload) });
+      showMsg(msgEl, "✅ Gate Pass request submitted! Sent to Class Incharge for approval.", true);
+      document.getElementById("gpReason").value = "";
+      loadGatepassPanel();
+    } catch (err) {
+      showMsg(msgEl, err.message || "Could not submit Gate Pass request.", false);
+    }
+  });
+}
+
+async function loadGatepassPanel() {
+  await loadActiveGatepass();
+  await loadGatepassHistory();
+}
+
+async function loadActiveGatepass() {
+  const activeCard = document.getElementById("gpActiveCard");
+  const badge = document.getElementById("navGatepassBadge");
+  try {
+    const res = await api("/api/student/gatepass/active");
+    if (res && res.has_active && res.pass) {
+      const p = res.pass;
+      if (activeCard) activeCard.classList.remove("dn");
+      if (badge) badge.classList.remove("dn");
+      document.getElementById("gpActiveReason").textContent = `${p.pass_type || 'Gate Pass'}: ${p.reason}`;
+      document.getElementById("gpActiveDate").textContent = `${p.event_date} (Out: ${p.out_time})`;
+      document.getElementById("gpActiveOtp").textContent = p.otp || "------";
+      document.getElementById("gpActiveFaculty").textContent = p.faculty_decided_by ? `${p.faculty_decided_by} (${p.faculty_decided_at || 'Approved'})` : "Approved";
+      document.getElementById("gpActiveHod").textContent = p.hod_decided_by ? `${p.hod_decided_by} (${p.hod_decided_at || 'Approved'})` : "Approved";
+      document.getElementById("gpActiveOutTime").textContent = `${p.out_time} (Expected Return: ${p.expected_in_time || 'N/A'})`;
+
+      renderQrCanvas("gpQrCanvas", `GP:${p.id}:${p.otp}`);
+    } else {
+      if (activeCard) activeCard.classList.add("dn");
+      if (badge) badge.classList.add("dn");
+    }
+  } catch (err) {
+    console.warn("loadActiveGatepass:", err);
+  }
+}
+
+function renderQrCanvas(targetId, text) {
+  const el = document.getElementById(targetId);
+  if (!el) return;
+  el.innerHTML = `
+    <svg width="74" height="74" viewBox="0 0 25 25" shape-rendering="crispEdges">
+      <rect width="25" height="25" fill="#ffffff"/>
+      <rect x="2" y="2" width="7" height="7" fill="#065f46"/>
+      <rect x="3" y="3" width="5" height="5" fill="#ffffff"/>
+      <rect x="4" y="4" width="3" height="3" fill="#065f46"/>
+      <rect x="16" y="2" width="7" height="7" fill="#065f46"/>
+      <rect x="17" y="3" width="5" height="5" fill="#ffffff"/>
+      <rect x="18" y="4" width="3" height="3" fill="#065f46"/>
+      <rect x="2" y="16" width="7" height="7" fill="#065f46"/>
+      <rect x="3" y="17" width="5" height="5" fill="#ffffff"/>
+      <rect x="4" y="18" width="3" height="3" fill="#065f46"/>
+      <rect x="11" y="4" width="2" height="2" fill="#065f46"/>
+      <rect x="11" y="9" width="3" height="3" fill="#065f46"/>
+      <rect x="10" y="16" width="2" height="4" fill="#065f46"/>
+      <rect x="15" y="11" width="3" height="2" fill="#065f46"/>
+      <rect x="16" y="16" width="5" height="5" fill="#065f46"/>
+      <rect x="18" y="18" width="2" height="2" fill="#ffffff"/>
+    </svg>
+  `;
+}
+
+async function loadGatepassHistory() {
+  const container = document.getElementById("gpHistory");
+  if (!container) return;
+  try {
+    const data = await api("/api/student/gatepass");
+    const requests = data.requests || [];
+    if (!requests.length) {
+      container.innerHTML = `<p class="placeholder-text">No Gate Pass requests found.</p>`;
+      return;
+    }
+    container.innerHTML = requests.map(r => {
+      let badgeClass = "badge-pending";
+      let statusLabel = r.status;
+      if (r.status === "Approved") {
+        badgeClass = "badge-approved";
+        statusLabel = `Approved (OTP: ${r.otp})`;
+      } else if (r.status === "Forwarded") {
+        badgeClass = "badge-pending";
+        statusLabel = "Under HOD Review";
+      } else if (r.status === "Exited") {
+        badgeClass = "badge-approved";
+        statusLabel = `Exited Gate (${r.exited_at ? (r.exited_at.split('T')[1] || r.exited_at) : 'Done'})`;
+      } else if (r.status === "Rejected") {
+        badgeClass = "badge-rejected";
+      }
+      return `
+        <div class="request-item" style="border-left: 4px solid ${r.status === 'Approved' ? '#10b981' : r.status === 'Exited' ? '#3b82f6' : r.status === 'Rejected' ? '#ef4444' : '#f59e0b'}; margin-bottom:12px; padding:12px 14px; background:#fff; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+            <div style="font-weight:700; font-size:0.95rem; color:var(--text);">${r.pass_type || 'Gate Pass'} — ${r.reason}</div>
+            <span class="badge ${badgeClass}" style="font-size:0.75rem; padding:3px 8px; border-radius:4px; font-weight:700;">${statusLabel}</span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text2); display:flex; gap:16px; flex-wrap:wrap;">
+            <span>📅 Date: <strong>${r.event_date}</strong></span>
+            <span>⏰ Out: <strong>${r.out_time}</strong></span>
+            <span>Applied: ${r.applied_at ? r.applied_at.replace('T', ' ') : ''}</span>
+            ${r.otp && r.status === 'Approved' ? `<span style="color:#059669; font-weight:800; font-family:monospace; background:#ecfdf5; padding:2px 8px; border-radius:4px;">OTP: ${r.otp}</span>` : ''}
+          </div>
+          ${r.hod_remarks || r.faculty_remarks ? `
+            <div style="font-size:0.76rem; color:#6b7280; margin-top:6px; font-style:italic;">
+              ${r.faculty_remarks ? `Class Incharge: "${r.faculty_remarks}" ` : ''}
+              ${r.hod_remarks ? `HOD: "${r.hod_remarks}"` : ''}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }).join("");
+  } catch (err) {
+    container.innerHTML = `<p class="placeholder-text" style="color:#ef4444">Error loading Gate Pass history.</p>`;
+  }
+}
+
 // ── Avatar upload ────────────────────────────────────────────
 document.getElementById("changePhotoBtn").addEventListener("click", () => {
   document.getElementById("photoInput").click();
@@ -305,6 +487,9 @@ function switchPanel(panelName) {
   }
   if (panelName === "od" && !odLoaded) {
     loadOdHistory();
+  }
+  if (panelName === "gatepass") {
+    loadGatepassPanel();
   }
   if (panelName === "tracker" && !trackerLoaded) {
     loadRequestTracker();

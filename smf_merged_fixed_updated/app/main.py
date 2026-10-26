@@ -250,6 +250,19 @@ def create_app() -> FastAPI:
     # (Auth, Students, Attendance, Session, Enrollment, Training, Alerts, Analytics, Frontend)
     app_instance.include_router(v1_router)
 
+    # 5b. Attach Student Portal and Gate Pass Systems (Isolated & CORS-Friendly)
+    try:
+        from app.api.v1.features.api_gatepass import router as _gatepass_router
+        app_instance.include_router(_gatepass_router)
+    except Exception as _gp_err:
+        log.warning("Gatepass router attachment notice: %s", _gp_err)
+
+    try:
+        from app.api.v1.features.api_student_portal import router as _student_portal_router
+        app_instance.include_router(_student_portal_router, prefix="/student")
+    except Exception as _sp_err:
+        log.warning("Student portal router attachment notice: %s", _sp_err)
+
     # 6. Avatars Static Mount
     avatars_dir = os.path.join(config.BASE_DIR, "data", "avatars")
     if os.path.isdir(avatars_dir):

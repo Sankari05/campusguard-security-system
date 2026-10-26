@@ -793,6 +793,7 @@ const NAV_CFG = {
       {icon:'fa-file-shield',label:'Compliance',page:'compliance'},
       {icon:'fa-circle-check',label:'Pending Approvals',page:'hod_approvals'},
       {icon:'fa-id-badge',label:'OD Approval Queue',page:'hod-od-approvals'},
+      {icon:'fa-door-open',label:'Gate Pass Approvals',page:'hod-gatepass-approvals'},
     ]},
   ],
   classincharge:[
@@ -820,6 +821,7 @@ const NAV_CFG = {
     {section:'REQUEST MANAGEMENT',links:[
       {icon:'fa-umbrella-beach',label:'Leave Approvals',page:'fac-leave-approvals'},
       {icon:'fa-id-badge',label:'OD Approvals',page:'fac-od-approvals'},
+      {icon:'fa-door-open',label:'Gate Pass Approvals',page:'fac-gatepass-approvals'},
     ]},
   ],
   student:[
@@ -1083,11 +1085,13 @@ function showPage(pid, skipPush = false) {
     'my-timetable':renderMyTeachingTimetable,
     'fac-leave-approvals':renderFacLeaveApprovalsPage,
     'fac-od-approvals':renderFacODApprovalsPage,
+    'fac-gatepass-approvals':renderFacGatepassApprovalsPage,
     'hod-students':function(){ if (typeof hsRenderPage === 'function') hsRenderPage(); else console.error('[hod-students] hsRenderPage not loaded yet — check that hod_students.js is included.'); },
     departments:initDeptDrill,faculty:renderFacultyPage,
     correction:renderStudentCorrectionPage,
     hod_approvals:renderHODApprovalsPage,
     'hod-od-approvals':renderHODODApprovalsPage,
+    'hod-gatepass-approvals':renderHODGatepassApprovalsPage,
     audit_log:renderAuditLogPage,
     academics:renderAcademicsPage,
     compliance:renderCompliancePage,
@@ -9167,13 +9171,28 @@ async function renderFacODApprovalsPage() {
   _facReqLoadList('od', _facReqTab.od);
 }
 
+// ── Gate Pass Approvals Page (Class Incharge) ─────────────────
+async function renderFacGatepassApprovalsPage() {
+  var pg = document.getElementById('pg-fac-gatepass-approvals');
+  if (!pg) {
+    pg = document.createElement('div');
+    pg.id = 'pg-fac-gatepass-approvals';
+    pg.className = 'page dn';
+    document.getElementById('pageArea')?.appendChild(pg);
+  }
+  pg.innerHTML = _facReqPageShell('gatepass', 'Gate Pass Approvals', 'fa-door-open',
+    'Review student gate pass applications and forward approved passes to HOD');
+  _facReqLoadList('gatepass', _facReqTab.gatepass || 'Pending');
+}
+
 // ── Shared page shell (tabs + table container) ──────────────
 function _facReqPageShell(kind, title, icon, sub) {
+  var refreshFn = kind === 'leave' ? 'renderFacLeaveApprovalsPage()' : (kind === 'gatepass' ? 'renderFacGatepassApprovalsPage()' : 'renderFacODApprovalsPage()');
   return [
     '<div class="page-header">',
     '  <div class="ph-left"><h2><i class="fa ' + icon + '" style="color:var(--primary);margin-right:8px"></i>' + title + '</h2>',
     '  <p>' + sub + '</p></div>',
-    '  <div class="ph-right"><button class="btn-primary" onclick="' + (kind === 'leave' ? 'renderFacLeaveApprovalsPage()' : 'renderFacODApprovalsPage()') + '"><i class="fa fa-rotate"></i> Refresh</button></div>',
+    '  <div class="ph-right"><button class="btn-primary" onclick="' + refreshFn + '"><i class="fa fa-rotate"></i> Refresh</button></div>',
     '</div>',
     '<div class="card">',
     '  <div class="card-head" style="flex-wrap:wrap;gap:8px">',
@@ -9273,6 +9292,18 @@ async function _facReqLoadList(kind, status) {
         + '<td style="padding:9px 11px;white-space:nowrap">' + actionsHtml + '</td>'
         + '</tr>';
     }
+    if (kind === 'gatepass') {
+      return '<tr style="border-bottom:1px solid var(--border)">'
+        + '<td style="padding:9px 11px;font-size:.84rem;color:var(--text1);font-weight:600">' + (r.student_name || '—') + '</td>'
+        + '<td style="padding:9px 11px;font-size:.84rem;color:var(--text2)"><code>' + (r.register_number || '—') + '</code></td>'
+        + '<td style="padding:9px 11px;font-size:.84rem;color:var(--text2)">' + (r.pass_type || 'Gate Pass') + '</td>'
+        + '<td style="padding:9px 11px;font-size:.84rem;color:var(--text2)"><strong>' + (r.event_date || '—') + '</strong> (' + (r.out_time || '—') + ')</td>'
+        + '<td style="padding:9px 11px;font-size:.82rem;color:var(--text2);max-width:160px" title="' + (r.reason || '') + '">' + reasonTrunc + '</td>'
+        + '<td style="padding:9px 11px;font-size:.8rem;color:var(--text3)">' + submitted + '</td>'
+        + '<td style="padding:9px 11px">' + statusBadge + (r.otp ? '<br><span style="color:#059669;font-weight:800;font-family:monospace;font-size:.78rem">OTP: ' + r.otp + '</span>' : '') + '</td>'
+        + '<td style="padding:9px 11px;white-space:nowrap">' + actionsHtml + '</td>'
+        + '</tr>';
+    }
     // OD
     var attach = r.attachment ? '<a href="' + r.attachment + '" target="_blank" style="color:var(--primary)"><i class="fa fa-paperclip"></i> View</a>' : '<span style="color:var(--text3)">—</span>';
     return '<tr style="border-bottom:1px solid var(--border)">'
@@ -9289,7 +9320,9 @@ async function _facReqLoadList(kind, status) {
 
   var head = kind === 'leave'
     ? '<th>Student</th><th>Register No.</th><th>Department</th><th>Year</th><th>Section</th><th>Leave Date</th><th>Reason</th><th>Submitted</th><th>Status</th><th>Actions</th>'
-    : '<th>Student</th><th>Register No.</th><th>Event Name</th><th>Event Date</th><th>Reason</th><th>Attachment</th><th>Status</th><th>Actions</th>';
+    : (kind === 'gatepass'
+      ? '<th>Student</th><th>Register No.</th><th>Pass Type</th><th>Date & Out-Time</th><th>Reason</th><th>Submitted</th><th>Status</th><th>Actions</th>'
+      : '<th>Student</th><th>Register No.</th><th>Event Name</th><th>Event Date</th><th>Reason</th><th>Attachment</th><th>Status</th><th>Actions</th>');
 
   body.innerHTML = '<div class="table-scroll"><table class="data-tbl" style="min-width:900px">'
     + '<thead><tr>' + head + '</tr></thead>'
@@ -9312,13 +9345,21 @@ async function _facReqView(kind, id) {
           ['From', r.from_date], ['To', r.to_date], ['Reason', r.reason],
           ['Status', r.status], ['Remarks', r.remarks || '—'],
         ]
-      : [
-          ['Student', r.student_name], ['Register No.', r.register_number],
-          ['Event Name', r.event_name], ['Event Date', r.event_date],
-          ['Reason', r.reason],
-          ['Attachment', r.attachment ? ('<a href="' + r.attachment + '" target="_blank">View attachment</a>') : '—'],
-          ['Status', r.status], ['Remarks', r.remarks || '—'],
-        ];
+      : (kind === 'gatepass'
+        ? [
+            ['Student', r.student_name || r.name], ['Register No.', r.register_number],
+            ['Department', r.department], ['Pass Type', r.pass_type || 'Gate Pass'],
+            ['Date', r.event_date], ['Out Time', r.out_time], ['Expected Return', r.expected_in_time || 'N/A'],
+            ['Reason', r.reason], ['Generated OTP', r.otp ? ('<strong style="color:#059669;font-size:1.1rem;font-family:monospace">' + r.otp + '</strong>') : 'Not yet generated'],
+            ['Status', r.status], ['Class Incharge Remarks', r.faculty_remarks || '—'], ['HOD Remarks', r.hod_remarks || '—']
+          ]
+        : [
+            ['Student', r.student_name], ['Register No.', r.register_number],
+            ['Event Name', r.event_name], ['Event Date', r.event_date],
+            ['Reason', r.reason],
+            ['Attachment', r.attachment ? ('<a href="' + r.attachment + '" target="_blank">View attachment</a>') : '—'],
+            ['Status', r.status], ['Remarks', r.remarks || '—'],
+          ]);
     overlay.innerHTML = [
       '<div style="background:var(--card-bg,#fff);border-radius:14px;padding:26px 22px;width:min(460px,92vw);box-shadow:0 8px 40px rgba(0,0,0,.2)">',
       '  <h4 style="margin:0 0 14px;font-size:1.05rem;color:var(--text1)"><i class="fa fa-circle-info" style="color:var(--primary);margin-right:6px"></i>Request #' + id + ' Details</h4>',
@@ -9345,7 +9386,7 @@ function _facReqApprove(kind, id) {
   overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center';
   overlay.innerHTML = [
     '<div style="background:var(--card-bg,#fff);border-radius:14px;padding:26px 22px;width:min(440px,92vw);box-shadow:0 8px 40px rgba(0,0,0,.2)">',
-    '  <h4 style="margin:0 0 14px;font-size:1.05rem;color:var(--text1)"><i class="fa fa-circle-check" style="color:#16a34a;margin-right:6px"></i>Approve ' + (kind === 'leave' ? 'Leave' : 'OD') + ' Request #' + id + '</h4>',
+    '  <h4 style="margin:0 0 14px;font-size:1.05rem;color:var(--text1)"><i class="fa fa-circle-check" style="color:#16a34a;margin-right:6px"></i>Approve ' + (kind === 'leave' ? 'Leave' : (kind === 'gatepass' ? 'Gate Pass' : 'OD')) + ' Request #' + id + '</h4>',
     '  <p style="margin:0 0 10px;font-size:.875rem;color:var(--text2)">Add remarks for the student (optional):</p>',
     '  <textarea id="facReqApproveReason" rows="3" placeholder="e.g. Approved, carry your ID card..."',
     '    style="width:100%;padding:8px 10px;border:1.5px solid var(--border);border-radius:8px;resize:vertical;color:var(--text1);font-size:.875rem;font-family:inherit;box-sizing:border-box"></textarea>',
@@ -9368,7 +9409,15 @@ async function _facReqApproveSubmit(kind, id) {
     document.getElementById('facReqApprovePrompt')?.remove();
     var successMsg = kind === 'leave'
       ? 'Leave request #' + id + ' approved ✓'
-      : 'OD request #' + id + ' approved and forwarded to HOD for final decision';
+      : (kind === 'gatepass' ? 'Gate Pass #' + id + ' approved and forwarded to HOD' : 'OD request #' + id + ' approved and forwarded to HOD for final decision');
+    toast(successMsg, 'success');
+    _facReqLoadList(kind, _facReqTab[kind]);
+    refreshNotificationCount();
+    if (document.getElementById('pg-fac-dashboard') && !document.getElementById('pg-fac-dashboard').classList.contains('dn')) renderFacDashboard();
+  } catch (e) {
+    toast('Approve failed: ' + (e.message || 'Error'), 'error');
+  }
+}
     toast(successMsg, 'success');
     _facReqLoadList(kind, _facReqTab[kind]);
     refreshNotificationCount();
@@ -9675,6 +9724,137 @@ async function _hodOdRejectSubmit(id) {
     } else {
       toast('Reject failed: ' + (e.message || 'Error'), 'error');
     }
+  }
+}
+
+// =============================================================
+// HOD GATE PASS APPROVAL QUEUE MODULE
+// =============================================================
+var _hodGpTab = 'Forwarded';
+
+async function renderHODGatepassApprovalsPage() {
+  var pg = document.getElementById('pg-hod-gatepass-approvals');
+  if (!pg) {
+    pg = document.createElement('div');
+    pg.id = 'pg-hod-gatepass-approvals';
+    pg.className = 'page dn';
+    document.getElementById('pageArea')?.appendChild(pg);
+  }
+
+  pg.innerHTML = [
+    '<div class="page-header">',
+    '  <div class="ph-left">',
+    '    <h2><i class="fa fa-door-open" style="color:var(--primary);margin-right:8px"></i>Gate Pass Approval Queue</h2>',
+    '    <p>Review and grant final exit approval & generate Gate Pass OTP for students</p>',
+    '  </div>',
+    '  <div class="ph-right">',
+    '    <button class="btn-primary" onclick="renderHODGatepassApprovalsPage()"><i class="fa fa-rotate"></i> Refresh</button>',
+    '  </div>',
+    '</div>',
+    '<div class="card">',
+    '  <div class="card-head" style="flex-wrap:wrap;gap:8px">',
+    '    <h4><i class="fa fa-inbox"></i> Gate Pass Requests</h4>',
+    '    <div style="display:flex;gap:6px;flex-wrap:wrap">',
+    '      <button id="hodGpTab_Forwarded" onclick="_hodGpSetTab(\'Forwarded\')" class="btn-sm" style="font-weight:700">⏳ Pending HOD Final Approval</button>',
+    '      <button id="hodGpTab_Approved"  onclick="_hodGpSetTab(\'Approved\')"  class="btn-sm">✓ Approved (OTP Active)</button>',
+    '      <button id="hodGpTab_Rejected"  onclick="_hodGpSetTab(\'Rejected\')"  class="btn-sm">✗ Rejected</button>',
+    '    </div>',
+    '  </div>',
+    '  <div id="hodGpBody">',
+    '    <div style="text-align:center;padding:36px;color:var(--text2)"><i class="fa fa-spinner fa-spin" style="font-size:1.6rem"></i><p style="margin:10px 0 0">Loading requests...</p></div>',
+    '  </div>',
+    '</div>',
+  ].join('\n');
+
+  _hodGpLoadList(_hodGpTab);
+}
+
+function _hodGpSetTab(status) {
+  _hodGpTab = status;
+  _hodGpLoadList(status);
+}
+
+async function _hodGpLoadList(status) {
+  var body = document.getElementById('hodGpBody');
+  if (!body) return;
+  ['Forwarded', 'Approved', 'Rejected'].forEach(function(s) {
+    var btn = document.getElementById('hodGpTab_' + s);
+    if (!btn) return;
+    if (s === status) {
+      btn.style.background = 'var(--primary)';
+      btn.style.color = '#fff';
+      btn.style.fontWeight = '700';
+    } else {
+      btn.style.background = '';
+      btn.style.color = '';
+      btn.style.fontWeight = '';
+    }
+  });
+
+  body.innerHTML = '<div style="text-align:center;padding:36px;color:var(--text2)"><i class="fa fa-spinner fa-spin" style="font-size:1.4rem"></i><p style="margin:10px 0 0">Loading...</p></div>';
+
+  try {
+    var res = await apiFetch('/api/faculty/requests/gatepass?status=' + encodeURIComponent(status));
+    var requests = (res && res.requests) ? res.requests : [];
+    if (!requests.length) {
+      body.innerHTML = '<div style="text-align:center;padding:48px 20px;color:var(--text2)"><i class="fa fa-circle-check" style="font-size:2.5rem;color:#16a34a;display:block;margin-bottom:12px"></i><strong>No ' + status.toLowerCase() + ' Gate Pass requests</strong></div>';
+      return;
+    }
+    var rows = requests.map(function(r) {
+      var isForwarded = (status === 'Forwarded');
+      var actions = '';
+      if (isForwarded) {
+        actions = '<button onclick="_hodGpApprove(' + r.id + ')" style="padding:6px 14px;border:none;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;background:#dcfce7;color:#16a34a"><i class="fa fa-check"></i> Final Approve (Generate OTP)</button>'
+          + '<button onclick="_hodGpReject(' + r.id + ')" style="padding:6px 12px;border:none;border-radius:6px;cursor:pointer;font-size:.82rem;font-weight:700;background:#fee2e2;color:#dc2626;margin-left:6px"><i class="fa fa-xmark"></i> Reject</button>';
+      } else {
+        actions = (r.status === 'Approved' ? '<span style="color:#059669;font-weight:800;font-family:monospace;background:#ecfdf5;padding:4px 8px;border-radius:6px;font-size:.9rem">OTP: ' + (r.otp || '—') + '</span>' : '<span style="color:#ef4444;font-weight:600">Rejected</span>');
+      }
+      return '<tr style="border-bottom:1px solid var(--border)">'
+        + '<td style="padding:10px 12px;font-weight:700;color:var(--text1)">' + (r.student_name || r.name || r.student_id) + '</td>'
+        + '<td style="padding:10px 12px"><code>' + (r.register_number || '—') + '</code></td>'
+        + '<td style="padding:10px 12px">' + (r.department || '—') + '</td>'
+        + '<td style="padding:10px 12px"><strong>' + (r.event_date || '—') + '</strong> (Out: ' + (r.out_time || '—') + ')</td>'
+        + '<td style="padding:10px 12px;max-width:200px" title="' + (r.reason || '') + '">' + (r.reason || '—') + '</td>'
+        + '<td style="padding:10px 12px;font-size:.8rem;color:var(--text3)">' + (r.faculty_decided_by ? 'Approved by ' + r.faculty_decided_by : 'Class Incharge') + '</td>'
+        + '<td style="padding:10px 12px;white-space:nowrap">' + actions + '</td>'
+        + '</tr>';
+    }).join('');
+
+    body.innerHTML = '<div class="table-scroll"><table class="data-tbl" style="width:100%;min-width:900px">'
+      + '<thead><tr><th>Student</th><th>Register No</th><th>Dept</th><th>Date & Out-Time</th><th>Reason</th><th>Class Incharge</th><th>Actions</th></tr></thead>'
+      + '<tbody>' + rows + '</tbody></table></div>';
+  } catch(e) {
+    body.innerHTML = '<div class="empty-msg"><p style="color:#ef4444">' + (e.message || 'Error loading requests') + '</p></div>';
+  }
+}
+
+async function _hodGpApprove(id) {
+  try {
+    var res = await apiFetch('/api/faculty/requests/gatepass/' + id + '/approve', {
+      method: 'POST', body: JSON.stringify({ remarks: 'Approved by HOD' })
+    });
+    var generatedOtp = res && res.record ? res.record.otp : '';
+    toast('🎉 Gate Pass #' + id + ' Approved! Generated OTP: ' + generatedOtp, 'success');
+    _hodGpLoadList(_hodGpTab);
+  } catch(e) {
+    toast('Approval failed: ' + (e.message || 'Error'), 'error');
+  }
+}
+
+async function _hodGpReject(id) {
+  var reason = prompt('Please enter rejection remarks (min 5 characters):');
+  if (!reason || reason.trim().length < 5) {
+    if (reason !== null) toast('Rejection remarks must be at least 5 characters.', 'warn');
+    return;
+  }
+  try {
+    await apiFetch('/api/faculty/requests/gatepass/' + id + '/reject', {
+      method: 'POST', body: JSON.stringify({ remarks: reason.trim() })
+    });
+    toast('Gate Pass #' + id + ' Rejected', 'warn');
+    _hodGpLoadList(_hodGpTab);
+  } catch(e) {
+    toast('Rejection failed: ' + (e.message || 'Error'), 'error');
   }
 }
 

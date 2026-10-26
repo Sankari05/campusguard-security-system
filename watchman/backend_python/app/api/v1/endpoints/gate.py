@@ -95,3 +95,21 @@ def get_stats(
 ) -> Any:
     service = GateService(db)
     return service.get_stats()
+
+
+@router.post("/anpr/recognize")
+def recognize_anpr(
+    payload: dict = Body(...),
+    db: Session = Depends(get_db),
+) -> Any:
+    """
+    ANPR v2 Recognition Endpoint:
+    Accepts image frame (base64 or data URI) and optional raw OCR text.
+    Performs dynamic computer vision localization, MoRTH Indian plate validation,
+    and returns gate barrier authorization decision.
+    """
+    from app.services.anpr_service import ANPRService
+    image_data = payload.get("image") or payload.get("frame")
+    ocr_text = payload.get("text") or payload.get("raw_text")
+    return ANPRService.process_anpr_frame(image_data, raw_ocr_text=ocr_text)
+
