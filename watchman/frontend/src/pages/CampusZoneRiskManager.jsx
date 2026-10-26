@@ -9,7 +9,6 @@ import {
   Droplets,
   Thermometer,
   CheckCircle,
-  RefreshCw,
   MapPin,
   Flame,
   Check,
@@ -63,21 +62,9 @@ export const CampusZoneRiskManager = () => {
               <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
                 {language === 'ta' ? 'வானிலை எச்சரிக்கை & வளாக மண்டல கண்காணிப்பு' : 'Weather Alerts & Campus Zone Monitoring'}
               </h1>
-              <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '0.2rem 0 0' }}>
-                {language === 'ta' ? 'மழை/புயல் அபாய எச்சரிக்கைகள், தொடர் புகார்கள் & மண்டல ஆபத்து பகுப்பாய்வு (Pillars 8 & 11)' : 'Pillars 8 & 11: Real-time campus weather hazard telemetry & automated zone attention radar'}
-              </p>
             </div>
           </div>
         </div>
-
-        <button
-          onClick={fetchData}
-          className="btn btn-secondary"
-          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700 }}
-        >
-          <RefreshCw size={16} className={loading ? 'spin' : ''} />
-          {language === 'ta' ? 'புதுப்பி' : 'Refresh Telemetry'}
-        </button>
       </div>
 
       {successBanner && (
@@ -86,62 +73,62 @@ export const CampusZoneRiskManager = () => {
         </div>
       )}
 
-      {/* ── Weather Hazard Telemetry Card (Pillar 8) ──────────── */}
+      {/* ── Weather Hazard Telemetry Card (Light Theme) ──────────── */}
       {weather && (
         <div
           style={{
-            background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-            color: 'white',
+            background: 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)',
+            color: '#0F172A',
             borderRadius: '20px',
             padding: '1.75rem',
             marginBottom: '2rem',
-            boxShadow: '0 10px 30px rgba(15, 23, 42, 0.25)',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.04)',
+            border: '1.5px solid #DBEAFE'
           }}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, padding: '0.2rem 0.6rem', borderRadius: '999px', background: '#f59e0b', color: '#000000' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 800, padding: '0.25rem 0.65rem', borderRadius: '999px', background: '#FEF3C7', color: '#B45309', border: '1px solid #FDE68A' }}>
                   ACTIVE WEATHER HAZARD &bull; {weather.hazard_level}
                 </span>
-                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Live Campus Station</span>
+                <span style={{ fontSize: '0.8rem', color: '#64748B', fontWeight: 600 }}>Live Campus Station</span>
               </div>
-              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, margin: '0 0 0.25rem' }}>
+              <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#0F172A', margin: '0 0 0.25rem' }}>
                 {weather.hazard_title}
               </h2>
-              <div style={{ fontSize: '0.88rem', color: '#cbd5e1' }}>
-                Forecast Condition: <strong>{weather.condition}</strong>
+              <div style={{ fontSize: '0.88rem', color: '#475569' }}>
+                Forecast Condition: <strong style={{ color: '#1E293B' }}>{weather.condition}</strong>
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '1.5rem', background: 'rgba(255, 255, 255, 0.05)', padding: '0.85rem 1.25rem', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+            <div style={{ display: 'flex', gap: '1.5rem', background: '#F8FAFC', padding: '0.85rem 1.25rem', borderRadius: '14px', border: '1px solid #E2E8F0' }}>
               <div style={{ textAlign: 'center' }}>
-                <Thermometer size={18} color="#f87171" style={{ margin: '0 auto 0.25rem' }} />
-                <div style={{ fontSize: '1.15rem', fontWeight: 900 }}>{weather.temperature_celsius}°C</div>
-                <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>TEMP</div>
+                <Thermometer size={18} color="#EF4444" style={{ margin: '0 auto 0.25rem' }} />
+                <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#0F172A' }}>{weather.temperature_celsius}°C</div>
+                <div style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 700 }}>TEMP</div>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <Droplets size={18} color="#60a5fa" style={{ margin: '0 auto 0.25rem' }} />
-                <div style={{ fontSize: '1.15rem', fontWeight: 900 }}>{weather.rainfall_probability}%</div>
-                <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>RAIN</div>
+                <Droplets size={18} color="#2563EB" style={{ margin: '0 auto 0.25rem' }} />
+                <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#0F172A' }}>{weather.rainfall_probability}%</div>
+                <div style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 700 }}>RAIN</div>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <Wind size={18} color="#34d399" style={{ margin: '0 auto 0.25rem' }} />
-                <div style={{ fontSize: '1.15rem', fontWeight: 900 }}>{weather.wind_speed_kmh}</div>
-                <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>KM/H WIND</div>
+                <Wind size={18} color="#059669" style={{ margin: '0 auto 0.25rem' }} />
+                <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#0F172A' }}>{weather.wind_speed_kmh}</div>
+                <div style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 700 }}>KM/H WIND</div>
               </div>
             </div>
           </div>
 
-          <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '1rem' }}>
-            <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#f59e0b', textTransform: 'uppercase', marginBottom: '0.5rem', letterSpacing: '0.04em' }}>
+          <div style={{ borderTop: '1px solid #E2E8F0', paddingTop: '1rem' }}>
+            <div style={{ fontSize: '0.82rem', fontWeight: 800, color: '#D97706', textTransform: 'uppercase', marginBottom: '0.5rem', letterSpacing: '0.04em' }}>
               🛡️ Mandatory Guard Safety Checklist:
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.65rem' }}>
               {weather.safety_checklist.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#e2e8f0' }}>
-                  <Check size={16} color="#10b981" />
+                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: '#334155' }}>
+                  <Check size={16} color="#059669" strokeWidth={2.5} />
                   <span>{item}</span>
                 </div>
               ))}
