@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIDGEWATCH — Survivor Detection &amp; Rescue Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">▲</span>
+      <div class="brand-text">
+        <span class="brand-name">RIDGEWATCH</span>
+        <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="sidebar-link is-active">📡 <span>Dashboard</span></a>
+      <a href="visual.html" class="sidebar-link">🌐 <span>Visual 3D</span></a>
+      <a href="hardware.html" class="sidebar-link">🔧 <span>Hardware</span></a>
+      <a href="logic.html" class="sidebar-link">🧠 <span>Logic</span></a>
+      <a href="testing.html" class="sidebar-link">📊 <span>Testing</span></a>
+      <a href="commander.html" class="sidebar-link">🎖️ <span>Commander</span></a>
+      <a href="doppler.html" class="sidebar-link">💓 <span>Doppler HR</span></a>
+      <a href="watch.html" class="sidebar-link">⌚ <span>Watch</span></a>
+      <a href="alerts.html" class="sidebar-link">🚨 <span>Alerts</span></a>
+      <a href="notification.html" class="sidebar-link">🔔 <span>Notification</span></a>
+      <a href="analytics.html" class="sidebar-link">📊 <span>Analytics</span></a>
+      <a href="scenarios.html" class="sidebar-link">🗺️ <span>Scenarios</span></a>
+      <a href="victims.html" class="sidebar-link">🧍 <span>Victims</span></a>
+      <a href="teams.html" class="sidebar-link">🚁 <span>Teams</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="sidebar-foot-avatar" aria-hidden="true">R</span>
+      <div class="sidebar-foot-text">
+        <span class="sidebar-foot-name">RidgeWatch Ops</span>
+        <span class="sidebar-foot-role">Demo build · v1.0</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+
+  <!-- ============================================================ -->
+  <!-- HEADER / CONTROL BAR                                          -->
+  <!-- ============================================================ -->
+  <header class="topbar">
+    <div class="site-tag">
+      <span class="site-tag-label">SITE</span>
+      <span class="site-tag-value" id="siteTagValue">Rohtang Pass Approach · Himachal Pradesh · 3,950 m</span>
+    </div>
+
+    <div class="topbar-controls">
+      <div class="conn-indicator" id="connIndicator" data-state="offline">
+        <span class="conn-dot" aria-hidden="true"></span>
+        <span class="conn-label" id="connLabel">🛰️ LINK DOWN</span>
+      </div>
+
+      <select class="scenario-select" id="scenarioSelect" title="Choose disaster scenario">
+        <option value="himalaya_avalanche">Himalaya Avalanche</option>
+      </select>
+
+      <label class="solar-toggle" title="Simulate solar panel + BMS charging on each sensor node">
+        <input type="checkbox" id="solarChargingToggle">
+        <span>☀️ Solar+BMS</span>
+      </label>
+
+      <button class="btn btn-primary" id="startBtn" type="button">Start Scenario</button>
+      <button class="btn btn-danger" id="resetBtn" type="button">Reset</button>
+    </div>
+    <div class="topbar-right">
+      <a href="notification.html" class="topbar-bell" title="Notification Center · Multi-Channel Dispatch" aria-label="Notification Center">🔔<span class="topbar-bell-dot" id="topbarAlertDot" hidden></span></a>
+      <span class="topbar-avatar" title="RidgeWatch Ops">R</span>
+    </div>
+  </header>
+
+  <section class="stat-row" id="statRow">
+    <div class="stat-card">
+      <span class="stat-card-icon" aria-hidden="true">🗺️</span>
+      <div class="stat-card-label">Available Scenarios</div>
+      <div class="stat-card-value" id="statScenarioCount">—</div>
+      <div class="stat-card-sub" id="statScenarioSub">no scenario running</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card-icon" aria-hidden="true">🧍</span>
+      <div class="stat-card-label">Victims Detected</div>
+      <div class="stat-card-value" id="statVictimCount">—</div>
+      <div class="stat-card-sub stat-sub-high" id="statVictimSub">High Priority: —</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card-icon" aria-hidden="true">🚑</span>
+      <div class="stat-card-label">Rescue Teams</div>
+      <div class="stat-card-value" id="statTeamCount">—</div>
+      <div class="stat-card-sub" id="statTeamSub">Tracked members: —</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card-icon" aria-hidden="true">✅</span>
+      <div class="stat-card-label">Rescues Completed</div>
+      <div class="stat-card-value" id="statRescuedCount">—</div>
+      <div class="stat-card-sub" id="statRescuedSub">en route: —</div>
+    </div>
+  </section>
+
+  <div class="scenario-meta" id="scenarioMeta">
+    <span id="scenarioState">NOT STARTED</span>
+    <span class="dim">·</span>
+    <span id="scenarioCycle">cycle 0</span>
+    <span class="dim">·</span>
+    <span id="scenarioClock">--:--:--</span>
+    <span class="dim">·</span>
+    <span id="scenarioRain" class="rain-readout" hidden>🌧️ -- mm/hr</span>
+    <span class="dim">·</span>
+    <span id="scenarioSoil" class="soil-readout" hidden>🪨 -- % saturated</span>
+    <span class="dim">·</span>
+    <span id="scenarioSeismic" class="seismic-readout" hidden>📈 -- mm/s PGV</span>
+    <span class="dim">·</span>
+    <span id="scenarioTilt" class="tilt-readout" hidden>📐 -- °</span>
+    <span class="dim">·</span>
+    <span id="scenarioEnv" class="env-readout" hidden>🌡️ -- °C · -- % RH</span>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- MAIN GRID                                                     -->
+  <!-- ============================================================ -->
+  <main class="grid-main">
+
+    <!-- SITE MAP ------------------------------------------------- -->
+    <section class="panel panel-map" aria-labelledby="mapHeading">
+      <div class="panel-head">
+        <h2 id="mapHeading">📍 Site Map · GPS Location</h2>
+        <div class="legend" id="mapLegend"></div>
+      </div>
+      <div class="map-wrap">
+        <svg id="siteMap" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Debris field site map showing victim and rescue team positions"></svg>
+        <div class="map-empty" id="mapEmpty">
+          <p>No active scenario.</p>
+          <p class="map-empty-sub">Start the scenario to bring sensor nodes online.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- OLED READOUT ---------------------------------------------- -->
+    <section class="panel panel-readout" aria-labelledby="readoutHeading">
+      <div class="panel-head">
+        <h2 id="readoutHeading">❤️ Vital Detection · Survivor Readout</h2>
+        <span class="panel-head-sub" id="readoutVictimTag">— NO TARGET SELECTED —</span>
+      </div>
+      <div class="oled" id="oledPanel">
+        <div class="oled-noise" id="oledNoise"></div>
+        <div class="oled-content" id="oledContent">
+          <p class="oled-placeholder">SELECT A VICTIM FROM THE MAP OR QUEUE</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRIORITY QUEUE ---------------------------------------------- -->
+    <section class="panel panel-queue" aria-labelledby="queueHeading">
+      <div class="panel-head">
+        <h2 id="queueHeading">📋 Triage Queue · Priority Score</h2>
+        <span class="panel-head-sub" id="queueCount">0 tracked</span>
+      </div>
+      <div class="queue-list" id="queueList">
+        <p class="empty-note">Queue will populate once the scenario starts.</p>
+      </div>
+    </section>
+
+    <!-- RESCUE TEAMS ---------------------------------------------- -->
+    <section class="panel panel-teams" aria-labelledby="teamsHeading">
+      <div class="panel-head">
+        <h2 id="teamsHeading">🚑 Rescue Team Status</h2>
+        <span class="panel-head-sub" id="teamsSub">ETA to assignment</span>
+      </div>
+      <div class="teams-body" id="teamsBody">
+        <p class="empty-note">No teams dispatched yet.</p>
+      </div>
+    </section>
+
+    <!-- ALERT LOG ---------------------------------------------- -->
+    <section class="panel panel-alerts" aria-labelledby="alertsHeading">
+      <div class="panel-head">
+        <h2 id="alertsHeading">Alert Log</h2>
+        <div class="panel-head-actions">
+          <button class="mute-toggle" id="muteToggleBtn" type="button" aria-pressed="false">🔊 Sound on</button>
+          <button class="btn btn-ghost btn-small" id="clearAlertsBtn" type="button">Clear</button>
+        </div>
+      </div>
+      <div class="alert-log" id="alertLog">
+        <p class="empty-note">No events yet.</p>
+      </div>
+    </section>
+
+    <!-- NETWORK ALERTS (simulated GSM/LoRa transmission log) ---- -->
+    <section class="panel panel-network-alerts" aria-labelledby="networkAlertsHeading">
+      <div class="panel-head">
+        <h2 id="networkAlertsHeading">📡 Network Alerts · Simulated GSM/LoRa</h2>
+        <span class="panel-head-sub">out-of-band dispatch, HIGH-priority only</span>
+      </div>
+      <div class="alert-log network-alert-log" id="networkAlertLog">
+        <p class="empty-note">No network alerts sent yet.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="statusbar">
+    <span id="statusMessage">Idle.</span>
+    <span class="statusbar-right" id="statusPoll">poll: —</span>
+  </footer>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

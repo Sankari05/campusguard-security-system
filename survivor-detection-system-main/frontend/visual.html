@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIDGEWATCH — 3D Digital Twin & Hardware Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<!-- Three.js & OrbitControls for High-Performance 3D Digital Twin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">▲</span>
+      <div class="brand-text">
+        <span class="brand-name">RIDGEWATCH</span>
+        <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="sidebar-link">📡 <span>Dashboard</span></a>
+      <a href="visual.html" class="sidebar-link is-active">🌐 <span>Visual 3D</span></a>
+      <a href="hardware.html" class="sidebar-link">🔧 <span>Hardware</span></a>
+      <a href="logic.html" class="sidebar-link">🧠 <span>Logic</span></a>
+      <a href="testing.html" class="sidebar-link">📊 <span>Testing</span></a>
+      <a href="commander.html" class="sidebar-link">🎖️ <span>Commander</span></a>
+      <a href="doppler.html" class="sidebar-link">💓 <span>Doppler HR</span></a>
+      <a href="watch.html" class="sidebar-link">⌚ <span>Watch</span></a>
+      <a href="alerts.html" class="sidebar-link">🚨 <span>Alerts</span></a>
+      <a href="notification.html" class="sidebar-link">🔔 <span>Notification</span></a>
+      <a href="analytics.html" class="sidebar-link">📈 <span>Analytics</span></a>
+      <a href="scenarios.html" class="sidebar-link">🗺️ <span>Scenarios</span></a>
+      <a href="victims.html" class="sidebar-link">🧍 <span>Victims</span></a>
+      <a href="teams.html" class="sidebar-link">🚁 <span>Teams</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="sidebar-foot-avatar" aria-hidden="true">R</span>
+      <div class="sidebar-foot-text">
+        <span class="sidebar-foot-name">RidgeWatch Ops</span>
+        <span class="sidebar-foot-role">3D Digital Twin &amp; Telemetry</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN DIGITAL TWIN WORKSPACE -->
+  <div class="main-content visual-console">
+
+    <!-- 1. TOPBAR & DIGITAL TWIN KPI HUD -->
+    <header class="topbar visual-topbar">
+      <div class="site-tag">
+        <span class="site-tag-label">DIGITAL TWIN &amp; HARDWARE ARCHITECTURE</span>
+        <span class="site-tag-value" id="dtSourceBadgeLabel">4D LIVE DIGITAL TWIN — LIVE SIMULATION</span>
+      </div>
+      
+      <div class="visual-header-meta">
+        <div class="hw-meta-pill" title="Total Physical &amp; Simulated Assets">
+          <span class="hw-pill-icon">📦</span>
+          <span class="hw-pill-label">Total:</span>
+          <strong id="dtKpiTotal">21</strong>
+        </div>
+        <div class="hw-meta-pill is-online" title="Online Healthy Hardware Units">
+          <span class="hw-pill-icon">🟢</span>
+          <span class="hw-pill-label">Online:</span>
+          <strong id="dtKpiOnline">21</strong>
+        </div>
+        <div class="hw-meta-pill is-alerts" title="Sensors in Warning / Elevated Alert State">
+          <span class="hw-pill-icon">🟡</span>
+          <span class="hw-pill-label">Warning:</span>
+          <strong id="dtKpiWarning">0</strong>
+        </div>
+        <div class="hw-meta-pill is-degraded" title="Critical Hazard Triggered Sensors">
+          <span class="hw-pill-icon">🔴</span>
+          <span class="hw-pill-label">Critical:</span>
+          <strong id="dtKpiCritical">0</strong>
+        </div>
+        <div class="hw-meta-pill is-live-stream" title="Live Telemetry Data Flow Link">
+          <span class="pulse-dot"></span>
+          <span class="hw-pill-label">Data Flow:</span>
+          <strong id="dtLiveStreamState">● LIVE</strong>
+        </div>
+      </div>
+    </header>
+
+    <!-- 2. CONTROL TOOLBAR: 2D/3D/4D LIVE TOGGLE, SCENARIOS, DATA FLOW, ACTIONS -->
+    <section class="visual-control-bar">
+      
+      <!-- View Modes: 2D Schematic vs 3D Kit vs 4D Live Digital Twin -->
+      <div class="visual-view-toggle">
+        <button type="button" class="dt-toggle-btn" id="btnView2D" title="2D Technical Wiring Schematic">
+          <span>📐 2D</span>
+        </button>
+        <button type="button" class="dt-toggle-btn" id="btnView3D" title="3D Physical Hardware Model">
+          <span>🧊 3D</span>
+        </button>
+        <button type="button" class="dt-toggle-btn is-active" id="btnView4D" title="4D Live Real-Time Digital Twin">
+          <span class="dt-live-pulse-icon">●</span> <span>4D LIVE</span>
+        </button>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="visual-quick-actions">
+        <button type="button" class="dt-action-btn" id="btnToggleFullView" title="Maximize Workspace (Hide Overlays)">
+          <span class="dt-btn-icon">⛶</span> <span id="lblFullView">EXPAND 3D</span>
+        </button>
+        <button type="button" class="dt-action-btn" id="btnToggleDataFlow" title="Toggle Animated Data Flow Particles">
+          <span class="dt-btn-icon">⚡</span> <span id="lblDataFlow">DATA FLOW: ON</span>
+        </button>
+        <button type="button" class="dt-action-btn" id="btnTogglePipeline" title="Show End-to-End Edge Pipeline Overlay">
+          <span class="dt-btn-icon">⛓️</span> <span>PIPELINE</span>
+        </button>
+        <button type="button" class="dt-action-btn" id="btnToggleInventory" title="Toggle Hardware Inventory Panel">
+          <span class="dt-btn-icon">📋</span> <span>INVENTORY</span>
+        </button>
+      </div>
+
+    </section>
+
+    <!-- 3. MAIN INTERACTIVE VISUALIZATION VIEWPORT -->
+    <main class="visual-stage-container" id="dtStageContainer">
+      
+      <!-- 3D/4D WebGL Canvas Viewport -->
+      <div class="dt-viewport-3d" id="dtViewport3D">
+        <canvas id="dtCanvas3D"></canvas>
+
+        <!-- 3D Camera Controls Floating HUD -->
+        <div class="dt-camera-hud">
+          <button type="button" class="dt-cam-btn" id="btnCamFitAll" title="Fit All Hardware in View (Bounding Box Solver)">🎯 Fit All</button>
+          <button type="button" class="dt-cam-btn" id="btnCamReset" title="Reset Camera to Default Overview">🔄 Reset</button>
+          <button type="button" class="dt-cam-btn" id="btnCamTop" title="Top Down View">⬇️ Top</button>
+          <button type="button" class="dt-cam-btn" id="btnCamFront" title="Front Elevation View">👁️ Front</button>
+          <button type="button" class="dt-cam-btn" id="btnCamIso" title="Isometric Angle">📐 Iso</button>
+          <button type="button" class="dt-cam-btn" id="btnCamRotate" title="Toggle Smooth Auto-Rotation">💫 Rotate</button>
+          <button type="button" class="dt-cam-btn is-active" id="btnCamWires" title="Toggle 3D Wiring Harnesses">🔌 Wires</button>
+          <button type="button" class="dt-cam-btn is-active" id="btnCamLabels" title="Toggle 3D Holographic Product Badges">🏷️ Labels</button>
+        </div>
+
+        <!-- 3D Hover Tooltip -->
+        <div class="dt-tooltip" id="dtTooltip" hidden>
+          <div class="dt-tooltip-icon" id="dtTooltipIcon">📡</div>
+          <div class="dt-tooltip-body">
+            <div class="dt-tooltip-name" id="dtTooltipName">Device Name</div>
+            <div class="dt-tooltip-meta" id="dtTooltipMeta">ID · Type · Status</div>
+          </div>
+        </div>
+
+        <!-- Status Legend Floating Badge -->
+        <div class="dt-legend-card">
+          <div class="dt-legend-title">HARDWARE LEGEND</div>
+          <div class="dt-legend-grid">
+            <span class="dt-legend-item"><span class="dt-dot is-online"></span> ONLINE</span>
+            <span class="dt-legend-item"><span class="dt-dot is-warning"></span> WARNING</span>
+            <span class="dt-legend-item"><span class="dt-dot is-critical"></span> CRITICAL</span>
+            <span class="dt-legend-item"><span class="dt-dot is-offline"></span> OFFLINE</span>
+            <span class="dt-legend-item"><span class="dt-dot is-dataflow"></span> DATA FLOW</span>
+            <span class="dt-legend-item"><span class="dt-dot is-active-sensor"></span> SCENARIO SENSOR</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 2D Schematic Wiring / Block Diagram Viewport (Hidden by default) -->
+      <div class="dt-viewport-2d" id="dtViewport2D" hidden>
+        <div class="dt-schematic-wrapper">
+          <svg id="dtSchematicSvg" class="dt-schematic-svg" viewBox="0 0 1400 950" preserveAspectRatio="xMidYMid meet" role="img" aria-label="RidgeWatch 2D Hardware Wiring Schematic"></svg>
+        </div>
+      </div>
+
+      <!-- LEFT: Floating Hardware Component Detail Micro-Drawer -->
+      <aside class="dt-detail-drawer" id="dtDetailDrawer" hidden>
+        <div class="dt-drawer-head">
+          <div class="dt-drawer-title-wrap">
+            <span class="dt-drawer-icon" id="dtDetailIcon">📡</span>
+            <div>
+              <h3 class="dt-drawer-title" id="dtDetailName">Component Name</h3>
+              <div class="dt-drawer-id" id="dtDetailId">DEV-ID-00</div>
+            </div>
+          </div>
+          <button type="button" class="dt-drawer-close" id="btnDetailClose" title="Close detail drawer">✕</button>
+        </div>
+
+        <div class="dt-drawer-body">
+          <!-- Classification Banner -->
+          <div class="dt-detail-banner" id="dtDetailBanner">
+            <span class="dt-badge" id="dtDetailCategory">SENSOR</span>
+            <span class="dt-badge is-sim" id="dtDetailSimLabel">SIMULATED</span>
+            <span class="dt-badge is-status-online" id="dtDetailStatusBadge">ONLINE</span>
+          </div>
+
+          <!-- Role & Physical Model Concept -->
+          <div class="dt-section-block">
+            <div class="dt-section-title">Physical Hardware Concept</div>
+            <div class="dt-detail-concept" id="dtDetailConcept">Texas Instruments IWR6843AOP mmWave Radar</div>
+            <div class="dt-detail-desc" id="dtDetailDesc">Sub-millimeter chest wall motion detection for survivor vital signs.</div>
+          </div>
+
+          <!-- Live Telemetry Data Box -->
+          <div class="dt-section-block dt-live-box">
+            <div class="dt-section-title">
+              <span>Live Telemetry Output</span>
+              <span class="dt-live-tag">● LIVE STREAM</span>
+            </div>
+            <div class="dt-live-readings" id="dtDetailLiveReadings">
+              <div class="dt-live-row">
+                <span class="dt-live-key">Reading:</span>
+                <strong class="dt-live-val" id="dtLivePrimaryVal">—</strong>
+              </div>
+              <div class="dt-live-row">
+                <span class="dt-live-key">Rate / Trend:</span>
+                <span class="dt-live-val" id="dtLiveTrendVal">STABLE</span>
+              </div>
+              <div class="dt-live-row">
+                <span class="dt-live-key">Signal Quality:</span>
+                <span class="dt-live-val" id="dtLiveQualityVal">98%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wiring & Interface Specifications -->
+          <div class="dt-section-block">
+            <div class="dt-section-title">Wiring &amp; Interface Specification</div>
+            <div class="dt-spec-table">
+              <div class="dt-spec-row">
+                <span>Protocol / Bus:</span>
+                <strong id="dtDetailProtocol">I2C (400 kHz)</strong>
+              </div>
+              <div class="dt-spec-row">
+                <span>Interface Nature:</span>
+                <strong id="dtDetailInterfaceNature">VIRTUAL PORT</strong>
+              </div>
+              <div class="dt-spec-row">
+                <span>Virtual Port / Pin:</span>
+                <strong id="dtDetailVirtualPort">VIRTUAL_I2C_ADDR (0x68)</strong>
+              </div>
+              <div class="dt-spec-row">
+                <span>Connected To:</span>
+                <strong id="dtDetailConnectedTo">ESP32-S3 Ingestion MCU</strong>
+              </div>
+              <div class="dt-spec-row">
+                <span>Operating Rail:</span>
+                <strong id="dtDetailPowerRail">3.3V DC (25 mA)</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scenario Relevance -->
+          <div class="dt-section-block">
+            <div class="dt-section-title">Disaster Scenario Relevance</div>
+            <div class="dt-scen-tags" id="dtDetailScenTags">
+              <span class="dt-tag">Earthquake</span>
+              <span class="dt-tag">Building Collapse</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="dt-drawer-actions">
+            <button type="button" class="dt-btn-focus" id="btnDetailFocus">🎯 Focus 3D Camera</button>
+            <a href="hardware.html" class="dt-btn-link" id="btnStationTelemetry" target="_blank">🔧 Station Telemetry →</a>
+          </div>
+        </div>
+      </aside>
+
+      <!-- FLOATING CONNECTION INSPECTOR PANEL -->
+      <aside class="dt-conn-inspector" id="dtConnectionInspector" hidden>
+        <div class="dt-conn-head">
+          <div class="dt-conn-title-wrap">
+            <span class="dt-conn-icon">🔌</span>
+            <div>
+              <h4 class="dt-conn-title">CONNECTION INSPECTOR</h4>
+              <span class="dt-conn-id" id="dtConnId">BUS-LINK-01</span>
+            </div>
+          </div>
+          <button type="button" class="dt-drawer-close" id="btnConnClose" title="Close Connection Inspector">✕</button>
+        </div>
+        <div class="dt-conn-body">
+          <div class="dt-conn-flow">
+            <div class="dt-conn-endpoint" id="dtConnSource">Source Device</div>
+            <div class="dt-conn-direction">
+              <span class="dt-conn-proto-tag" id="dtConnProto">I2C</span>
+              <span class="dt-conn-wire-line">──────▶</span>
+            </div>
+            <div class="dt-conn-endpoint" id="dtConnTarget">Target Device</div>
+          </div>
+          <div class="dt-spec-table">
+            <div class="dt-spec-row"><span>Interface Protocol:</span> <strong id="dtConnProtocol">I2C (0x68)</strong></div>
+            <div class="dt-spec-row"><span>Pin / Port Mapping:</span> <strong id="dtConnPinMapping">SDA/SCL -> GPIO21/22</strong></div>
+            <div class="dt-spec-row"><span>Power Rail:</span> <strong id="dtConnPowerRail">3.3V DC / 15mA</strong></div>
+            <div class="dt-spec-row"><span>Data Channel:</span> <strong id="dtConnDataLine">Telemetry Bus Stream</strong></div>
+            <div class="dt-spec-row"><span>Link Status:</span> <strong id="dtConnStatus" class="dt-status-online">ONLINE (ACTIVE)</strong></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT: Collapsible Hardware Inventory Panel -->
+      <aside class="dt-inventory-drawer" id="dtInventoryDrawer" hidden>
+        <div class="dt-inv-head">
+          <div class="dt-inv-title-wrap">
+            <span class="dt-inv-title">HARDWARE INVENTORY</span>
+            <span class="dt-inv-badge" id="dtInvCountBadge">21 Assets</span>
+          </div>
+          <button type="button" class="dt-drawer-close" id="btnInventoryClose" title="Close inventory drawer">✕</button>
+        </div>
+
+        <div class="dt-inv-controls">
+          <div class="dt-search-box">
+            <span class="dt-search-icon">🔍</span>
+            <input type="text" id="dtInvSearchInput" class="dt-search-input" placeholder="Search hardware, protocol, port..." autocomplete="off">
+            <button type="button" id="dtInvSearchClear" class="dt-search-clear" hidden>✕</button>
+          </div>
+          
+          <div class="dt-cat-pills" id="dtInvCatPills">
+            <button type="button" class="dt-cat-btn is-active" data-cat="ALL">All (21)</button>
+            <button type="button" class="dt-cat-btn" data-cat="SENSOR">Sensors (14)</button>
+            <button type="button" class="dt-cat-btn" data-cat="CAMERA">Cameras (2)</button>
+            <button type="button" class="dt-cat-btn" data-cat="CONTROLLER">Control (2)</button>
+            <button type="button" class="dt-cat-btn" data-cat="COMMUNICATION">Comms (2)</button>
+            <button type="button" class="dt-cat-btn" data-cat="POWER">Power (1)</button>
+          </div>
+        </div>
+
+        <div class="dt-inv-list" id="dtInventoryList">
+          <!-- Populated dynamically via visual.js -->
+        </div>
+      </aside>
+
+    </main>
+
+    <!-- 5. COLLAPSIBLE END-TO-END INTELLIGENCE PIPELINE OVERLAY -->
+    <section class="dt-pipeline-section" id="dtPipelineSection" hidden>
+      <div class="dt-pipeline-card">
+        <div class="dt-pipeline-header">
+          <div class="dt-pipeline-title">
+            <span>⛓️ LIVE DATA FLOW — HARDWARE TO RESCUE INTELLIGENCE PIPELINE</span>
+            <span class="dt-live-tag">● REAL-TIME COMPUTATION</span>
+          </div>
+          <button type="button" class="dt-drawer-close" id="btnPipelineClose" title="Close pipeline overlay">✕</button>
+        </div>
+        
+        <div class="dt-pipeline-flow">
+          
+          <!-- Stage 1: Hardware Sensors -->
+          <div class="dt-pipe-node is-stage-1">
+            <div class="dt-pipe-icon">📡</div>
+            <div class="dt-pipe-name">1. Multi-Sensor Array</div>
+            <div class="dt-pipe-sub">18 Raw Telemetry Channels</div>
+            <div class="dt-pipe-meta">ADC · I2C · SPI · UART · CSI</div>
+          </div>
+          
+          <div class="dt-pipe-arrow">▶</div>
+
+          <!-- Stage 2: ESP32 Ingestion -->
+          <div class="dt-pipe-node is-stage-2">
+            <div class="dt-pipe-icon">🎛️</div>
+            <div class="dt-pipe-name">2. ESP32-S3 MCU</div>
+            <div class="dt-pipe-sub">Validation &amp; Frame Packing</div>
+            <div class="dt-pipe-meta">Physical Bounds &amp; Filtering</div>
+          </div>
+
+          <div class="dt-pipe-arrow">▶</div>
+
+          <!-- Stage 3: Raspberry Pi 5 AI Core -->
+          <div class="dt-pipe-node is-stage-3">
+            <div class="dt-pipe-icon">🧠</div>
+            <div class="dt-pipe-name">3. Raspberry Pi 5 Core</div>
+            <div class="dt-pipe-sub">Edge AI &amp; Scenario Engine</div>
+            <div class="dt-pipe-meta">Subsystem Trend Analyzers</div>
+          </div>
+
+          <div class="dt-pipe-arrow">▶</div>
+
+          <!-- Stage 4: Fusion & SPS Triage -->
+          <div class="dt-pipe-node is-stage-4">
+            <div class="dt-pipe-icon">⚡</div>
+            <div class="dt-pipe-name">4. Fusion &amp; SPS Engine</div>
+            <div class="dt-pipe-sub">Multi-Modal Corroboration</div>
+            <div class="dt-pipe-meta">Triage Class (P1..P4) + SPS</div>
+          </div>
+
+          <div class="dt-pipe-arrow">▶</div>
+
+          <!-- Stage 5: LoRa Alerts & Dispatch -->
+          <div class="dt-pipe-node is-stage-5">
+            <div class="dt-pipe-icon">🚨</div>
+            <div class="dt-pipe-name">5. Alert &amp; Dispatch Mesh</div>
+            <div class="dt-pipe-sub">LoRa SX1262 / 4G-5G</div>
+            <div class="dt-pipe-meta">Hazard Warning Broadcasts</div>
+          </div>
+
+          <div class="dt-pipe-arrow">▶</div>
+
+          <!-- Stage 6: Field Rescue Operations -->
+          <div class="dt-pipe-node is-stage-6">
+            <div class="dt-pipe-icon">🚁</div>
+            <div class="dt-pipe-name">6. Field Rescue Teams</div>
+            <div class="dt-pipe-sub">Smartwatch &amp; Tactical App</div>
+            <div class="dt-pipe-meta">Targeted Survivor Extraction</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. STATUS BAR FOOTER -->
+    <footer class="statusbar visual-statusbar">
+      <span id="dtStatusMessage">Digital Twin initialized — connecting to telemetry backend…</span>
+      <span class="statusbar-right" id="dtStatusFps">3D Engine: 60 FPS · Three.js r128 · Live WebGL</span>
+    </footer>
+
+  </div>
+
+</div>
+
+<!-- Scripts -->
+<script src="js/config.js"></script>
+<script src="js/visual.js"></script>
+</body>
+</html>

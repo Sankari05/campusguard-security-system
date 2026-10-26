@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Portal — EduTrack Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/student.css">
+<style>
+/* Suppress duplicate native browser password reveal icon (Edge ::-ms-reveal) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  pointer-events: none !important;
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div id="loginScreen" class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="auth-logo">S</div>
+      <span style="display:inline-block;padding:4px 10px;border-radius:99px;background:#fef3c7;color:#b45309;font-size:0.75rem;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">🎓 Student Access</span>
+      <h1>Student Portal</h1>
+      <p>Sign in with your Register Number and Date of Birth</p>
+    </div>
+
+    <form id="loginForm" autocomplete="off">
+      <label>Register Number</label>
+      <input type="text" id="regNo" placeholder="e.g. 21CS001" required>
+
+      <label>Date of Birth</label>
+      <input type="date" id="dob" required>
+      <p class="hint">Use the date of birth as on your college record.</p>
+
+      <div id="loginError" class="err-msg dn"></div>
+      <button type="submit" class="btn-primary" id="loginBtn">Continue</button>
+    </form>
+  </div>
+</div>
+
+<!-- ============ DASHBOARD / APP SHELL ============ -->
+<div id="appScreen" class="dn">
+  <header class="topbar">
+    <div class="topbar-brand">
+      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">☰</button>
+      Student Portal
+    </div>
+    <div class="topbar-user">
+      <button class="bell-btn" id="bellBtn" aria-label="Notifications">
+        🔔<span class="bell-badge dn" id="bellBadge">0</span>
+      </button>
+      <span id="topUserName"></span>
+      <button class="btn-ghost" id="logoutBtn">Log out</button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <!-- ============ SIDEBAR ============ -->
+    <nav class="sidebar" id="sidebar">
+      <button class="nav-item active" data-panel="dashboard">
+        <span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span>
+      </button>
+      <button class="nav-item" data-panel="profile">
+        <span class="nav-icon">👤</span><span class="nav-label">Profile</span>
+      </button>
+      <button class="nav-item" data-panel="attendance">
+        <span class="nav-icon">📅</span><span class="nav-label">Attendance</span>
+      </button>
+      <button class="nav-item" data-panel="marks">
+        <span class="nav-icon">📊</span><span class="nav-label">Marks</span>
+      </button>
+      <button class="nav-item" data-panel="results">
+        <span class="nav-icon">📈</span><span class="nav-label">Semester Results</span>
+      </button>
+      <button class="nav-item" data-panel="timetable">
+        <span class="nav-icon">🕒</span><span class="nav-label">Timetable</span>
+      </button>
+      <button class="nav-item" data-panel="assignments">
+        <span class="nav-icon">📝</span><span class="nav-label">Assignments</span>
+      </button>
+      <button class="nav-item" data-panel="materials">
+        <span class="nav-icon">📚</span><span class="nav-label">Materials</span>
+      </button>
+      <button class="nav-item" data-panel="leave">
+        <span class="nav-icon">🏖</span><span class="nav-label">Leave Request</span>
+      </button>
+      <button class="nav-item" data-panel="od">
+        <span class="nav-icon">🎓</span><span class="nav-label">OD Request</span>
+      </button>
+      <button class="nav-item" data-panel="tracker">
+        <span class="nav-icon">📌</span><span class="nav-label">Request Tracker</span>
+      </button>
+      <button class="nav-item" data-panel="notifications">
+        <span class="nav-icon">🔔</span><span class="nav-label">Notifications</span>
+        <span class="nav-badge dn" id="navNotifBadge">0</span>
+      </button>
+      <button class="nav-item" data-panel="placement">
+        <span class="nav-icon">💼</span><span class="nav-label">Placement</span>
+      </button>
+      <button class="nav-item" data-panel="events">
+        <span class="nav-icon">🎉</span><span class="nav-label">Events</span>
+      </button>
+      <button class="nav-item" data-panel="certificates">
+        <span class="nav-icon">📄</span><span class="nav-label">Certificates</span>
+      </button>
+      <button class="nav-item" data-panel="settings">
+        <span class="nav-icon">⚙</span><span class="nav-label">Settings</span>
+      </button>
+    </nav>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <main class="content">
+
+      <!-- ---- Dashboard panel ---- -->
+      <section class="panel" id="panel-dashboard">
+        <h2 class="page-title" id="dashWelcome">Welcome 👋</h2>
+        <p class="page-sub">Quick overview of your academic activity.</p>
+
+        <div class="dash-grid">
+          <div class="card dash-card">
+            <div class="dash-icon">📅</div>
+            <div class="dash-label">Attendance %</div>
+            <div class="dash-value" id="dashAttendance">—</div>
+          </div>
+          <div class="card dash-card">
+            <div class="dash-icon">🎓</div>
+            <div class="dash-label">Current Semester</div>
+            <div class="dash-value" id="dashSemester">—</div>
+          </div>
+          <div class="card dash-card">
+            <div class="dash-icon">🏖</div>
+            <div class="dash-label">Pending Leave Requests</div>
+            <div class="dash-value" id="dashLeave">—</div>
+          </div>
+          <div class="card dash-card">
+            <div class="dash-icon">🎉</div>
+            <div class="dash-label">Upcoming Events</div>
+            <div class="dash-value" id="dashEvents">—</div>
+          </div>
+          <div class="card dash-card">
+            <div class="dash-icon">📝</div>
+            <div class="dash-label">Assignment Deadlines</div>
+            <div class="dash-value" id="dashAssignments">—</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---- Profile panel (existing functionality, unchanged) ---- -->
+      <section class="panel dn" id="panel-profile">
+        <h2 class="page-title">My Profile</h2>
+        <p class="page-sub">View your academic record and manage your editable contact details.</p>
+
+        <div class="profile-grid">
+          <!-- Avatar card -->
+          <div class="card avatar-card">
+            <div class="avatar-wrap">
+              <img id="avatarImg" src="" alt="" class="dn">
+              <div id="avatarPlaceholder" class="avatar-placeholder">?</div>
+            </div>
+            <button class="btn-secondary" id="changePhotoBtn">Change Photo</button>
+            <input type="file" id="photoInput" accept="image/png,image/jpeg,image/webp" class="dn">
+            <div id="photoMsg" class="msg dn"></div>
+          </div>
+
+          <!-- Read-only academic info -->
+          <div class="card">
+            <h3>Academic Details <span class="badge">Read-only</span></h3>
+            <div class="kv"><span>Name</span><b id="vName">—</b></div>
+            <div class="kv"><span>Register Number</span><b id="vRegNo">—</b></div>
+            <div class="kv"><span>Department</span><b id="vDept">—</b></div>
+            <div class="kv"><span>Course</span><b id="vCourse">—</b></div>
+            <div class="kv"><span>Year / Section</span><b id="vYearSec">—</b></div>
+            <div class="kv"><span>Date of Birth</span><b id="vDob">—</b></div>
+            <div class="kv"><span>Status</span><b id="vStatus">—</b></div>
+          </div>
+
+          <!-- Editable contact info -->
+          <div class="card">
+            <h3>Contact Details <span class="badge badge-edit">Editable</span></h3>
+            <form id="profileForm">
+              <label>First Name</label>
+              <input type="text" id="fFirstName">
+
+              <label>Last Name</label>
+              <input type="text" id="fLastName">
+
+              <label>Student Email</label>
+              <input type="email" id="fStudentEmail">
+
+              <label>Student Mobile</label>
+              <input type="tel" id="fStudentMobile">
+
+              <label>Parent Email</label>
+              <input type="email" id="fParentEmail">
+
+              <label>Parent Mobile</label>
+              <input type="tel" id="fParentMobile">
+
+              <div id="profileMsg" class="msg dn"></div>
+              <button type="submit" class="btn-primary">Save Changes</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---- Placeholder panels for upcoming modules ---- -->
+      <section class="panel dn" id="panel-attendance">
+        <h2 class="page-title">Attendance</h2>
+        <p class="page-sub">Your overall and subject-wise attendance.</p>
+
+        <!-- Summary stat cards -->
+        <div class="att-stat-grid">
+          <div class="card att-stat-card">
+            <div class="dash-label">Overall %</div>
+            <div class="att-overall-value" id="attOverallValue">—</div>
+          </div>
+          <div class="card att-stat-card">
+            <div class="dash-label">Present</div>
+            <div class="att-overall-value att-present-color" id="attPresentCount">—</div>
+          </div>
+          <div class="card att-stat-card">
+            <div class="dash-label">Absent</div>
+            <div class="att-overall-value att-absent-color" id="attAbsentCount">—</div>
+          </div>
+          <div class="card att-stat-card">
+            <div class="dash-label">Total Classes</div>
+            <div class="att-overall-value" id="attTotalCount">—</div>
+          </div>
+        </div>
+
+        <div class="card att-subjects-card">
+          <h3>Subject-wise Attendance</h3>
+          <div id="attBars" class="att-bars">
+            <p class="placeholder-text">Loading attendance…</p>
+          </div>
+        </div>
+
+        <!-- Day-by-day detail log -->
+        <div class="card">
+          <h3 style="margin-bottom:14px">Day-by-Day Log</h3>
+          <div class="table-wrap">
+            <table class="data-table" id="attDetailTable">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Period</th>
+                  <th>Subject</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="attDetailBody">
+                <tr><td colspan="5" class="placeholder-text">Loading…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel dn" id="panel-marks">
+        <h2 class="page-title">Marks</h2>
+        <p class="page-sub">Internal assessment marks and graphs.</p>
+
+        <div class="card marks-table-card">
+          <h3>Internal Assessment</h3>
+          <div class="table-wrap">
+            <table class="data-table" id="marksTable">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>CIA 1</th>
+                  <th>CIA 2</th>
+                  <th>CIA 3</th>
+                  <th>Model Exam</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody id="marksTableBody">
+                <tr><td colspan="6" class="placeholder-text">Loading marks…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card marks-chart-card">
+          <h3>Total Marks by Subject</h3>
+          <div id="marksBars" class="att-bars">
+            <p class="placeholder-text">Loading chart…</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel dn" id="panel-results">
+        <h2 class="page-title">Semester Results</h2>
+        <p class="page-sub">Your semester-wise grades and overall CGPA.</p>
+
+        <div class="card results-card">
+          <div class="results-header">
+            <h3>Semester Results</h3>
+            <div class="cgpa-badge">
+              CGPA: <span id="cgpaValue">—</span>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table" id="resultsTable">
+              <thead>
+                <tr>
+                  <th>Semester</th>
+                  <th>SGPA</th>
+                  <th>CGPA</th>
+                  <th>Backlogs</th>
+                </tr>
+              </thead>
+              <tbody id="resultsTableBody">
+                <tr><td colspan="4" class="placeholder-text">Loading results…</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel dn" id="panel-timetable">
+        <h2 class="page-title">Timetable</h2>
+        <p class="page-sub">Your weekly class schedule.</p>
+
+        <div class="card timetable-card">
+          <div class="table-wrap">
+            <div id="timetableGrid" class="placeholder-card">
+              <p class="placeholder-text">Loading timetable…</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel dn" id="panel-assignments">
+        <h2 class="page-title">Assignments</h2>
+        <p class="page-sub">Track due dates and submission status.</p>
+        <div class="placeholder-card"><p>Coming soon.</p></div>
+      </section>
+
+      <section class="panel dn" id="panel-materials">
+        <h2 class="page-title">Study Materials</h2>
+        <p class="page-sub">Download notes, question banks and lab manuals.</p>
+        <div class="placeholder-card"><p>Coming soon.</p></div>
+      </section>
+
+      <section class="panel dn" id="panel-leave">
+        <h2 class="page-title">Leave Request</h2>
+        <p class="page-sub">Apply for leave and track approval status.</p>
+
+        <div class="card">
+          <h3>Apply Leave</h3>
+          <form id="leaveForm">
+            <label>From Date</label>
+            <input type="date" id="leaveFrom" required>
+
+            <label>To Date</label>
+            <input type="date" id="leaveTo" required>
+
+            <label>Reason</label>
+            <textarea id="leaveReason" rows="3" maxlength="500" required placeholder="Briefly describe the reason for leave"></textarea>
+
+            <div id="leaveMsg" class="msg dn"></div>
+            <button type="submit" class="btn-primary">Submit Request</button>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:20px">
+          <h3>Leave History</h3>
+          <div id="leaveHistory" class="request-list">
+            <p class="placeholder-text">Loading leave history…</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel dn" id="panel-od">
+        <h2 class="page-title">OD Request</h2>
+        <p class="page-sub">Apply for on-duty leave and track approval status.</p>
+
+        <div class="card">
+          <h3>Apply OD</h3>
+          <form id="odForm">
+            <label>Event Name</label>
+            <input type="text" id="odEventName" maxlength="200" required placeholder="e.g. National Hackathon 2026">
+
+            <label>Event Date</label>
+            <input type="date" id="odEventDate" required>
+
+            <label>Reason</label>
+            <textarea id="odReason" rows="3" maxlength="500" required placeholder="Briefly describe the reason for OD"></textarea>
+
+            <div id="odMsg" class="msg dn"></div>
+            <button type="submit" class="btn-primary">Submit Request</button>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:20px">
+          <h3>OD History</h3>
+          <div id="odHistory" class="request-list">
+            <p class="placeholder-text">Loading OD history…</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel dn" id="panel-tracker">
+        <h2 class="page-title">Request Tracker</h2>
+        <p class="page-sub">Track approval stages of your requests.</p>
+        <div class="card">
+          <h3>📌 Request Tracker</h3>
+          <div id="trackerList" class="tracker-list">
+            <p class="placeholder-text">Loading requests…</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel dn" id="panel-notifications">
+        <div class="results-header">
+          <div>
+            <h2 class="page-title">Notifications</h2>
+            <p class="page-sub" style="margin-bottom:0">Recent updates and alerts.</p>
+          </div>
+          <button class="btn-secondary" id="markAllReadBtn">Mark all as read</button>
+        </div>
+        <div class="card">
+          <div id="notifList" class="notif-list">
+            <p class="placeholder-text">Loading notifications…</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel dn" id="panel-placement">
+        <h2 class="page-title">Placement Cell</h2>
+        <p class="page-sub">Upcoming drives and eligibility.</p>
+        <div class="placeholder-card"><p>Coming soon.</p></div>
+      </section>
+
+      <section class="panel dn" id="panel-events">
+        <h2 class="page-title">Events</h2>
+        <p class="page-sub">Hackathons, symposiums and workshops.</p>
+        <div class="placeholder-card"><p>Coming soon.</p></div>
+      </section>
+
+      <section class="panel dn" id="panel-certificates">
+        <h2 class="page-title">Certificates</h2>
+        <p class="page-sub">Request bonafide, course completion and internship letters.</p>
+        <div class="placeholder-card"><p>Coming soon.</p></div>
+      </section>
+
+      <section class="panel dn" id="panel-settings">
+        <h2 class="page-title">Settings</h2>
+        <p class="page-sub">Manage your account preferences.</p>
+        <div class="placeholder-card"><p>Coming soon.</p></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+<script src="/student.js"></script>
+</body>
+</html>

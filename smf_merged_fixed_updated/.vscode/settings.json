@@ -1,0 +1,23 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/venv/Scripts/python.exe",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}",
+    "${workspaceFolder}/app",
+    "${workspaceFolder}/app/core",
+    "${workspaceFolder}/app/database",
+    "${workspaceFolder}/app/services",
+    "${workspaceFolder}/app/services/vision",
+    "${workspaceFolder}/app/services/notifications",
+    "${workspaceFolder}/app/services/attendance",
+    "${workspaceFolder}/app/api",
+    "${workspaceFolder}/app/api/v1",
+    "${workspaceFolder}/app/api/v1/features"
+  ],
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.autoSearchPaths": true,
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": [
+    "tests"
+  ],
+  "editor.formatOnSave": true
+}

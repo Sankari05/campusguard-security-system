@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RIDGEWATCH — Commander Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <div class="app-shell">
+
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-mark" aria-hidden="true">▲</span>
+        <div class="brand-text">
+          <span class="brand-name">RIDGEWATCH</span>
+          <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="sidebar-link">📡 <span>Dashboard</span></a>
+        <a href="visual.html" class="sidebar-link">🌐 <span>Visual 3D</span></a>
+        <a href="hardware.html" class="sidebar-link">🔧 <span>Hardware</span></a>
+        <a href="logic.html" class="sidebar-link">🧠 <span>Logic</span></a>
+        <a href="testing.html" class="sidebar-link">📊 <span>Testing</span></a>
+        <a href="commander.html" class="sidebar-link is-active">🎖️ <span>Commander</span></a>
+        <a href="doppler.html" class="sidebar-link">💓 <span>Doppler HR</span></a>
+        <a href="watch.html" class="sidebar-link">⌚ <span>Watch</span></a>
+        <a href="alerts.html" class="sidebar-link">🚨 <span>Alerts</span></a>
+        <a href="notification.html" class="sidebar-link">🔔 <span>Notification</span></a>
+        <a href="analytics.html" class="sidebar-link">📊 <span>Analytics</span></a>
+        <a href="scenarios.html" class="sidebar-link">🗺️ <span>Scenarios</span></a>
+        <a href="victims.html" class="sidebar-link">🧍 <span>Victims</span></a>
+        <a href="teams.html" class="sidebar-link">🚁 <span>Teams</span></a>
+      </nav>
+      <div class="sidebar-foot">
+        <span class="sidebar-foot-avatar" aria-hidden="true">R</span>
+        <div class="sidebar-foot-text">
+          <span class="sidebar-foot-name">RidgeWatch Ops</span>
+          <span class="sidebar-foot-role">Demo build · v1.0</span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-content commander-console">
+
+      <!-- ============================================================ -->
+      <!-- HEADER / CONTROL BAR                                          -->
+      <!-- ============================================================ -->
+      <header class="topbar">
+        <div class="site-tag">
+          <span class="site-tag-label">VIEW</span>
+          <span class="site-tag-value">Commander Console · Live Dual-Layer Map</span>
+        </div>
+        <div class="topbar-right" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div id="cmdWearableBadges" style="display: flex; gap: 0.5rem; font-size: 0.75rem;">
+            <span id="badgeCmdBridge"
+              style="padding: 2px 8px; border-radius: 4px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3);">📲
+              BRIDGE: ONLINE</span>
+            <span id="badgeCmdCallPlus"
+              style="padding: 2px 8px; border-radius: 4px; background: rgba(52, 211, 153, 0.15); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.3);">⌚
+              WAVE CALL PLUS: CONNECTED</span>
+          </div>
+          <a href="notification.html" class="topbar-bell" title="Notification Center"
+            aria-label="Notification Center">🔔<span class="topbar-bell-dot" id="topbarAlertDot" hidden></span></a>
+          <span class="topbar-avatar" title="RidgeWatch Ops">R</span>
+        </div>
+      </header>
+
+      <!-- ============================================================ -->
+      <!-- MAIN LAYOUT                                                   -->
+      <!-- ============================================================ -->
+
+      <main class="commander-layout" id="cmdMainView">
+        <section class="panel commander-map-panel">
+          <div class="panel-head">
+            <h2>Live Operations Map</h2>
+            <div class="cmd-map-legend" id="cmdMapLegend">
+              <button type="button" class="legend-toggle is-active" data-layer="victims" id="toggleLayerVictims"
+                title="Click to toggle survivor pins">
+                <span class="legend-dot legend-victim"></span> Needy people <span class="legend-count"
+                  id="legendCountVictims">0</span>
+              </button>
+              <button type="button" class="legend-toggle is-active" data-layer="members" id="toggleLayerMembers"
+                title="Click to toggle team member pins">
+                <span class="legend-dot legend-member"></span> Simulated Rescuers <span class="legend-count"
+                  id="legendCountMembers">0</span>
+              </button>
+              <button type="button" class="legend-toggle is-active" data-layer="members" id="toggleLayerGps"
+                title="Real Phone GPS Tracking Active">
+                <span class="legend-dot"
+                  style="background:#00f0ff; box-shadow: 0 0 6px #00f0ff; border-radius: 2px; transform: rotate(45deg);"></span>
+                Real GPS (Alpha 1)
+              </button>
+              <button type="button" class="legend-toggle is-active" data-layer="jobs" id="toggleLayerJobs"
+                title="Click to toggle operational jobs">
+                <span class="legend-dot legend-job"></span> Ops jobs <span class="legend-count"
+                  id="legendCountJobs">0</span>
+              </button>
+              <button type="button" class="legend-toggle is-active" data-layer="base" id="toggleLayerBase"
+                title="Click to toggle Command Base">
+                <span class="legend-dot legend-base"></span> Base
+              </button>
+            </div>
+          </div>
+          <div class="cmd-map-wrap" id="cmdMapWrap" tabindex="0" role="region"
+            aria-label="Interactive Commander Site Map — Double click to enter Deep Exploration mode">
+            <!-- Floating HUD controls -->
+            <div class="cmd-map-hud" id="cmdMapHud">
+              <div class="cmd-deep-badge" id="cmdDeepBadge" hidden>
+                <span class="cmd-deep-pulse"></span>
+                <span>DEEP MAP MODE</span>
+              </div>
+              <div class="cmd-hud-btn-group">
+                <button type="button" class="cmd-hud-btn" id="btnCmdZoomIn" title="Zoom In (+)"
+                  aria-label="Zoom In">➕</button>
+                <button type="button" class="cmd-hud-btn" id="btnCmdZoomOut" title="Zoom Out (-)"
+                  aria-label="Zoom Out">➖</button>
+                <button type="button" class="cmd-hud-btn" id="btnCmdFitAll" title="Fit All Entities (F)"
+                  aria-label="Fit All Entities">🎯 Fit All</button>
+                <button type="button" class="cmd-hud-btn" id="btnCmdReset" title="Reset View (R)"
+                  aria-label="Reset View">↺ Reset</button>
+                <button type="button" class="cmd-hud-btn cmd-hud-btn-exit" id="btnCmdExitDeep"
+                  title="Exit Exploration Mode (Esc)" aria-label="Exit Exploration Mode" hidden>✕ Exit</button>
+              </div>
+            </div>
+
+            <!-- Coordinates / Zoom Level Readout -->
+            <div class="cmd-map-coords-bar" id="cmdMapCoordsBar">
+              <span id="cmdCoordsText">Origin: 32.3739°N, 77.2491°E</span>
+              <span class="dim">·</span>
+              <span id="cmdZoomText">Zoom: 1.0x (180m)</span>
+              <span class="dim">·</span>
+              <span id="cmdAlpha1GpsNavText" style="color:#38bdf8; font-weight:600;">Alpha 1: GPS STANDBY</span>
+            </div>
+
+            <!-- Detail Popover Card -->
+            <div class="cmd-map-popover" id="cmdMapPopover" hidden>
+              <div class="popover-head">
+                <span id="popoverTitle" class="popover-title">Entity Details</span>
+                <button type="button" id="btnPopoverClose" class="popover-close" aria-label="Close Popover">✕</button>
+              </div>
+              <div id="popoverBody" class="popover-body"></div>
+            </div>
+
+            <svg id="cmdMap" viewBox="0 0 600 600" class="cmd-map-svg" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+        </section>
+
+        <section class="panel commander-side-panel">
+          <!-- Section 15: Dedicated Live Metadata Panel for Alpha Member 1 -->
+          <div class="cmd-alpha1-card" id="cmdAlpha1LiveCard">
+            <div class="alpha1-head">
+              <div class="alpha1-title-wrap">
+                <span class="alpha1-badge-gps" id="a1CardGpsBadge">🛰️ REAL GPS</span>
+                <span class="alpha1-name" id="a1CardMember">Alpha Member 1</span>
+              </div>
+              <span class="badge alpha1-status-pill" id="a1CardGpsStatus">STANDBY</span>
+            </div>
+            <div class="alpha1-grid">
+              <div class="alpha1-row"><span class="alpha1-label">Member:</span><span class="alpha1-val"
+                  id="a1CardMemberVal">Alpha Member 1</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Location Source:</span><span class="alpha1-val"
+                  id="a1CardLocationSource">REAL GPS</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">GPS Status:</span><span class="alpha1-val"
+                  id="a1CardGpsState">STANDBY</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Latitude:</span><span class="alpha1-val"
+                  id="a1CardLat">--</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Longitude:</span><span class="alpha1-val"
+                  id="a1CardLon">--</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Accuracy:</span><span class="alpha1-val"
+                  id="a1CardAccuracy">--</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Speed:</span><span class="alpha1-val"
+                  id="a1CardSpeed">--</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Heading:</span><span class="alpha1-val"
+                  id="a1CardHeading">--</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Target Bearing:</span><span class="alpha1-val"
+                  id="a1CardTargetBearing">--</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Heading Diff:</span><span class="alpha1-val"
+                  id="a1CardHeadingDiff">--</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Distance:</span><span class="alpha1-val"
+                  id="a1CardDistance">--</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Distance Trend:</span><span class="alpha1-val"
+                  id="a1CardDistanceTrend">--</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Mission ID:</span><span class="alpha1-val"
+                  id="a1CardMissionId">--</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Mission Status:</span><span class="alpha1-val"
+                  id="a1CardMissionStatus">HOLD</span></div>
+              <span id="a1CardMission" style="display:none;">HOLD</span>
+              <div class="alpha1-row"><span class="alpha1-label">Navigation:</span><span class="alpha1-val"
+                  id="a1CardNav">--</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Guidance:</span><span class="alpha1-val"
+                  id="a1CardGuidance">--</span></div>
+              <div class="alpha1-row"><span class="alpha1-label">Last GPS Update:</span><span class="alpha1-val"
+                  id="a1CardLastUpdate">--</span></div>
+            </div>
+          </div>
+
+          <div class="panel-head">
+            <h2>Team Members (Roster)</h2>
+          </div>
+          <div id="cmdMemberList" class="cmd-member-list"></div>
+        </section>
+
+        <!-- Barometric Pressure & Atmospheric Intelligence Panel -->
+        <section class="panel commander-pressure-panel" id="cmdPressurePanel">
+          <div class="panel-head">
+            <h2>🌤️ Barometric Pressure &amp; Atmospheric Intelligence</h2>
+            <span class="badge" id="cmdPressureModeBadge">SIMULATED</span>
+          </div>
+          <div class="pressure-widget-grid">
+            <div class="pressure-stat-card">
+              <div class="stat-card-title">ATMOSPHERIC PRESSURE</div>
+              <div class="pressure-val-row">
+                <span class="pressure-val-large" id="cmdPressureVal">--</span>
+                <span class="pressure-val-unit">hPa</span>
+              </div>
+              <div class="pressure-badges-row">
+                <span class="badge-pressure-trend trend-stable" id="cmdPressureTrend">STABLE</span>
+                <span class="badge" id="cmdPressureStatus">ONLINE</span>
+              </div>
+              <div class="stat-card-sub" id="cmdPressureRate">Rate: 0.0 hPa/cycle</div>
+            </div>
+
+            <div class="pressure-chart-container">
+              <div class="stat-card-title">PRESSURE TIME-SERIES (hPa vs TIME)</div>
+              <svg id="cmdPressureSvg" viewBox="0 0 500 160" class="pressure-chart-svg"></svg>
+            </div>
+
+            <div class="pressure-evidence-card">
+              <div class="stat-card-title">CONFIDENCE &amp; SCENARIO EVIDENCE</div>
+              <div class="stat-card-sub" id="cmdConfidenceScore">Confidence Score: --%</div>
+              <ul class="pressure-evidence-list" id="cmdEvidenceList">
+                <li class="pressure-evidence-item">Awaiting live telemetry cycle...</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Subsurface UWB Bioradar Simulation Panel (RIDGEWATCH Landslide SAR) -->
+        <section class="panel commander-subsurface-panel" id="cmdSubsurfacePanel">
+          <div class="panel-head" style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>📡 SUBSURFACE UWB BIORADAR — 0–6.0m SIMULATION</h2>
+            <a href="doppler.html" id="cmdBtnOpenDopplerHr"
+              style="font-size: 11px; font-family: var(--font-mono); color: #2563eb; text-decoration: none; background: #eff6ff; padding: 4px 10px; border-radius: 6px; border: 1px solid #bfdbfe; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; transition: all 0.15s ease;">
+              💓 Doppler HR Analyzer →
+            </a>
+          </div>
+
+          <!-- Controls Row: Presets & Simulation Parameters -->
+          <div
+            style="padding: 14px 0 8px 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; font-size: 12px;">
+            <div>
+              <label
+                style="display: block; font-family: var(--font-mono); color: var(--ink-dim, #4d5f80); margin-bottom: 4px; font-size: 11px; font-weight: 600;">SIMULATION
+                PRESET (12 DEMOS)</label>
+              <select id="subPresetSelect"
+                style="width: 100%; padding: 6px 8px; background: #ffffff; border: 1px solid var(--border, #d3e1f5); color: var(--ink, #0f2547); border-radius: 6px; font-size: 12px;">
+                <option value="preset_1">1. Shallow 1m — Dry Sandy Soil</option>
+                <option value="preset_2">2. Moderate 2m — Wet Loam Soil</option>
+                <option value="preset_3">3. Deep 3m — Clay Loam</option>
+                <option value="preset_4">4. Very Deep 4m — Wet Soil</option>
+                <option value="preset_5" selected>5. 5m Survivor Demo (Landslide SAR)</option>
+                <option value="preset_6">6. 5m Challenge Mode (Saturated Mud)</option>
+                <option value="preset_7">7. 6m Limit Test (Boundary Range)</option>
+                <option value="preset_8">8. Empty Landslide (False-Positive Filter)</option>
+                <option value="preset_9">9. Multiple Survivors (1m, 3m, 5m)</option>
+                <option value="preset_10">10. Heavy Clutter &amp; Shadowing</option>
+                <option value="preset_11">11. Saturated Mud Layered Strata</option>
+                <option value="preset_12">12. Metallic Obstacle Masking (Metal at 4.5m)</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                style="display: block; font-family: var(--font-mono); color: var(--ink-dim, #4d5f80); margin-bottom: 4px; font-size: 11px; font-weight: 600;">SOIL
+                TYPE / MEDIUM</label>
+              <select id="subSoilTypeSelect"
+                style="width: 100%; padding: 6px 8px; background: #ffffff; border: 1px solid var(--border, #d3e1f5); color: var(--ink, #0f2547); border-radius: 6px; font-size: 12px;">
+                <option value="dry_soil" selected>Dry Soil (Low Attenuation)</option>
+                <option value="sandy_soil">Sandy Soil</option>
+                <option value="clay_soil">Clay Soil (High Dielectric)</option>
+                <option value="wet_soil">Wet Soil (Loam)</option>
+                <option value="saturated_mud">Saturated Mud (Severe Loss)</option>
+                <option value="mixed_debris_soil">Mixed Debris / Rubble</option>
+              </select>
+            </div>
+
+            <div>
+              <div
+                style="display: flex; justify-content: space-between; font-family: var(--font-mono); color: var(--ink-dim, #4d5f80); margin-bottom: 4px; font-size: 11px; font-weight: 600;">
+                <span>SOIL MOISTURE</span>
+                <span id="subMoistureVal" style="color: #2563eb; font-weight: 700;">22%</span>
+              </div>
+              <input type="range" id="subMoistureSlider" min="0" max="100" value="22"
+                style="width: 100%; accent-color: #2563eb;">
+            </div>
+
+            <div>
+              <div
+                style="display: flex; justify-content: space-between; font-family: var(--font-mono); color: var(--ink-dim, #4d5f80); margin-bottom: 4px; font-size: 11px; font-weight: 600;">
+                <span>BURIAL DEPTH (m)</span>
+                <span id="subDepthVal" style="color: #d97706; font-weight: 700;">5.0 m</span>
+              </div>
+              <input type="range" id="subDepthSlider" min="0.3" max="5.8" step="0.1" value="5.0"
+                style="width: 100%; accent-color: #2563eb;">
+            </div>
+          </div>
+
+          <!-- Soil Layer Strata Visualization Bar (0 to 6.0m Depth Breakdown) -->
+          <div style="padding: 6px 0 12px 0; border-bottom: 1px solid var(--border-soft, #e2ecfa);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <span
+                style="font-size: 10px; font-family: var(--font-mono); color: var(--ink-dim, #4d5f80); font-weight: 700;">STRATIGRAPHIC
+                SOIL LAYERS (0–6.0m)</span>
+              <span id="subSoilStatusTag"
+                style="font-size: 10px; color: #2563eb; font-family: var(--font-mono); font-weight: 600;">SIMULATED LAYERED STRATA</span>
+            </div>
+            <div id="subLayerStrataBar"
+              style="display: flex; height: 18px; border-radius: 4px; overflow: hidden; border: 1px solid var(--border, #d3e1f5); font-size: 10px; font-family: var(--font-mono); font-weight: 700;">
+              <div
+                style="flex: 1; background: #fef3c7; color: #92400e; display: flex; align-items: center; justify-content: center;">
+                0–1m DRY SOIL</div>
+              <div
+                style="flex: 2.5; background: #dbeafe; color: #1e40af; display: flex; align-items: center; justify-content: center; border-left: 1px solid var(--border, #d3e1f5);">
+                1–3.5m MOIST LOAM</div>
+              <div
+                style="flex: 2.5; background: #f3e8ff; color: #6b21a8; display: flex; align-items: center; justify-content: center; border-left: 1px solid var(--border, #d3e1f5);">
+                3.5–6m CLAY BED</div>
+            </div>
+          </div>
+
+          <!-- Main Visual Layout: Radargram Canvas + Depth Gauge + Telemetry Readouts -->
+          <div style="display: grid; grid-template-columns: 1.4fr 180px 1.4fr; gap: 14px; margin-top: 14px;">
+
+            <!-- Left: Synthetic Radargram / Fast-Time A-Scan -->
+            <div
+              style="background: var(--bg-panel-raised, #f3f7fd); border: 1px solid var(--border, #d3e1f5); border-radius: 8px; padding: 12px; display: flex; flex-direction: column;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span
+                  style="font-size: 11px; font-family: var(--font-mono); color: #2563eb; font-weight: 700;">RADARGRAM
+                  RANGE PROFILE (A-SCAN)</span>
+                <span style="font-size: 10px; color: var(--ink-dim, #4d5f80); font-family: var(--font-mono);">0m to 6.0m Depth</span>
+              </div>
+              <canvas id="subRadargramCanvas" width="460" height="180"
+                style="width: 100%; height: 180px; background: #ffffff; border-radius: 6px; border: 1px solid var(--border, #d3e1f5);"></canvas>
+              <div
+                style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 10px; color: var(--ink-dim, #4d5f80); font-family: var(--font-mono);">
+                <span>0m</span>
+                <span>1m</span>
+                <span>2m</span>
+                <span>3m</span>
+                <span>4m</span>
+                <span style="color: #dc2626; font-weight: 700;">5m (Target)</span>
+                <span>6m (Max)</span>
+              </div>
+              <div style="display: flex; gap: 12px; margin-top: 8px; font-size: 11px; flex-wrap: wrap;">
+                <span style="display: flex; align-items: center; gap: 4px; color: var(--ink-dim, #4d5f80);"><span
+                    style="width: 8px; height: 8px; background: #2563eb; border-radius: 2px;"></span> Raw Signal</span>
+                <span style="display: flex; align-items: center; gap: 4px; color: var(--ink-dim, #4d5f80);"><span
+                    style="width: 8px; height: 8px; background: #16a34a; border-radius: 2px;"></span> Processed
+                  Envelope</span>
+                <span style="display: flex; align-items: center; gap: 4px; color: var(--ink-dim, #4d5f80);"><span
+                    style="width: 8px; height: 8px; background: #dc2626; border-radius: 2px;"></span> Target Echo</span>
+              </div>
+            </div>
+
+            <!-- Middle: Vertical Depth Gauge -->
+            <div
+              style="background: var(--bg-panel-raised, #f3f7fd); border: 1px solid var(--border, #d3e1f5); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; align-items: center;">
+              <span
+                style="font-size: 11px; font-family: var(--font-mono); color: #2563eb; font-weight: 700; margin-bottom: 8px; text-align: center;">DEPTH
+                GAUGE (0–6m)</span>
+              <canvas id="subDepthGaugeCanvas" width="120" height="210"
+                style="width: 120px; height: 210px; background: #ffffff; border-radius: 6px; border: 1px solid var(--border, #d3e1f5);"></canvas>
+              <div
+                style="margin-top: 6px; text-align: center; font-size: 10px; font-family: var(--font-mono); color: #d97706; font-weight: 700;"
+                id="subDepthGaugeText">
+                Est: 5.02m ±0.24m
+              </div>
+            </div>
+
+            <!-- Right: Telemetry Readouts & Live Vital Waveforms -->
+            <div
+              style="background: var(--bg-panel-raised, #f3f7fd); border: 1px solid var(--border, #d3e1f5); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+
+              <!-- Multi-Survivor Target Selector Bar (Rendered when multiple targets detected) -->
+              <div id="subMultiTargetSelectorContainer" style="display: none; flex-direction: column; gap: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 10px; font-family: var(--font-mono); color: var(--ink-dim, #4d5f80); font-weight: 700; letter-spacing: 0.5px;">
+                    DETECTED SURVIVORS (<span id="subTargetCount">0</span>) — SELECT TO VIEW VITALS:
+                  </span>
+                </div>
+                <div id="subTargetChipsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px;">
+                  <!-- Dynamic Target Cards Injected Here by commander.js -->
+                </div>
+              </div>
+
+              <!-- Selected Survivor Identity & Status Header Banner -->
+              <div id="subSelectedTargetBanner"
+                style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border, #d3e1f5); border-left: 4px solid #2563eb; box-shadow: 0 1px 2px rgba(15,37,71,0.04);">
+                <div>
+                  <div style="font-size: 9px; font-family: var(--font-mono); color: var(--ink-dim, #4d5f80); font-weight: 700; letter-spacing: 0.5px;">
+                    SELECTED SURVIVOR VITALS
+                  </div>
+                  <div style="display: flex; align-items: baseline; gap: 6px; margin-top: 2px;">
+                    <span style="font-size: 10px; font-family: var(--font-mono); color: var(--ink-dim, #4d5f80); font-weight: 600;">SURVIVOR ID:</span>
+                    <span id="subSelectedTargetId"
+                      style="font-size: 14px; font-weight: 800; font-family: var(--font-mono); color: #0f2547;">--</span>
+                    <span id="subSelectedTargetType"
+                      style="font-size: 9px; font-weight: 700; font-family: var(--font-mono); color: #2563eb; background: #eff6ff; padding: 1px 6px; border-radius: 4px; border: 1px solid #bfdbfe;">MONITORED</span>
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <span id="subSelectedTargetTriage"
+                    style="font-size: 10px; font-family: var(--font-mono); font-weight: 700; padding: 3px 8px; border-radius: 4px; color: #dc2626; background: rgba(220, 38, 38, 0.1); border: 1px solid rgba(220, 38, 38, 0.2);">--</span>
+                </div>
+              </div>
+
+              <!-- Key Metrics Grid -->
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div style="background: #ffffff; padding: 8px; border-radius: 6px; border: 1px solid var(--border, #d3e1f5); box-shadow: 0 1px 2px rgba(15,37,71,0.03);">
+                  <div style="font-size: 10px; color: var(--ink-dim, #4d5f80); font-family: var(--font-mono);">ESTIMATED DEPTH</div>
+                  <div style="display: flex; align-items: baseline; gap: 4px;">
+                    <span id="subEstDepth"
+                      style="font-size: 20px; font-weight: 800; font-family: var(--font-mono); color: #2563eb;">--</span>
+                    <span id="subDepthUncert" style="font-size: 11px; color: var(--ink-faint, #8998b8);"></span>
+                  </div>
+                </div>
+
+                <div style="background: #ffffff; padding: 8px; border-radius: 6px; border: 1px solid var(--border, #d3e1f5); box-shadow: 0 1px 2px rgba(15,37,71,0.03);">
+                  <div
+                    style="font-size: 10px; color: var(--ink-dim, #4d5f80); font-family: var(--font-mono); display: flex; justify-content: space-between;">
+                    <span>TRUE DEPTH</span>
+                    <span style="color: #d97706; font-size: 9px; font-weight: 700;">GROUND TRUTH</span>
+                  </div>
+                  <div style="font-size: 20px; font-weight: 800; font-family: var(--font-mono); color: #d97706;"
+                    id="subTrueDepth">--</div>
+                </div>
+
+                <div style="background: #ffffff; padding: 8px; border-radius: 6px; border: 1px solid var(--border, #d3e1f5); box-shadow: 0 1px 2px rgba(15,37,71,0.03);">
+                  <div style="font-size: 10px; color: var(--ink-dim, #4d5f80); font-family: var(--font-mono);">RESPIRATION RATE</div>
+                  <div style="display: flex; align-items: baseline; gap: 4px;">
+                    <span id="subRespRate"
+                      style="font-size: 18px; font-weight: 800; font-family: var(--font-mono); color: #16a34a;">--</span>
+                    <span style="font-size: 11px; color: var(--ink-dim, #4d5f80);">RPM</span>
+                  </div>
+                </div>
+
+                <div style="background: #ffffff; padding: 8px; border-radius: 6px; border: 1px solid var(--border, #d3e1f5); box-shadow: 0 1px 2px rgba(15,37,71,0.03);">
+                  <div style="font-size: 10px; color: var(--ink-dim, #4d5f80); font-family: var(--font-mono);">CARDIAC HEARTBEAT</div>
+                  <div style="display: flex; align-items: baseline; gap: 4px;">
+                    <span id="subHeartRate"
+                      style="font-size: 18px; font-weight: 800; font-family: var(--font-mono); color: #dc2626;">--</span>
+                    <span style="font-size: 11px; color: var(--ink-dim, #4d5f80);">BPM</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Secondary Metrics Bar -->
+              <div
+                style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-family: var(--font-mono); border: 1px solid var(--border, #d3e1f5); color: var(--ink, #0f2547); box-shadow: 0 1px 2px rgba(15,37,71,0.03);">
+                <span>Radar SNR: <strong id="subSnrDb" style="color: #2563eb;">--</strong></span>
+                <span>Confidence: <strong id="subConfPct" style="color: #16a34a;">--</strong></span>
+                <span>Triage: <strong id="subTriageBadge"
+                    style="color: #dc2626; background: rgba(220, 38, 38, 0.1); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(220, 38, 38, 0.2);">--</strong></span>
+                <span>SPS: <strong id="subSpsVal" style="color: #d97706;">--</strong></span>
+              </div>
+
+              <!-- Live Waveforms Canvas -->
+              <div>
+                <div
+                  style="display: flex; justify-content: space-between; font-size: 10px; color: var(--ink-dim, #4d5f80); font-family: var(--font-mono); margin-bottom: 2px;">
+                  <span>SIMULATED DOPPLER VITAL WAVEFORMS (<span id="subWaveformTargetLabel" style="color: #2563eb; font-weight: 700;">--</span>)</span>
+                  <span id="subMicroMotion" style="color: #16a34a; font-weight: 600;">● Micro-Motion Active</span>
+                </div>
+                <canvas id="subWaveformsCanvas" width="380" height="70"
+                  style="width: 100%; height: 70px; background: #ffffff; border-radius: 6px; border: 1px solid var(--border, #d3e1f5);"></canvas>
+              </div>
+
+              <!-- Dispatch Rescue Action Button -->
+              <button type="button" id="subBtnDispatchRescue" class="btn"
+                style="width: 100%; padding: 8px; background: linear-gradient(90deg, #dc2626 0%, #ea580c 100%); color: #ffffff; font-weight: 700; font-size: 12px; border: none; border-radius: 6px; cursor: pointer; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.25);">
+                🚨 DISPATCH RESCUE TO BURIED SURVIVOR
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Landslide Hazard & Slope Stability Intelligence Panel -->
+        <section class="panel commander-landslide-panel" id="cmdLandslidePanel">
+          <div class="panel-head">
+            <h2>🌱 Landslide Hazard &amp; Slope Stability Intelligence</h2>
+            <span class="badge" id="cmdLandslideRiskBadge"
+              style="background: rgba(34,197,94,0.15); color: #16a34a; border: 1px solid rgba(34,197,94,0.4);">LOW
+              (0.0)</span>
+          </div>
+          <div class="landslide-widget-grid" style="display: grid; grid-template-columns: 280px 1.2fr 1fr; gap: 14px;">
+            <!-- Left: Overall Score Card -->
+            <div class="stat-card"
+              style="background: var(--bg-panel-raised, #f3f7fd); border: 1px solid var(--border, #d3e1f5); border-radius: 10px; padding: 14px;">
+              <div class="stat-card-title"
+                style="font-size: 11px; color: var(--ink-dim); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-weight: 700;">
+                ESTIMATED LANDSLIDE RISK</div>
+              <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0;">
+                <span id="cmdLandslideRiskScore"
+                  style="font-size: 36px; font-weight: 800; font-family: var(--font-mono); color: #16a34a;">--</span>
+                <span style="font-size: 14px; color: var(--ink-dim);">/ 100</span>
+              </div>
+              <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                <span class="badge" id="cmdLandslideStateBadge"
+                  style="background: rgba(34, 197, 94, 0.15); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.4); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;">NORMAL</span>
+                <span class="badge" id="cmdLandslidePersistBadge"
+                  style="background: #e2ecfa; color: var(--ink-dim); border: 1px solid var(--border, #d3e1f5); font-size: 11px; padding: 2px 8px; border-radius: 6px;">Persist:
+                  0 cyc</span>
+              </div>
+              <div id="cmdLandslideAction" style="font-size: 11px; color: var(--ink-dim); line-height: 1.4;">Routine
+                slope stability monitoring active.</div>
+            </div>
+
+            <!-- Middle: Multi-Node Telemetry Grid -->
+            <div class="stat-card"
+              style="background: var(--bg-panel-raised, #f3f7fd); border: 1px solid var(--border, #d3e1f5); border-radius: 10px; padding: 14px;">
+              <div class="stat-card-title"
+                style="font-size: 11px; color: var(--ink-dim); text-transform: uppercase; margin-bottom: 8px; font-family: 'JetBrains Mono', monospace; font-weight: 700;">
+                SLOPE NODES TELEMETRY (UPPER / MID / BASE)</div>
+              <div id="cmdSlopeNodesList" style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="empty-note">Loading slope nodes…</div>
+              </div>
+            </div>
+
+            <!-- Right: Contributing Factors & Warning Evidence -->
+            <div class="stat-card"
+              style="background: var(--bg-panel-raised, #f3f7fd); border: 1px solid var(--border, #d3e1f5); border-radius: 10px; padding: 14px;">
+              <div class="stat-card-title"
+                style="font-size: 11px; color: var(--ink-dim); text-transform: uppercase; margin-bottom: 8px; font-family: 'JetBrains Mono', monospace; font-weight: 700;">
+                GEOTECHNICAL HAZARD EVIDENCE &amp; TRIGGERS</div>
+              <ul id="cmdLandslideFactorsList"
+                style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: 12px;">
+                <li class="empty-note">Awaiting sensor-fusion cycle…</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Multi-Spectral Optical & Thermal Intelligence Panel -->
+        <section class="panel commander-camera-panel" id="cmdCameraPanel">
+          <div class="panel-head">
+            <h2>📷 Multi-Spectral Optical &amp; Thermal IR Intelligence (Cross-Modal AI)</h2>
+            <span class="badge" id="cmdCameraSynergyBadge"
+              style="background: rgba(37,99,235,0.15); color: #2563eb; border: 1px solid rgba(37,99,235,0.4);">CORROBORATION
+              ACTIVE</span>
+          </div>
+          <div class="camera-widget-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
+            <!-- Left: Optical Visual Node -->
+            <div class="stat-card"
+              style="background: var(--bg-panel-raised, #f3f7fd); border: 1px solid var(--border, #d3e1f5); border-radius: 10px; padding: 14px;">
+              <div class="stat-card-title"
+                style="font-size: 11px; color: var(--ink-dim); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-weight: 700;">
+                OPTICAL RGB CAMERA (AI VISION)</div>
+              <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0;">
+                <span id="cmdCameraState"
+                  style="font-size: 18px; font-weight: 800; font-family: var(--font-display); color: #2563eb;">--</span>
+              </div>
+              <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                <span class="badge" id="cmdCameraConfBadge"
+                  style="background: rgba(37,99,235,0.15); color: #2563eb; border: 1px solid rgba(37,99,235,0.3); font-size: 11px; padding: 2px 8px; border-radius: 6px;">Conf:
+                  --%</span>
+                <span class="badge" id="cmdCameraPersonsBadge"
+                  style="background: #e2ecfa; color: var(--ink-dim); border: 1px solid var(--border, #d3e1f5); font-size: 11px; padding: 2px 8px; border-radius: 6px;">0
+                  Pers</span>
+              </div>
+              <div id="cmdCameraSub" style="font-size: 11px; color: var(--ink-dim); line-height: 1.4;">Visibility: -- ·
+                Occlusion: --</div>
+            </div>
+
+            <!-- Middle: Thermal Infrared Node -->
+            <div class="stat-card"
+              style="background: var(--bg-panel-raised, #f3f7fd); border: 1px solid var(--border, #d3e1f5); border-radius: 10px; padding: 14px;">
+              <div class="stat-card-title"
+                style="font-size: 11px; color: var(--ink-dim); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-weight: 700;">
+                THERMAL LWIR INFRARED (HEAT SIGNATURE)</div>
+              <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0;">
+                <span id="cmdThermalTemp"
+                  style="font-size: 24px; font-weight: 800; font-family: var(--font-mono); color: #e11d48;">-- °C</span>
+                <span id="cmdThermalDelta" style="font-size: 12px; color: var(--ink-dim);">(Δ --°C)</span>
+              </div>
+              <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                <span class="badge" id="cmdThermalTypeBadge"
+                  style="background: rgba(225,29,72,0.15); color: #e11d48; border: 1px solid rgba(225,29,72,0.3); font-size: 11px; padding: 2px 8px; border-radius: 6px;">HEAT
+                  SIGNATURE</span>
+                <span class="badge" id="cmdThermalConfBadge"
+                  style="background: #e2ecfa; color: var(--ink-dim); border: 1px solid var(--border, #d3e1f5); font-size: 11px; padding: 2px 8px; border-radius: 6px;">Conf:
+                  --%</span>
+              </div>
+              <div id="cmdThermalSub" style="font-size: 11px; color: var(--ink-dim); line-height: 1.4;">Smoke
+                Penetration: High · Contrast: 1.0x</div>
+            </div>
+
+            <!-- Right: Correlation & Synergy Assessment -->
+            <div class="stat-card"
+              style="background: var(--bg-panel-raised, #f3f7fd); border: 1px solid var(--border, #d3e1f5); border-radius: 10px; padding: 14px;">
+              <div class="stat-card-title"
+                style="font-size: 11px; color: var(--ink-dim); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-weight: 700;">
+                CROSS-MODAL EVIDENCE CORROBORATION</div>
+              <div id="cmdCorrelationCase" style="font-size: 13px; font-weight: 700; color: #16a34a; margin: 6px 0;">--
+              </div>
+              <div id="cmdCorrelationNarrative"
+                style="font-size: 11px; color: var(--ink-dim); line-height: 1.4; margin-bottom: 6px;">Awaiting
+                correlation cycle...</div>
+              <div id="cmdCorrelationTokens" style="display: flex; gap: 4px; flex-wrap: wrap;"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Dedicated Rainfall & Severe Weather Intelligence Panel -->
+        <section class="panel commander-rainfall-panel" id="cmdRainfallPanel">
+          <div class="panel-head">
+            <h2>🌧️ Dedicated Rainfall &amp; Meteorological Hazard Intelligence</h2>
+            <span class="badge" id="cmdRainfallRiskBadge"
+              style="background: rgba(37,99,235,0.15); color: #2563eb; border: 1px solid rgba(37,99,235,0.4);">NO RAIN
+              (0.0 mm/h)</span>
+          </div>
+          <div class="rainfall-widget-grid" style="display: grid; grid-template-columns: 280px 1.2fr 1fr; gap: 14px;">
+            <!-- Left: Current Rate & Class Card -->
+            <div class="stat-card"
+              style="background: var(--bg-panel-raised, #f3f7fd); border: 1px solid var(--border, #d3e1f5); border-radius: 10px; padding: 14px;">
+              <div class="stat-card-title"
+                style="font-size: 11px; color: var(--ink-dim); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-weight: 700;">
+                PRECIPITATION INTENSITY</div>
+              <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0;">
+                <span id="cmdRainfallRate"
+                  style="font-size: 36px; font-weight: 800; font-family: var(--font-mono); color: #2563eb;">0.0</span>
+                <span style="font-size: 14px; color: var(--ink-dim);">mm/h</span>
+              </div>
+              <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                <span class="badge" id="cmdRainfallClassBadge"
+                  style="background: rgba(37, 99, 235, 0.15); color: #2563eb; border: 1px solid rgba(37, 99, 235, 0.4); font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px;">NO_RAIN</span>
+                <span class="badge" id="cmdRainfallTrendBadge"
+                  style="background: #e2ecfa; color: var(--ink-dim); border: 1px solid var(--border, #d3e1f5); font-size: 11px; padding: 2px 8px; border-radius: 6px;">STABLE</span>
+              </div>
+              <div id="cmdRainfallSummary" style="font-size: 11px; color: var(--ink-dim); line-height: 1.4;">
+                Precipitation levels nominal. Routine weather monitoring.</div>
+            </div>
+
+            <!-- Middle: Cumulative Volume & Sensor Health -->
+            <div class="stat-card"
+              style="background: var(--bg-panel-raised, #f3f7fd); border: 1px solid var(--border, #d3e1f5); border-radius: 10px; padding: 14px;">
+              <div class="stat-card-title"
+                style="font-size: 11px; color: var(--ink-dim); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-weight: 700;">
+                CUMULATIVE PRECIPITATION &amp; PROBE</div>
+              <div style="display: flex; align-items: baseline; gap: 8px; margin: 8px 0;">
+                <span id="cmdRainfallCumul"
+                  style="font-size: 24px; font-weight: 800; font-family: var(--font-mono); color: #2563eb;">0.0
+                  mm</span>
+                <span id="cmdRainfallRoc" style="font-size: 12px; color: var(--ink-dim);">(Δ 0.0 mm/h/cyc)</span>
+              </div>
+              <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+                <span class="badge" id="cmdRainfallStatusBadge"
+                  style="background: rgba(34,197,94,0.15); color: #16a34a; border: 1px solid rgba(34,197,94,0.3); font-size: 11px; padding: 2px 8px; border-radius: 6px;">ONLINE</span>
+                <span class="badge" id="cmdRainfallConfBadge"
+                  style="background: #e2ecfa; color: var(--ink-dim); border: 1px solid var(--border, #d3e1f5); font-size: 11px; padding: 2px 8px; border-radius: 6px;">98%
+                  Conf</span>
+              </div>
+              <div id="cmdRainfallAlertTriggers" style="font-size: 11px; color: var(--ink-dim); line-height: 1.4;">
+                Critical Accumulation Limit: 100.0 mm</div>
+            </div>
+
+            <!-- Right: Compound Hazard Indicators -->
+            <div class="stat-card"
+              style="background: var(--bg-panel-raised, #f3f7fd); border: 1px solid var(--border, #d3e1f5); border-radius: 10px; padding: 14px;">
+              <div class="stat-card-title"
+                style="font-size: 11px; color: var(--ink-dim); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; font-weight: 700;">
+                COMPOUND DISASTER RISK TRIGGERS</div>
+              <div id="cmdRainfallCompoundFlood"
+                style="font-size: 12px; font-weight: 700; color: #4d5f80; margin: 6px 0;">🌊 Flash Flood Driver: <span
+                  style="color: #64748b;">INACTIVE</span></div>
+              <div id="cmdRainfallCompoundLandslide"
+                style="font-size: 12px; font-weight: 700; color: #4d5f80; margin-bottom: 6px;">⛰️ Landslide Driver:
+                <span style="color: #64748b;">INACTIVE</span></div>
+              <div id="cmdRainfallEvidenceBadges" style="display: flex; gap: 4px; flex-wrap: wrap;"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel commander-assign-form-panel" id="cmdAssignFormPanel">
+          <div class="panel-head">
+            <h2>📋 Assign Rescue Member</h2>
+          </div>
+
+          <div class="cmd-form-row">
+            <label>Scenario
+              <input type="text" id="cmdFormScenario" readonly>
+            </label>
+            <label>Team
+              <select id="cmdFormTeam">
+                <option value="">Select team…</option>
+              </select>
+            </label>
+            <label>Member
+              <select id="cmdFormMember" disabled>
+                <option value="">Select team first…</option>
+              </select>
+            </label>
+            <label>Nearest Victim
+              <select id="cmdFormVictim" disabled>
+                <option value="">Select member first…</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="cmdConfirmBanner" class="cmd-confirm-banner" hidden>
+            <span id="cmdConfirmIcon">⚠️</span>
+            <span id="cmdConfirmText">Confirm member status is HOLD before assigning.</span>
+          </div>
+
+          <button type="button" id="cmdFormAssignBtn" class="btn btn-primary" disabled>✅ Confirm &amp; Assign</button>
+          <div id="cmdFormResult" class="admin-result"></div>
+        </section>
+
+        <section class="panel commander-suggest-panel" id="cmdSuggestPanel" hidden>
+          <div class="panel-head">
+            <h2>Nearest Needy People — <span id="cmdSuggestMember"></span></h2>
+          </div>
+          <div id="cmdSuggestList" class="cmd-suggest-list"></div>
+        </section>
+      </main>
+    </div>
+
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/commander.js"></script>
+</body>
+
+</html>

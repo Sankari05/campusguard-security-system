@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIDGEWATCH — Scenarios Ledger</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">▲</span>
+      <div class="brand-text">
+        <span class="brand-name">RIDGEWATCH</span>
+        <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">TESTING</div>
+      <a href="testing.html" class="sidebar-link">📊 <span>Testing Console</span></a>
+      <a href="testing-persons.html" class="sidebar-link">👤 <span>Persons</span></a>
+      <a href="testing-scenarios.html" class="sidebar-link is-active">🗺️ <span>Scenarios</span></a>
+      <a href="testing-teams.html" class="sidebar-link">👥 <span>Rescue Teams</span></a>
+      <a href="victims.html" class="sidebar-link">🩹 <span>Live Victims</span></a>
+
+      <div class="sidebar-section-title">OPERATIONS</div>
+      <a href="commander.html" class="sidebar-link">🎖️ <span>Commander</span></a>
+      <a href="watch.html" class="sidebar-link">⌚ <span>Watch</span></a>
+      <a href="index.html" class="sidebar-link">📡 <span>Dashboard</span></a>
+      <a href="hardware.html" class="sidebar-link">🔧 <span>Hardware</span></a>
+
+      <div class="sidebar-section-title">SYSTEM</div>
+      <a href="logic.html" class="sidebar-link">🧠 <span>Logic</span></a>
+      <a href="alerts.html" class="sidebar-link">🚨 <span>Alerts</span></a>
+      <a href="analytics.html" class="sidebar-link">📈 <span>Analytics</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="sidebar-foot-avatar" aria-hidden="true">T</span>
+      <div class="sidebar-foot-text">
+        <span class="sidebar-foot-name">Testing Controls</span>
+        <span class="sidebar-foot-role">Direct Access · No Login</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+
+  <!-- TOPBAR HEADER -->
+  <header class="topbar">
+    <div class="site-tag">
+      <span class="site-tag-label">TESTING CONSOLE</span>
+      <span class="site-tag-value">Scenarios Ledger</span>
+    </div>
+    <div class="topbar-right">
+      <input type="text" class="topbar-search" id="scenariosSearchInput" placeholder="Filter scenarios…">
+      <a href="notification.html" class="topbar-bell" title="Notification Center" aria-label="Notification Center">🔔<span class="topbar-bell-dot" id="topbarAlertDot" hidden></span></a>
+      <span class="topbar-avatar" title="Testing Operations" style="background: var(--accent-ice);">T</span>
+    </div>
+  </header>
+
+  <!-- MAIN PAGE CONTENT -->
+  <main class="page-content" style="padding: 24px;">
+
+    <!-- LEDGER HEADER -->
+    <div class="ledger-header">
+      <div class="ledger-title-group">
+        <h1 class="ledger-title">🗺️ Scenarios Ledger</h1>
+        <span class="ledger-count-badge">Total Scenarios: <span id="scenariosTotalCount">0</span></span>
+      </div>
+    </div>
+
+    <!-- NOTICE BANNER -->
+    <div class="ledger-info-banner">
+      <span class="info-icon">ℹ️</span>
+      <span><strong>This is the ledger of custom scenario templates.</strong> To create one, use <a href="testing.html" style="color: var(--accent-ice); font-weight: 600; text-decoration: underline;">Add Scenario</a> from the Testing Console. Click a scenario's status pill to toggle it Active/Inactive — only <strong>Active</strong> scenarios appear in the Dashboard's "Start Scenario" picker. Starting a built-in scenario from the <a href="scenarios.html" style="color: var(--accent-ice); font-weight: 600; text-decoration: underline;">Scenarios</a> page runs it live but won't add a row here — check Commander or Dashboard for that instead.</span>
+    </div>
+
+    <!-- LEDGER DATA TABLE -->
+    <div class="ledger-table-wrap">
+      <table class="ledger-table" id="scenariosLedgerTable">
+        <thead>
+          <tr>
+            <th style="width: 140px;">Scenario ID</th>
+            <th>Scenario Name</th>
+            <th>Hazard Type</th>
+            <th>Victims</th>
+            <th>Incident Location (Lat, Long)</th>
+            <th>Status</th>
+            <th>Action</th>
+            <th>Created Date</th>
+            <th>Created Time</th>
+          </tr>
+        </thead>
+        <tbody id="scenariosTableBody">
+          <tr>
+            <td colspan="9" style="text-align: center; color: var(--ink-faint); padding: 32px;">
+              Loading scenario history records…
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/testing-common.js"></script>
+<script src="js/testing-scenarios.js"></script>
+</body>
+</html>

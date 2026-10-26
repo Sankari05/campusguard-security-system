@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIDGEWATCH — Add Rescue Personnel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">▲</span>
+      <div class="brand-text">
+        <span class="brand-name">RIDGEWATCH</span>
+        <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">TESTING</div>
+      <a href="testing.html" class="sidebar-link is-active">📊 <span>Testing Console</span></a>
+      <a href="testing-persons.html" class="sidebar-link">👤 <span>Persons</span></a>
+      <a href="testing-scenarios.html" class="sidebar-link">🗺️ <span>Scenarios</span></a>
+      <a href="testing-teams.html" class="sidebar-link">👥 <span>Rescue Teams</span></a>
+      <a href="victims.html" class="sidebar-link">🩹 <span>Live Victims</span></a>
+
+      <div class="sidebar-section-title">OPERATIONS</div>
+      <a href="commander.html" class="sidebar-link">🎖️ <span>Commander</span></a>
+      <a href="watch.html" class="sidebar-link">⌚ <span>Watch</span></a>
+      <a href="index.html" class="sidebar-link">📡 <span>Dashboard</span></a>
+      <a href="hardware.html" class="sidebar-link">🔧 <span>Hardware</span></a>
+
+      <div class="sidebar-section-title">SYSTEM</div>
+      <a href="logic.html" class="sidebar-link">🧠 <span>Logic</span></a>
+      <a href="alerts.html" class="sidebar-link">🚨 <span>Alerts</span></a>
+      <a href="analytics.html" class="sidebar-link">📈 <span>Analytics</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="sidebar-foot-avatar" aria-hidden="true">T</span>
+      <div class="sidebar-foot-text">
+        <span class="sidebar-foot-name">Testing Controls</span>
+        <span class="sidebar-foot-role">Direct Access · No Login</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+
+  <!-- TOPBAR HEADER -->
+  <header class="topbar">
+    <div class="site-tag">
+      <span class="site-tag-label">TESTING CONSOLE</span>
+      <span class="site-tag-value">Add Personnel</span>
+    </div>
+    <div class="topbar-right">
+      <a href="notification.html" class="topbar-bell" title="Notification Center" aria-label="Notification Center">🔔<span class="topbar-bell-dot" id="topbarAlertDot" hidden></span></a>
+      <span class="topbar-avatar" title="Testing Operations" style="background: var(--accent-ice);">T</span>
+    </div>
+  </header>
+
+  <!-- MAIN PAGE CONTENT -->
+  <main class="page-content" style="padding: 24px;">
+
+    <div class="admin-form-container">
+      
+      <!-- BREADCRUMB -->
+      <nav class="admin-breadcrumb">
+        <a href="testing.html" class="breadcrumb-link">Testing Console</a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current">Add Person</span>
+      </nav>
+
+      <!-- FORM CARD -->
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <h1 class="admin-card-title" id="formCardTitle">👤 Add Person to System</h1>
+          <p class="admin-card-subtitle" id="formCardSubtitle">Register a medical-needy survivor into the live operation or add a qualified rescue staff member to the organization roster.</p>
+        </div>
+
+        <form id="addPersonForm">
+          
+          <!-- PERSON TYPE SELECTOR -->
+          <div class="person-type-container">
+            <div class="person-type-header">
+              <span class="person-type-title">🎯 Select Person Type</span>
+              <span class="form-hint" style="margin: 0;">Choose dynamic workflow</span>
+            </div>
+            <div class="person-type-grid">
+              
+              <!-- OPTION: VICTIM / NEEDY PERSON -->
+              <label class="person-type-option is-victim is-selected" id="optVictimLabel">
+                <input type="radio" name="personType" id="personTypeVictim" value="victim" checked>
+                <span class="person-type-icon">🏥</span>
+                <div class="person-type-text">
+                  <span class="person-type-label">Medical Needy Person (Victim)</span>
+                  <span class="person-type-desc">Register a survivor in distress into the live triage engine, sensor simulator, and rescue queue.</span>
+                </div>
+              </label>
+
+              <!-- OPTION: STAFF / RESCUE MEMBER -->
+              <label class="person-type-option" id="optStaffLabel">
+                <input type="radio" name="personType" id="personTypeStaff" value="staff">
+                <span class="person-type-icon">👥</span>
+                <div class="person-type-text">
+                  <span class="person-type-label">Rescue Team Member (Staff)</span>
+                  <span class="person-type-desc">Register a rescue specialist into the persistent roster ledger and link to live operation pool.</span>
+                </div>
+              </label>
+
+            </div>
+          </div>
+
+          <!-- SHARED FIELD: FULL NAME / LABEL -->
+          <div class="form-group full-width" style="margin-bottom: 20px;">
+            <label class="form-label" for="personFullName" id="labelFullName">
+              <span id="nameFieldText">Full Name / Victim Label</span> <span class="required-star">*</span>
+            </label>
+            <input type="text" id="personFullName" class="form-input" placeholder="e.g. Priya Sharma or Victim-North-Debris" required>
+            <span class="form-hint" id="nameFieldHint">A human-readable identifier for tracking across Commander and Dashboard</span>
+          </div>
+
+          <!-- ============================================================ -->
+          <!-- VICTIM FIELDSET (Conditionally Rendered)                     -->
+          <!-- ============================================================ -->
+          <div id="victimFieldsGroup">
+            <div class="form-section-banner victim-banner">
+              <span>🚨</span>
+              <span><strong>Triage &amp; Sensor Configuration:</strong> This survivor will be placed into the live AI Multi-Sensor fusion matrix.</span>
+            </div>
+
+            <div class="form-grid-2">
+              <!-- Triage Priority / Status -->
+              <div class="form-group">
+                <label class="form-label" for="victimStatus">Triage Priority / Status <span class="required-star">*</span></label>
+                <select id="victimStatus" class="form-select" required>
+                  <option value="HIGH" selected>🔴 HIGH Priority — Critical / Viable (Urgent extraction)</option>
+                  <option value="MEDIUM">🟠 MEDIUM Priority — Minor Injury / Stable (Delayed extraction)</option>
+                  <option value="LOW">🟡 LOW Priority — Weak / Unreliable Sensor Signal</option>
+                </select>
+                <span class="form-hint">Maps to fusion engine priority templates and sensor threshold matrix</span>
+              </div>
+
+              <!-- Burial Depth -->
+              <div class="form-group">
+                <label class="form-label" for="victimBurialDepth">Burial Depth (meters)</label>
+                <input type="number" id="victimBurialDepth" class="form-input" placeholder="Template default (e.g. 1.2)" step="0.1" min="0" max="15">
+                <span class="form-hint">Optional: override default depth (affects radar/thermal signal attenuation)</span>
+              </div>
+            </div>
+
+            <div class="form-grid-3">
+              <!-- Latitude -->
+              <div class="form-group">
+                <label class="form-label" for="victimLat">Latitude <span class="required-star">*</span></label>
+                <input type="number" id="victimLat" class="form-input" placeholder="e.g. 32.37420" step="0.00001" required>
+              </div>
+
+              <!-- Longitude -->
+              <div class="form-group">
+                <label class="form-label" for="victimLon">Longitude <span class="required-star">*</span></label>
+                <input type="number" id="victimLon" class="form-input" placeholder="e.g. 77.24930" step="0.00001" required>
+              </div>
+
+              <!-- Altitude -->
+              <div class="form-group">
+                <label class="form-label" for="victimAlt">Altitude (m)</label>
+                <input type="number" id="victimAlt" class="form-input" placeholder="e.g. 3950" step="0.1">
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <!-- Consciousness -->
+              <div class="form-group">
+                <label class="form-label" for="victimConsciousness">Consciousness Level</label>
+                <select id="victimConsciousness" class="form-select">
+                  <option value="Conscious" selected>Conscious / Alert</option>
+                  <option value="Semi-conscious">Semi-conscious / Drowsy</option>
+                  <option value="Unconscious">Unconscious / Unresponsive</option>
+                  <option value="Unknown">Unknown / Pending Scan</option>
+                </select>
+              </div>
+
+              <!-- Mobility -->
+              <div class="form-group">
+                <label class="form-label" for="victimMobility">Mobility State</label>
+                <select id="victimMobility" class="form-select">
+                  <option value="Ambulatory">Ambulatory (Able to walk / move)</option>
+                  <option value="Immobile" selected>Immobile (Trapped / unable to move)</option>
+                  <option value="Unknown">Unknown</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <!-- Age -->
+              <div class="form-group">
+                <label class="form-label" for="victimAge">Approximate Age</label>
+                <input type="number" id="victimAge" class="form-input" placeholder="e.g. 32" min="1" max="120">
+              </div>
+
+              <!-- Gender -->
+              <div class="form-group">
+                <label class="form-label" for="victimGender">Gender</label>
+                <select id="victimGender" class="form-select">
+                  <option value="" selected>Unknown / Unspecified</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Injury Notes -->
+            <div class="form-group full-width">
+              <label class="form-label" for="victimInjuryNotes">Clinical &amp; Injury Description</label>
+              <textarea id="victimInjuryNotes" class="form-textarea" placeholder="e.g. Left leg pinned under rubble, labored respiration, thermal heat signature visible."></textarea>
+            </div>
+          </div>
+
+          <!-- ============================================================ -->
+          <!-- STAFF FIELDSET (Conditionally Rendered)                      -->
+          <!-- ============================================================ -->
+          <div id="staffFieldsGroup" style="display: none;">
+            <div class="form-section-banner staff-banner">
+              <span>🛡️</span>
+              <span><strong>Rescue Team Staff:</strong> Persists to the SQLite registry and appears in live operations as an Unassigned Pool member.</span>
+            </div>
+
+            <div class="form-grid-2">
+              <!-- Role -->
+              <div class="form-group">
+                <label class="form-label" for="personRole">Assigned Role <span class="required-star">*</span></label>
+                <select id="personRole" class="form-select">
+                  <option value="" disabled selected>Select staff role</option>
+                  <option value="Rescuer">Rescuer</option>
+                  <option value="Medic">Medic</option>
+                  <option value="Coordinator">Coordinator</option>
+                  <option value="Technician">Technician</option>
+                  <option value="Team Leader">Team Leader</option>
+                </select>
+              </div>
+
+              <!-- Badge / ID -->
+              <div class="form-group">
+                <label class="form-label" for="personBadge">ID / Badge Number</label>
+                <input type="text" id="personBadge" class="form-input" placeholder="e.g. B-104">
+                <span class="form-hint">Optional organizational badge</span>
+              </div>
+            </div>
+
+            <div class="form-grid-2">
+              <!-- Phone Number -->
+              <div class="form-group">
+                <label class="form-label" for="personPhone">Phone Number</label>
+                <input type="tel" id="personPhone" class="form-input" placeholder="e.g. +91 98765 43210">
+              </div>
+
+              <!-- Email Address -->
+              <div class="form-group">
+                <label class="form-label" for="personEmail">Email Address</label>
+                <input type="email" id="personEmail" class="form-input" placeholder="e.g. staff@ridgewatch.org">
+              </div>
+            </div>
+
+            <div class="form-grid-3">
+              <!-- Date of Birth -->
+              <div class="form-group">
+                <label class="form-label" for="personDob">Date of Birth</label>
+                <input type="date" id="personDob" class="form-input">
+              </div>
+
+              <!-- Gender -->
+              <div class="form-group">
+                <label class="form-label" for="personGender">Gender</label>
+                <select id="personGender" class="form-select">
+                  <option value="" selected>Prefer not to say</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <!-- Status -->
+              <div class="form-group">
+                <label class="form-label" for="personStatus">Status</label>
+                <select id="personStatus" class="form-select">
+                  <option value="Active" selected>Active</option>
+                  <option value="On Leave">On Leave</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Address -->
+            <div class="form-group full-width">
+              <label class="form-label" for="personAddress">Address / Station Base</label>
+              <textarea id="personAddress" class="form-textarea" placeholder="e.g. Sector 4 Base Camp, Manali, HP"></textarea>
+            </div>
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="form-actions">
+            <a href="testing.html" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn-submit" id="savePersonBtn">
+              <span>💾</span> <span id="saveBtnText">Add Medical Needy Person</span>
+            </button>
+          </div>
+
+          <div id="addPersonMsg" class="admin-msg-box"></div>
+        </form>
+
+      </div>
+    </div>
+
+  </main>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/testing-common.js"></script>
+<script src="js/testing-add-person.js"></script>
+</body>
+</html>

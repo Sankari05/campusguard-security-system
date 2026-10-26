@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIDGEWATCH — Operational AI Decision Center &amp; Explainable Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">▲</span>
+      <div class="brand-text">
+        <span class="brand-name">RIDGEWATCH</span>
+        <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="sidebar-link">📡 <span>Dashboard</span></a>
+      <a href="visual.html" class="sidebar-link">🌐 <span>Visual 3D</span></a>
+      <a href="hardware.html" class="sidebar-link">🔧 <span>Hardware</span></a>
+      <a href="logic.html" class="sidebar-link is-active">🧠 <span>Logic</span></a>
+      <a href="testing.html" class="sidebar-link">📊 <span>Testing</span></a>
+      <a href="commander.html" class="sidebar-link">🎖️ <span>Commander</span></a>
+      <a href="doppler.html" class="sidebar-link">💓 <span>Doppler HR</span></a>
+      <a href="watch.html" class="sidebar-link">⌚ <span>Watch</span></a>
+      <a href="alerts.html" class="sidebar-link">🚨 <span>Alerts</span></a>
+      <a href="notification.html" class="sidebar-link">🔔 <span>Notification</span></a>
+      <a href="analytics.html" class="sidebar-link">📊 <span>Analytics</span></a>
+      <a href="scenarios.html" class="sidebar-link">🗺️ <span>Scenarios</span></a>
+      <a href="victims.html" class="sidebar-link">🧍 <span>Victims</span></a>
+      <a href="teams.html" class="sidebar-link">🚁 <span>Teams</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="sidebar-foot-avatar" aria-hidden="true">R</span>
+      <div class="sidebar-foot-text">
+        <span class="sidebar-foot-name">RidgeWatch Ops</span>
+        <span class="sidebar-foot-role">Demo build · v1.0</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content logic-console">
+
+    <!-- ============================================================ -->
+    <!-- 1. TOPBAR & OPERATIONAL AI DECISION CENTER HEADER            -->
+    <!-- ============================================================ -->
+    <header class="topbar">
+      <div class="site-tag">
+        <span class="site-tag-label">OPERATIONAL AI DECISION CENTER</span>
+        <span class="site-tag-value">How RIDGEWATCH converts raw sensor data into explainable rescue decisions</span>
+      </div>
+
+      <div class="ai-header-controls">
+        <!-- Live Intelligence Badge -->
+        <div class="ai-live-badge" id="aiLiveStatusBadge" title="Real-time multi-modal inference stream">
+          <span class="ai-live-dot"></span>
+          <span>LIVE INTELLIGENCE</span>
+        </div>
+
+        <!-- Compact Scenario Selector Dropdown -->
+        <div class="scenario-selector-wrap" id="logicScenarioSelectorWrap">
+          <span class="dt-bar-label">ACTIVE SCENARIO:</span>
+          <div class="scenario-dropdown-anchor">
+            <button type="button" class="scenario-dropdown-btn" id="logicScenarioDropdownBtn" aria-haspopup="listbox" aria-expanded="false" title="Switch or inspect disaster scenario">
+              <span class="scenario-btn-icon">🗺️</span>
+              <span class="scenario-btn-text" id="logicSelectedScenarioText">ACTIVE SCENARIO</span>
+              <span class="scenario-btn-arrow">▼</span>
+            </button>
+            <div class="scenario-popover" id="logicScenarioPopover" hidden>
+              <div class="scenario-popover-header">
+                <span class="scenario-popover-title">Select Disaster Scenario</span>
+              </div>
+              <div class="scenario-search-box">
+                <span class="scenario-search-icon">🔍</span>
+                <input type="text" class="scenario-search-input" id="logicScenarioSearchInput" placeholder="Search scenario…" autocomplete="off">
+              </div>
+              <div class="scenario-option-list" id="logicScenarioOptionList" role="listbox" tabindex="-1">
+                <!-- Dynamically populated from backend -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clock & AI Engine Status -->
+        <div class="ai-clock-badge" id="logicSimClock">🕒 CYCLE 0 · --:--:-- UTC</div>
+        <div class="ai-engine-badge is-online" id="logicAiEngineState">🤖 AI ENGINE: ONLINE</div>
+      </div>
+
+      <div class="topbar-right">
+        <a href="notification.html" class="topbar-bell" title="Notification Center" aria-label="Notification Center">🔔<span class="topbar-bell-dot" id="topbarAlertDot" hidden></span></a>
+        <span class="topbar-avatar" title="RidgeWatch Ops">R</span>
+      </div>
+    </header>
+
+    <!-- ============================================================ -->
+    <!-- MAIN AI DECISION CENTER LAYOUT                                -->
+    <!-- ============================================================ -->
+    <main class="logic-layout" style="padding: 16px 20px;">
+
+      <!-- VICTIM NODE SELECTOR TABS -->
+      <section class="panel logic-victim-select" style="margin-bottom: 12px;">
+        <div class="panel-head" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px;">
+          <h2 style="font-size: 13.5px; font-weight: 700;">🎯 Select Monitored Victim Target</h2>
+          <span class="panel-head-sub" id="logicStatusSub">— WAITING FOR SCENARIO —</span>
+        </div>
+        <div id="logicVictimTabs" class="hw-victim-tabs">
+          <p class="empty-note">No victim nodes online yet.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- 2. VISUAL 5-STAGE DECISION PIPELINE BANNER                   -->
+      <!-- ============================================================ -->
+      <section class="ai-pipeline-box" id="aiPipelineBox">
+        <div class="ai-sec-header" style="margin-bottom: 6px;">
+          <div class="ai-sec-title">
+            <span>⛓️ End-to-End AI Decision Pipeline</span>
+          </div>
+          <span class="ai-sec-badge">Deterministic 5-Stage Transformation</span>
+        </div>
+        <div class="ai-pipeline-flow" id="aiPipelineFlow">
+          <div class="ai-pipe-step is-active" id="pipeStepEvidence">
+            <div class="ai-pipe-step-header">
+              <span class="ai-pipe-step-num">STAGE 1</span>
+              <span class="ai-pipe-step-icon">📡</span>
+            </div>
+            <span class="ai-pipe-step-name">RAW SENSOR INPUTS</span>
+            <span class="ai-pipe-step-val" id="valPipeEvidence">-- Modalities</span>
+            <span class="ai-pipe-step-sub">Telemetry ingestion &amp; vital pulses</span>
+          </div>
+
+          <div class="ai-pipe-step is-active" id="pipeStepConfidence">
+            <div class="ai-pipe-step-header">
+              <span class="ai-pipe-step-num">STAGE 2</span>
+              <span class="ai-pipe-step-icon">⚖️</span>
+            </div>
+            <span class="ai-pipe-step-name">NORMALIZATION &amp; RELIABILITY</span>
+            <span class="ai-pipe-step-val" id="valPipeConfidence">Range 0.00 – 1.00</span>
+            <span class="ai-pipe-step-sub">Noise gating &amp; packet integrity</span>
+          </div>
+
+          <div class="ai-pipe-step is-active" id="pipeStepTriage">
+            <div class="ai-pipe-step-header">
+              <span class="ai-pipe-step-num">STAGE 3</span>
+              <span class="ai-pipe-step-icon">🔀</span>
+            </div>
+            <span class="ai-pipe-step-name">WEIGHTED SENSOR FUSION</span>
+            <span class="ai-pipe-step-val" id="valPipeTriage">Fused Conf: --%</span>
+            <span class="ai-pipe-step-sub">Convex combination Σ (wᵢ · sᵢ)</span>
+          </div>
+
+          <div class="ai-pipe-step is-active" id="pipeStepHazard">
+            <div class="ai-pipe-step-header">
+              <span class="ai-pipe-step-num">STAGE 4</span>
+              <span class="ai-pipe-step-icon">⚠️</span>
+            </div>
+            <span class="ai-pipe-step-name">HAZARD ANALYSIS</span>
+            <span class="ai-pipe-step-val" id="valPipeHazard">Multiplier: --x</span>
+            <span class="ai-pipe-step-sub">Seismic, tilt, flood &amp; burial urgency</span>
+          </div>
+
+          <div class="ai-pipe-step is-active" id="pipeStepPriority">
+            <div class="ai-pipe-step-header">
+              <span class="ai-pipe-step-num">STAGE 5</span>
+              <span class="ai-pipe-step-icon">🎯</span>
+            </div>
+            <span class="ai-pipe-step-name">SPS / TRIAGE DECISION</span>
+            <span class="ai-pipe-step-val" id="valPipePriority">-- SPS · STANDBY</span>
+            <span class="ai-pipe-step-sub">INSARAG medical rescue action</span>
+          </div>
+
+          <!-- Hidden element to maintain full compatibility with existing step IDs -->
+          <div id="pipeStepSps" style="display: none;"><span id="valPipeSps">--</span></div>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- 3. HERO LEVEL 1 CARDS: SCENARIO, COMPOSITE RISK, CONFIDENCE   -->
+      <!-- ============================================================ -->
+      <section class="ai-hero-grid" id="aiHeroSection">
+        
+        <!-- Hero Card 1: Active Disaster / Scenario -->
+        <div class="ai-hero-card hero-scenario" id="aiHeroScenarioCard">
+          <div class="ai-hero-top">
+            <span class="ai-hero-label">🗺️ Active Disaster / Situation</span>
+            <span class="ai-hero-status-pill" id="aiHeroScenarioStatusPill" style="background: rgba(37,99,235,0.12); color: #2563eb;">ACTIVE</span>
+          </div>
+          <div class="ai-hero-val-wrap">
+            <div class="ai-hero-val" id="aiHeroScenarioName">STANDBY</div>
+          </div>
+          <div class="ai-hero-sub" id="aiHeroSiteLabel">Waiting for live scenario telemetry…</div>
+        </div>
+
+        <!-- Hero Card 2: Composite Hazard Risk -->
+        <div class="ai-hero-card hero-risk" id="aiHeroRiskCard">
+          <div class="ai-hero-top">
+            <span class="ai-hero-label">⚠️ Composite Hazard Risk</span>
+            <span class="ai-hero-badge" id="aiHeroRiskLevel" style="background: rgba(148,163,184,0.15); color: #64748b;">STANDBY</span>
+          </div>
+          <div class="ai-hero-val-wrap">
+            <div class="ai-hero-val" id="aiHeroRiskScore">-- <span style="font-size: 16px; font-weight: 500; color: var(--ink-dim);">/ 100</span></div>
+          </div>
+          <div class="ai-hero-sub" id="aiHeroRiskTrend">Geotechnical, meteorological &amp; atmospheric threat synthesis.</div>
+        </div>
+
+        <!-- Hero Card 3: Survivor Detection Confidence -->
+        <div class="ai-hero-card hero-confidence" id="aiHeroConfidenceCard">
+          <div class="ai-hero-top">
+            <span class="ai-hero-label">📡 Survivor Detection Confidence</span>
+            <span class="ai-hero-badge" id="aiHeroTriagePill" style="background: rgba(148,163,184,0.15); color: #64748b;">STANDBY</span>
+          </div>
+          <div class="ai-hero-val-wrap">
+            <div class="ai-hero-val" id="aiHeroConfPct">--%</div>
+          </div>
+          <div class="ai-hero-sub" id="aiHeroSpsScore">SPS: -- · Multi-Sensor Weighted Reliability: --</div>
+        </div>
+
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- 4. TWO-COLUMN OPERATIONAL AI INTELLIGENCE LAYOUT             -->
+      <!-- ============================================================ -->
+      <div class="ai-center-layout">
+
+        <!-- ========================================================== -->
+        <!-- LEFT COLUMN: LIVE CALCULATIONS, FORMULAS & FUSION FLOW     -->
+        <!-- ========================================================== -->
+        <div class="ai-left-col">
+
+          <!-- 4A. LIVE CALCULATION WORKBENCH -->
+          <section class="ai-calc-box" id="aiCalcWorkbench">
+            <div class="ai-sec-header">
+              <div class="ai-sec-title">
+                <span>🧮 Live Multi-Modal Calculation Breakdown</span>
+              </div>
+              <span class="ai-sec-badge">Real-Time Arithmetic &amp; Modality Contributions</span>
+            </div>
+
+            <!-- Calculation Summary Stat Bar -->
+            <div class="ai-calc-summary-bar">
+              <div class="ai-calc-stat-item">
+                <span class="ai-calc-stat-label">Weighted Fused Confidence</span>
+                <span class="ai-calc-stat-val" id="aiCalcSumConfidence" style="color: #2563eb;">--%</span>
+              </div>
+              <div class="ai-calc-stat-item">
+                <span class="ai-calc-stat-label">Hazard Multiplier</span>
+                <span class="ai-calc-stat-val" id="aiCalcSumHazard" style="color: #ea580c;">--x</span>
+              </div>
+              <div class="ai-calc-stat-item highlight">
+                <span class="ai-calc-stat-label">Final SPS Score</span>
+                <span class="ai-calc-stat-val" id="aiCalcSumSps" style="color: #059669;">--</span>
+              </div>
+              <div class="ai-calc-stat-item">
+                <span class="ai-calc-stat-label">Composite Risk</span>
+                <span class="ai-calc-stat-val" id="aiCalcSumRisk" style="color: #d97706;">-- / 100</span>
+              </div>
+              <div class="ai-calc-stat-item">
+                <span class="ai-calc-stat-label">Triage Level</span>
+                <span class="ai-calc-stat-val" id="aiCalcSumTriage" style="color: #475569;">STANDBY</span>
+              </div>
+            </div>
+
+            <!-- Live Sensor Weight Contribution Table -->
+            <div class="ai-calc-table-wrap">
+              <table class="ai-calc-table">
+                <thead>
+                  <tr>
+                    <th>Modality</th>
+                    <th>Weight (wᵢ)</th>
+                    <th>Live Signal</th>
+                    <th>Normalized (sᵢ)</th>
+                    <th>Reliability (rᵢ)</th>
+                    <th>Weighted Contribution (wᵢ · sᵢ · rᵢ)</th>
+                  </tr>
+                </thead>
+                <tbody id="aiCalcTableBody">
+                  <tr><td colspan="6" style="text-align: center; color: var(--ink-dim); padding: 14px;">Waiting for live victim telemetry…</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Live Arithmetic Output Bar -->
+            <div class="ai-calc-arithmetic-bar" id="aiCalcArithmeticBar">
+              <div class="ai-calc-formula-line">
+                <span>1. Fused Confidence %:</span>
+                <span id="aiMathConfidenceLine">100 × (Σ wᵢ · sᵢ) × R = <strong>--%</strong></span>
+              </div>
+              <div class="ai-calc-formula-line">
+                <span>2. Hazard Multiplier:</span>
+                <span id="aiMathHazardLine">Base (1.00) + Σ Hazards = <strong>--x</strong></span>
+              </div>
+              <div class="ai-calc-formula-line" style="border-top: 1px dashed #cbd5e1; padding-top: 6px; font-weight: 700;">
+                <span>3. Final Survivor Priority Score (SPS):</span>
+                <span id="aiMathSpsLine">Confidence % × Hazard Multiplier = <strong style="color: #2563eb; font-size: 13.5px;">--</strong></span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 4B. EXPANDABLE "HOW IS THIS CALCULATED?" MATHEMATICAL FORMULAS -->
+          <section class="ai-calc-box" id="aiFormulaCardsBox">
+            <div class="ai-sec-header">
+              <div class="ai-sec-title">
+                <span>📐 How is this Calculated? Mathematical Reference</span>
+              </div>
+              <span class="ai-sec-badge">Expandable Formula Logic</span>
+            </div>
+
+            <div class="ai-formula-grid">
+              <!-- Formula 1: Confidence Fusion -->
+              <details class="ai-formula-card" open>
+                <summary class="ai-formula-title">
+                  <span>1. Multi-Sensor Life-Sign Fusion Formula</span>
+                  <span class="ai-formula-expand-icon">▾</span>
+                </summary>
+                <div class="ai-formula-math">Confidence % = 100 × (Σ wᵢ · sᵢ) × Reliability</div>
+                <div class="ai-formula-desc">Convex linear combination of normalized physiological sub-scores (sᵢ ∈ [0.0, 1.0]) weighted by scenario role and scaled by hardware packet reliability.</div>
+              </details>
+
+              <!-- Formula 2: Reliability Adjustment -->
+              <details class="ai-formula-card" open>
+                <summary class="ai-formula-title">
+                  <span>2. Packet Reliability Adjustment</span>
+                  <span class="ai-formula-expand-icon">▾</span>
+                </summary>
+                <div class="ai-formula-math">Reliability R = Valid Packets / Expected Window Packets</div>
+                <div class="ai-formula-desc">Penalizes intermittent or packet-loss prone sensors without discarding valid life signs. R ∈ [0.0, 1.0].</div>
+              </details>
+
+              <!-- Formula 3: Hazard Multiplier -->
+              <details class="ai-formula-card" open>
+                <summary class="ai-formula-title">
+                  <span>3. Situational Hazard Multiplier</span>
+                  <span class="ai-formula-expand-icon">▾</span>
+                </summary>
+                <div class="ai-formula-math">Multiplier = min(2.50x, 1.0 + B_depth + B_sec + B_vib + B_tilt + B_rain + …)</div>
+                <div class="ai-formula-desc">Situational threat scaling incorporating burial depth, seismic tremors, slope shear, and flood urgency. Capped at 2.500x.</div>
+              </details>
+
+              <!-- Formula 4: Composite Hazard Risk -->
+              <details class="ai-formula-card">
+                <summary class="ai-formula-title">
+                  <span>4. Composite Multi-Hazard Risk</span>
+                  <span class="ai-formula-expand-icon">▾</span>
+                </summary>
+                <div class="ai-formula-math">Risk Score = max(Geotechnical, Meteorological, Atmospheric) ∈ [0, 100]</div>
+                <div class="ai-formula-desc">Multi-hazard environmental threat index synthesizing slope shear, seismic PGV, rainfall rate, and toxic gas PPM.</div>
+              </details>
+
+              <!-- Formula 5: Triage Threshold Logic -->
+              <details class="ai-formula-card">
+                <summary class="ai-formula-title">
+                  <span>5. INSARAG / FEMA Medical Triage Boundaries</span>
+                  <span class="ai-formula-expand-icon">▾</span>
+                </summary>
+                <div class="ai-formula-math">HIGH (≥30% or Tap≥15%) · MED (≥15%) · LOW (≥5%) · NVS (&lt;5%)</div>
+                <div class="ai-formula-desc">Strict INSARAG/FEMA SAR triage doctrine. Survivable cases (HIGH &gt; MED &gt; LOW) extracted before recovery (NO_VITAL_SIGNS).</div>
+              </details>
+            </div>
+          </section>
+
+          <!-- 4C. DEDICATED EARTHQUAKE & GEOTECHNICAL INTELLIGENCE -->
+          <section class="ai-earthquake-box" id="aiEarthquakeBox">
+            <div class="ai-sec-header">
+              <div class="ai-sec-title">
+                <span>🌋 Earthquake &amp; Structural Geotechnical Intelligence</span>
+              </div>
+              <span class="ai-sec-badge" id="logicEqScenarioBadge">Seismic &amp; Inclinometer Tracking</span>
+            </div>
+
+            <!-- Primary Seismic Indicators Grid -->
+            <div class="ai-eq-grid">
+              <div class="ai-eq-card">
+                <div class="ai-eq-label">Seismic PGV Vibration</div>
+                <div class="ai-eq-val" id="logicEqVibVal">0.0 mm/s</div>
+                <span class="ai-eq-status trend-nominal" id="logicEqVibStatus">NOMINAL</span>
+              </div>
+              <div class="ai-eq-card">
+                <div class="ai-eq-label">Structural Tilt Angle</div>
+                <div class="ai-eq-val" id="logicEqTiltVal">0.0°</div>
+                <span class="ai-eq-status trend-nominal" id="logicEqTiltStatus">STABLE</span>
+              </div>
+              <div class="ai-eq-card">
+                <div class="ai-eq-label">Seismic Multiplier Share</div>
+                <div class="ai-eq-val" id="logicEqMultiplierShare">+0.000x</div>
+                <span class="ai-eq-status trend-rising">MAX +0.50x</span>
+              </div>
+              <div class="ai-eq-card">
+                <div class="ai-eq-label">Aftershock / Tremor State</div>
+                <div class="ai-eq-val" id="logicEqAftershockStatus" style="font-size: 13px;">NO TREMORS</div>
+                <span class="ai-eq-status trend-nominal" id="logicEqAftershockSub">DECAYED</span>
+              </div>
+              <div class="ai-eq-card">
+                <div class="ai-eq-label">MPU6050 Kit Disturbance</div>
+                <div class="ai-eq-val" id="logicEqKitStatus" style="font-size: 13px;">QUIESCENT</div>
+                <span class="ai-eq-status trend-nominal" id="logicEqKitSub">NO JITTER</span>
+              </div>
+            </div>
+
+            <!-- Before vs After Impact on SPS Bar -->
+            <div class="ai-eq-impact-bar">
+              <div class="ai-eq-impact-title">
+                <span>📊 Seismic Impact on Survivor Priority Score (Before vs After):</span>
+              </div>
+              <div class="ai-eq-impact-grid">
+                <div class="ai-eq-impact-cell">
+                  <span class="ai-eq-impact-cell-label">Baseline SPS (No Seismic):</span>
+                  <span class="ai-eq-impact-cell-val" id="logicEqBeforeSps">--</span>
+                </div>
+                <div class="ai-eq-impact-cell">
+                  <span class="ai-eq-impact-cell-label">Seismic-Boosted SPS:</span>
+                  <span class="ai-eq-impact-cell-val boosted" id="logicEqAfterSps">--</span>
+                </div>
+                <div class="ai-eq-impact-cell">
+                  <span class="ai-eq-impact-cell-label">Priority Escalation:</span>
+                  <span class="ai-eq-impact-cell-val delta" id="logicEqSpsDelta">+0.0 pts</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 4D. LIVE SENSOR EVIDENCE SECTION -->
+          <section class="ai-evidence-section" id="aiEvidenceSection">
+            <div class="ai-sec-header">
+              <div class="ai-sec-title">
+                <span>📊 Live Sensor Telemetry Evidence</span>
+                <span class="ai-sec-badge" id="aiEvidenceBadge">Primary &amp; Supporting Modalities</span>
+              </div>
+              <button type="button" class="btn btn-secondary btn-xs" id="btnJumpToRoleMatrix" title="View Full Scenario Role Matrix">
+                <span>🔍 View Role Matrix</span>
+              </button>
+            </div>
+
+            <!-- Primary Evidence Grid -->
+            <div class="ai-evidence-group-title title-primary">
+              <span>● Primary Driving Modalities</span>
+            </div>
+            <div class="ai-evidence-grid" id="aiEvidencePrimaryGrid">
+              <div style="grid-column: 1/-1; padding: 12px; font-size: 11.5px; color: var(--ink-dim); text-align: center;">
+                Waiting for live scenario telemetry…
+              </div>
+            </div>
+
+            <!-- Supporting Evidence Grid -->
+            <div class="ai-evidence-group-title title-supporting">
+              <span>○ Supporting Corroboration Modalities</span>
+            </div>
+            <div class="ai-evidence-grid" id="aiEvidenceSupportingGrid">
+              <div style="grid-column: 1/-1; padding: 12px; font-size: 11.5px; color: var(--ink-dim); text-align: center;">
+                Waiting for supporting sensor channels…
+              </div>
+            </div>
+          </section>
+
+          <!-- 4E. SENSOR FUSION DYNAMIC FLOW DIAGRAM -->
+          <section class="ai-fusion-box" id="aiFusionBox">
+            <div class="ai-sec-header">
+              <div class="ai-sec-title">
+                <span>⚡ Multi-Modal Sensor Fusion Synthesis Flow</span>
+              </div>
+              <span class="ai-sec-badge">Live Cross-Channel Synthesis</span>
+            </div>
+            <div class="ai-fusion-svg-container" id="aiFusionSvgContainer">
+              <svg id="aiFusionSvg" width="100%" height="100%" viewBox="0 0 700 180" preserveAspectRatio="xMidYMid meet">
+                <!-- Dynamically populated SVG nodes & animated beams -->
+              </svg>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- ========================================================== -->
+        <!-- RIGHT COLUMN: EXPLAINABLE AI, DECISION DIRECTIVES & ALERTS -->
+        <!-- ========================================================== -->
+        <div class="ai-right-col">
+
+          <!-- 5A. "WHY THIS DECISION?" EXPLAINABLE AI PANEL -->
+          <section class="ai-explain-box" id="aiExplainBox">
+            <div class="ai-sec-header">
+              <div class="ai-sec-title">
+                <span>🎯 Why Did the AI Decide This?</span>
+              </div>
+              <span class="ai-sec-badge">Transparent Evidence Verification</span>
+            </div>
+
+            <!-- Narrative Banner -->
+            <div class="ai-why-banner" id="aiWhyBanner" style="margin-bottom: 12px;">
+              <div class="ai-why-tag">EXPLANATION</div>
+              <div class="ai-why-sentence" id="aiWhySentence">
+                Waiting for live telemetry. Select an active disaster scenario to inspect live multi-modal fusion evidence and decision rationale.
+              </div>
+            </div>
+
+            <!-- Detailed Audit Bullet Items -->
+            <div class="ai-bullet-list" id="aiEvidenceBullets">
+              <div class="ai-bullet-item">
+                <span class="ai-bullet-icon">✓</span>
+                <span>AI decision criteria will be dynamically verified once scenario telemetry is active.</span>
+              </div>
+            </div>
+
+            <!-- Conflict / False-Alarm Warning -->
+            <div class="ai-conflict-warning" id="aiConflictWarning" hidden>
+              <span>⚠️</span>
+              <span id="aiConflictText">Conflicting evidence detected.</span>
+            </div>
+          </section>
+
+          <!-- 5B. DECISION SUMMARY METRICS CARD -->
+          <div class="ai-op-card" id="aiRiskSummaryCard">
+            <div class="ai-sec-header" style="margin-bottom: 8px;">
+              <div class="ai-sec-title">
+                <span>📈 Real-Time Decision Metrics</span>
+              </div>
+            </div>
+            <div class="ai-summary-metrics">
+              <div class="ai-metric-cell">
+                <div class="ai-metric-cell-label">Hazard Risk</div>
+                <div class="ai-metric-cell-val" id="aiSummaryRiskScore">-- / 100</div>
+              </div>
+              <div class="ai-metric-cell">
+                <div class="ai-metric-cell-label">Confidence</div>
+                <div class="ai-metric-cell-val" id="aiSummaryConfidence">--%</div>
+              </div>
+              <div class="ai-metric-cell">
+                <div class="ai-metric-cell-label">Active Signals</div>
+                <div class="ai-metric-cell-val" id="aiSummaryEvidenceStrength">-- Modalities</div>
+              </div>
+              <div class="ai-metric-cell">
+                <div class="ai-metric-cell-label">Threat Level</div>
+                <div class="ai-metric-cell-val" id="aiSummaryRiskLevel">STANDBY</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5C. ACTIVE TACTICAL ALERT CARD -->
+          <div class="ai-op-card ai-alert-card no-alert" id="aiAlertCard">
+            <div class="ai-sec-header" style="margin-bottom: 6px;">
+              <div class="ai-sec-title">
+                <span>🚨 Active Tactical Alert</span>
+              </div>
+              <span class="ai-alert-badge badge-nominal" id="aiAlertBadge">✓ NO ACTIVE ALERTS</span>
+            </div>
+            <div class="ai-alert-title" id="aiAlertTitle">All environmental and survivor vital signs within nominal threshold envelopes.</div>
+            <div class="ai-alert-grid" id="aiAlertMetaGrid" style="display: none;">
+              <div>Location: <strong id="aiAlertLocation">—</strong></div>
+              <div>Confidence: <strong id="aiAlertConfidence">—</strong></div>
+              <div>Triggered By: <strong id="aiAlertTriggers">—</strong></div>
+              <div>Time: <strong id="aiAlertTime">—</strong></div>
+            </div>
+          </div>
+
+          <!-- 5D. RECOMMENDED TACTICAL ACTION DIRECTIVES -->
+          <div class="ai-op-card" id="aiActionCard">
+            <div class="ai-sec-header" style="margin-bottom: 6px;">
+              <div class="ai-sec-title">
+                <span>🧭 Recommended Commander Directives</span>
+              </div>
+              <span class="ai-sec-badge">Operational Protocol</span>
+            </div>
+            <div class="ai-action-list" id="aiActionList">
+              <div class="ai-action-item">
+                <span>→</span> <span>Maintain continuous automated telemetry surveillance and multi-sensor baseline monitoring.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5E. RECENT INTELLIGENCE TIMELINE -->
+          <div class="ai-op-card" id="aiTimelineCard">
+            <div class="ai-sec-header" style="margin-bottom: 6px;">
+              <div class="ai-sec-title">
+                <span>⏱️ Recent Intelligence Events</span>
+              </div>
+              <span class="ai-sec-badge">Live Chronology</span>
+            </div>
+            <div class="ai-timeline-list" id="aiTimelineList">
+              <div class="ai-timeline-item">
+                <span class="ai-timeline-time">--:--:--</span>
+                <span class="ai-timeline-desc">AI Decision Engine initialized in standby mode.</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- 6. EXPANDABLE DEEP TECHNICAL CALCULATION DETAILS (Steps 0–9)  -->
+      <!-- ============================================================ -->
+      <section class="ai-tech-drawer-wrap">
+        <button type="button" class="ai-tech-toggle-btn" id="btnToggleTechDetails" aria-expanded="false" title="Click to view/hide deep technical formula breakdowns">
+          <span>🔬 Technical Calculation Details &amp; Domain Engine Walkthroughs (Steps 0–9)</span>
+          <span class="ai-tech-toggle-icon" id="iconTechToggle">▼</span>
+        </button>
+
+        <div class="ai-tech-container" id="aiTechDetailsContainer" hidden>
+
+          <!-- Step 0: Scenario Sensor Role Matrix -->
+          <section class="panel">
+            <div class="panel-head">
+              <h2>⚡ Step 0 — Active Scenario Sensor Role &amp; Priority Matrix</h2>
+              <span class="panel-head-sub" id="logicProfileSub">PRIMARY / SUPPORTING / INACTIVE classification &amp; hazard gating</span>
+            </div>
+            <div id="logicProfileMatrix" class="logic-formula" style="padding: 12px; overflow-x: auto;">
+              <p class="empty-note">Awaiting scenario sensor profile…</p>
+            </div>
+          </section>
+
+          <!-- Step 1: Confidence % (weighted sensor fusion) -->
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Step 1 — Confidence % (weighted sensor fusion)</h2>
+            </div>
+            <div id="logicConfidenceSteps" class="logic-formula">
+              <p class="empty-note">No data yet.</p>
+            </div>
+          </section>
+
+          <!-- Step 2: Triage Classification -->
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Step 2 — Triage Classification</h2>
+            </div>
+            <div id="logicTriageBar" class="logic-triage-bar">
+              <p class="empty-note">No data yet.</p>
+            </div>
+          </section>
+
+          <!-- Step 3: Hazard Multiplier Breakdown -->
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Step 3 — Hazard Multiplier Breakdown</h2>
+            </div>
+            <div id="logicHazardBars" class="logic-hazard-bars">
+              <p class="empty-note">No data yet.</p>
+            </div>
+          </section>
+
+          <!-- Step 4: Final Survivor Priority Score (SPS) -->
+          <section class="panel">
+            <div class="panel-head">
+              <h2>Step 4 — Final Survivor Priority Score (SPS)</h2>
+            </div>
+            <div id="logicFinalSps" class="logic-final-sps">
+              <p class="empty-note">No data yet.</p>
+            </div>
+          </section>
+
+          <!-- Step 5: Landslide Hazard Risk Engine & Explainability -->
+          <section class="panel logic-landslide-panel">
+            <div class="panel-head">
+              <h2>🌱 Step 5 — Landslide Hazard Risk Engine (Multi-Sensor Fusion Formula)</h2>
+              <span class="panel-head-sub" id="logicLandslideSub">Score = Moisture (25%) + Moist Trend (15%) + Tilt (25%) + Tilt Trend (25%) + Persistence (10%)</span>
+            </div>
+            <div id="logicLandslideFormula" class="logic-formula" style="padding: 16px;">
+              <p class="empty-note">Awaiting geotechnical hazard computation…</p>
+            </div>
+          </section>
+
+          <!-- Step 6: Optical & Thermal AI Cross-Modal Fusion Engine -->
+          <section class="panel logic-camera-thermal-panel">
+            <div class="panel-head">
+              <h2>📷 Step 6 — Optical &amp; Thermal Cross-Modal Synergy &amp; False Positive Mitigation</h2>
+              <span class="panel-head-sub" id="logicCameraThermalSub">Synergy Bonus (+5%) · False-Positive Discount (-50%) · Single-Sensor Clamping (&le;35%)</span>
+            </div>
+            <div id="logicCameraThermalFormula" class="logic-formula" style="padding: 16px;">
+              <p class="empty-note">Awaiting optical &amp; thermal cross-modal telemetry…</p>
+            </div>
+          </section>
+
+          <!-- Step 7: Dedicated Rainfall & Meteorological Risk Engine -->
+          <section class="panel logic-rainfall-panel">
+            <div class="panel-head">
+              <h2>🌧️ Step 7 — Rainfall &amp; Meteorological Hazard Engine (Precipitation &amp; Compound Risks)</h2>
+              <span class="panel-head-sub" id="logicRainfallSub">Rate Thresholds · Cumulative Exposure · Compound Landslide &amp; Flood Triggers</span>
+            </div>
+            <div id="logicRainfallFormula" class="logic-formula" style="padding: 16px;">
+              <p class="empty-note">Awaiting rainfall &amp; meteorological telemetry…</p>
+            </div>
+          </section>
+
+          <!-- Step 8: Barometric Atmospheric Pressure & Weather Risk Engine -->
+          <section class="panel logic-baro-panel">
+            <div class="panel-head">
+              <h2>⏱️ Step 8 — Barometric Atmospheric Pressure &amp; Cyclone Detection Engine</h2>
+              <span class="panel-head-sub" id="logicBaroSub">Dynamic Baseline Drift · Z-Score Anomaly · Plunge Rate (&le; -3.0 hPa/cyc) · Cyclonic Depression (&le; 990 hPa)</span>
+            </div>
+            <div id="logicBaroFormula" class="logic-formula" style="padding: 16px;">
+              <p class="empty-note">Awaiting barometric telemetry…</p>
+            </div>
+          </section>
+
+          <!-- Step 9: Hazardous Gas & Toxic Atmosphere Safety Engine -->
+          <section class="panel logic-gassmoke-panel">
+            <div class="panel-head">
+              <h2>☣️ Step 9 — Hazardous Gas &amp; Toxic Atmosphere Safety Assessment</h2>
+              <span class="panel-head-sub" id="logicGasSmokeSub">Toxic Gas Concentration (&ge;100 PPM) · Particulate Smoke Density (&ge;40%) · SCBA Life Safety Protocol</span>
+            </div>
+            <div id="logicGasSmokeFormula" class="logic-formula" style="padding: 16px;">
+              <p class="empty-note">Awaiting gas and smoke telemetry…</p>
+            </div>
+          </section>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- STATUSBAR -->
+    <footer class="statusbar">
+      <span id="logicStatusMessage">AI Decision Center Online.</span>
+      <span class="statusbar-right" id="logicStatusPoll">poll: —</span>
+    </footer>
+
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/logic.js"></script>
+</body>
+</html>

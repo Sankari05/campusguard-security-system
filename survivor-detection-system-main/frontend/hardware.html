@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIDGEWATCH — Hardware &amp; Sensor Status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">▲</span>
+      <div class="brand-text">
+        <span class="brand-name">RIDGEWATCH</span>
+        <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="sidebar-link">📡 <span>Dashboard</span></a>
+      <a href="visual.html" class="sidebar-link">🌐 <span>Visual 3D</span></a>
+      <a href="hardware.html" class="sidebar-link is-active">🔧 <span>Hardware</span></a>
+      <a href="logic.html" class="sidebar-link">🧠 <span>Logic</span></a>
+      <a href="testing.html" class="sidebar-link">📊 <span>Testing</span></a>
+      <a href="commander.html" class="sidebar-link">🎖️ <span>Commander</span></a>
+      <a href="doppler.html" class="sidebar-link">💓 <span>Doppler HR</span></a>
+      <a href="watch.html" class="sidebar-link">⌚ <span>Watch</span></a>
+      <a href="alerts.html" class="sidebar-link">🚨 <span>Alerts</span></a>
+      <a href="notification.html" class="sidebar-link">🔔 <span>Notification</span></a>
+      <a href="analytics.html" class="sidebar-link">📈 <span>Analytics</span></a>
+      <a href="scenarios.html" class="sidebar-link">🗺️ <span>Scenarios</span></a>
+      <a href="victims.html" class="sidebar-link">🧍 <span>Victims</span></a>
+      <a href="teams.html" class="sidebar-link">🚁 <span>Teams</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="sidebar-foot-avatar" aria-hidden="true">R</span>
+      <div class="sidebar-foot-text">
+        <span class="sidebar-foot-name">RidgeWatch Ops</span>
+        <span class="sidebar-foot-role">Hardware Instrumentation</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content hardware-console">
+
+    <!-- 1. COMPACT TOPBAR & HARDWARE HEADER -->
+    <header class="topbar hw-topbar">
+      <div class="site-tag">
+        <span class="site-tag-label">HARDWARE MONITORING</span>
+        <span class="site-tag-value">Hardware &amp; Sensor Status</span>
+      </div>
+      
+      <div class="hw-header-meta">
+        <div class="hw-system-status-badge" id="hwSystemStatusBadge">
+          <span class="hw-status-dot-pulse"></span>
+          <span id="hwSystemStatusText">SYSTEM ONLINE</span>
+        </div>
+        <div class="hw-meta-pill" title="Total Sensor Channels">
+          <span class="hw-pill-icon">📡</span>
+          <span class="hw-pill-label">Sensors:</span>
+          <strong id="hwHeaderTotal">18</strong>
+        </div>
+        <div class="hw-meta-pill is-online" title="Online Healthy Channels">
+          <span class="hw-pill-icon">●</span>
+          <span class="hw-pill-label">Online:</span>
+          <strong id="hwHeaderOnline">18</strong>
+        </div>
+        <div class="hw-meta-pill is-alerts" title="Active Hazard Warnings">
+          <span class="hw-pill-icon">🚨</span>
+          <span class="hw-pill-label">Warnings:</span>
+          <strong id="hwHeaderAlerts">0</strong>
+        </div>
+        <div class="hw-meta-pill is-degraded" id="hwHeaderDegradedPill" title="Degraded / Offline Sensors">
+          <span class="hw-pill-icon">⚠️</span>
+          <span class="hw-pill-label">Critical:</span>
+          <strong id="hwHeaderDegraded">0</strong>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <a href="notification.html" class="topbar-bell" title="Notification Center" aria-label="Notification Center">🔔</a>
+        <span class="topbar-avatar" title="RidgeWatch Ops">R</span>
+      </div>
+    </header>
+
+    <!-- 2. SENSOR SUMMARY KPI CARDS -->
+    <section class="hw-summary-grid">
+      <div class="hw-kpi-card">
+        <div class="hw-kpi-title">Total Modalities</div>
+        <div class="hw-kpi-val" id="hwKpiTotal">18</div>
+        <div class="hw-kpi-sub">Hardware Channels</div>
+      </div>
+      <div class="hw-kpi-card hw-kpi-online">
+        <div class="hw-kpi-title">Online &amp; Healthy</div>
+        <div class="hw-kpi-val" id="hwKpiOnline">18</div>
+        <div class="hw-kpi-sub">Telemetry Active</div>
+      </div>
+      <div class="hw-kpi-card hw-kpi-primary">
+        <div class="hw-kpi-title">Primary (Scenario)</div>
+        <div class="hw-kpi-val" id="hwKpiActive">—</div>
+        <div class="hw-kpi-sub" id="hwKpiActiveSub">High Priority Evidence</div>
+      </div>
+      <div class="hw-kpi-card hw-kpi-supporting">
+        <div class="hw-kpi-title">Supporting / Standby</div>
+        <div class="hw-kpi-val" id="hwKpiStandby">—</div>
+        <div class="hw-kpi-sub" id="hwKpiStandbySub">Corroborating / Nominal</div>
+      </div>
+      <div class="hw-kpi-card hw-kpi-alerts" id="hwKpiAlertsCard">
+        <div class="hw-kpi-title">Hazard Warnings</div>
+        <div class="hw-kpi-val" id="hwKpiAlerts">0</div>
+        <div class="hw-kpi-sub">Threshold Alerts</div>
+      </div>
+    </section>
+
+    <!-- 4. CONTROLS BAR: VICTIM NODE SELECTOR + FILTER PILLS + SEARCH + VIEW TOGGLE -->
+    <section class="hw-controls-bar">
+      <div class="hw-node-selector-wrap">
+        <span class="hw-control-label">Node:</span>
+        <div id="hwVictimTabs" class="hw-victim-tabs-compact">
+          <p class="empty-note" style="margin: 0; font-size: 11px; padding: 0;">Waiting for scenario…</p>
+        </div>
+      </div>
+
+      <div class="hw-filter-search-wrap">
+        <div class="hw-filter-pills" id="hwFilterPills">
+          <button type="button" class="hw-filter-btn is-active" data-filter="ALL">All <span class="hw-badge-cnt" id="cntFilterAll">18</span></button>
+          <button type="button" class="hw-filter-btn" data-filter="PRIMARY">Active <span class="hw-badge-cnt" id="cntFilterPrimary">0</span></button>
+          <button type="button" class="hw-filter-btn" data-filter="SUPPORTING">Supporting <span class="hw-badge-cnt" id="cntFilterSupporting">0</span></button>
+          <button type="button" class="hw-filter-btn" data-filter="STANDBY">Standby <span class="hw-badge-cnt" id="cntFilterStandby">0</span></button>
+          <button type="button" class="hw-filter-btn" data-filter="ALERTS">Warning <span class="hw-badge-cnt" id="cntFilterAlerts">0</span></button>
+          <button type="button" class="hw-filter-btn" data-filter="OFFLINE">Offline <span class="hw-badge-cnt" id="cntFilterOffline">0</span></button>
+        </div>
+
+        <div class="hw-view-toggle">
+          <button type="button" class="hw-view-btn is-active" id="btnViewGrid" title="Card Grid View">▦ Cards</button>
+          <button type="button" class="hw-view-btn" id="btnViewTable" title="Table List View">☰ Table</button>
+        </div>
+
+        <div class="hw-search-box">
+          <span class="hw-search-icon">🔍</span>
+          <input type="text" id="hwSearchInput" class="hw-search-input" placeholder="Search sensors..." autocomplete="off">
+          <button type="button" id="hwSearchClear" class="hw-search-clear" title="Clear search" hidden>✕</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. COMPACT RESPONSIVE SENSOR GRID -->
+    <main class="hw-sensor-grid-section">
+      <div id="hwSensorGrid" class="hw-sensor-grid">
+        <div class="stat-card" style="grid-column: 1 / -1; padding: 24px; text-align: center; color: var(--ink-dim);">
+          <div style="font-size: 28px; margin-bottom: 8px;">📡</div>
+          <div style="font-weight: 700; font-size: 15px; color: var(--ink);">Connecting to Hardware Telemetry Stream…</div>
+          <div style="font-size: 12px; margin-top: 4px;">Start a scenario from the Dashboard or Testing Console to initiate real-time multi-sensor telemetry.</div>
+        </div>
+      </div>
+
+      <!-- SENSOR STATUS TABLE (TOGGLEABLE) -->
+      <div id="hwTableContainer" class="hw-table-container" hidden>
+        <table class="hw-table" id="hwSensorTable">
+          <thead>
+            <tr>
+              <th>Sensor</th>
+              <th>Value</th>
+              <th>Trend</th>
+              <th>Health</th>
+              <th>Scenario Role</th>
+              <th>Status</th>
+              <th>Interface / Port</th>
+            </tr>
+          </thead>
+          <tbody id="hwTableBody">
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--ink-dim); padding: 20px;">Awaiting telemetry…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <!-- 6. VISUAL INTELLIGENCE SECTION (RGB CAMERA & FLIR THERMAL) -->
+    <section class="hw-visual-section" id="hwVisualSection">
+      <div class="hw-visual-card">
+        <div class="hw-visual-head">
+          <div class="hw-visual-title">
+            <span>📷</span> <span>RGB OPTICAL INTELLIGENCE</span>
+          </div>
+          <span class="hw-status-indicator"><span class="hw-dot is-online"></span> <span id="hwRgbStatusText">ONLINE</span></span>
+        </div>
+        <div class="hw-visual-grid">
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Detection State</div>
+            <div class="hw-visual-stat-val" id="hwRgbDetectionState">SCANNING</div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Confidence</div>
+            <div class="hw-visual-stat-val" id="hwRgbConfidence">88%</div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Target Count</div>
+            <div class="hw-visual-stat-val" id="hwRgbPersonCount">1 Person</div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Optical Clarity</div>
+            <div class="hw-visual-stat-val" id="hwRgbClarity">95% (Clear)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hw-visual-card">
+        <div class="hw-visual-head">
+          <div class="hw-visual-title">
+            <span>🌡️</span> <span>FLIR LEPTON THERMAL LWIR</span>
+          </div>
+          <span class="hw-status-indicator"><span class="hw-dot is-online"></span> <span id="hwThermalStatusText">ONLINE</span></span>
+        </div>
+        <div class="hw-visual-grid">
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Human Body Temp</div>
+            <div class="hw-visual-stat-val" id="hwThermalBodyTemp">34.2 °C</div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Thermal Delta (ΔT)</div>
+            <div class="hw-visual-stat-val" id="hwThermalDelta">+8.4 °C</div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Heat Signatures</div>
+            <div class="hw-visual-stat-val" id="hwThermalSignatures">1 Detected</div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Hotspot / Fire</div>
+            <div class="hw-visual-stat-val" id="hwThermalHotspot">None</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6.5 SMARTWATCH HARDWARE INSTRUMENTATION (WAVE CALL PLUS) -->
+    <section class="hw-visual-section" style="margin-top: 12px;" id="hwWatchSection">
+      <div class="hw-visual-card" style="grid-column: 1 / -1; border-color: var(--accent-ice, #38bdf8);">
+        <div class="hw-visual-head">
+          <div class="hw-visual-title">
+            <span>⌚</span> <span>SMARTWATCH HARDWARE — Wave Call Plus (<code>CALLPLUS_7F1B</code>)</span>
+          </div>
+          <span class="hw-status-indicator" id="hwWatchStatusBadge">
+            <span class="hw-dot is-online" id="hwWatchDot"></span> <span id="hwWatchStatusText">CONNECTED</span>
+          </span>
+        </div>
+        <div class="hw-visual-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Device &amp; Model</div>
+            <div class="hw-visual-stat-val" style="font-size: 13px;">Wave Call Plus</div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Bluetooth Name &amp; MAC</div>
+            <div class="hw-visual-stat-val" style="font-size: 12px; font-family: var(--font-mono);">CALLPLUS_7F1B<br><span style="font-size: 10px; color: var(--ink-dim);">CB:4E:FD:EE:7F:1B</span></div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Software Version</div>
+            <div class="hw-visual-stat-val" style="font-size: 13px; font-family: var(--font-mono);">6.4.3582.28</div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Location Capability</div>
+            <div class="hw-visual-stat-val" style="font-size: 12px; color: #38bdf8;">PHONE_GPS<br><span style="font-size: 10px; color: var(--ink-dim);">Phone GNSS Bridge</span></div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Command Capability</div>
+            <div class="hw-visual-stat-val" style="font-size: 11px; line-height: 1.3;">Companion Relay<br><span style="font-size: 9.5px; color: var(--ink-dim);">Notification Push</span></div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Last Seen</div>
+            <div class="hw-visual-stat-val" id="hwWatchLastSeen" style="font-size: 11px; font-family: var(--font-mono);">Active</div>
+          </div>
+        </div>
+        <div style="margin-top: 12px; padding: 10px 14px; background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 6px; font-size: 11.5px; color: var(--ink-dim);">
+          <strong style="color: var(--ink);">Discovered Capabilities:</strong>
+          <span style="color: #34d399; margin-left: 8px;">✓ Bluetooth Connection</span> ·
+          <span style="color: #34d399;">✓ Device Discovery</span> ·
+          <span style="color: #34d399;">✓ PPG Heart Rate (0x180D)</span> ·
+          <span style="color: #34d399;">✓ Battery Service (0x180F)</span> ·
+          <span style="color: #38bdf8;">✓ Companion Push Relay</span> ·
+          <span style="color: #f59e0b;">⚠️ Direct GATT Write: Unsupported (Proprietary RTOS)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6.6 NON-CONTACT HYDROSTATIC & FLASH-FLOOD EARLY WARNING INTELLIGENCE -->
+    <section class="hw-visual-section" style="margin-top: 12px;" id="hwFloodSection">
+      <div class="hw-visual-card" style="grid-column: 1 / -1; border-color: #0284c7; background: linear-gradient(135deg, rgba(2, 132, 199, 0.03) 0%, rgba(56, 189, 248, 0.08) 100%);">
+        <div class="hw-visual-head" style="border-bottom: 1px solid rgba(2, 132, 199, 0.2);">
+          <div class="hw-visual-title">
+            <span>🌊</span> <span style="font-weight: 700; color: #0369a1;">NON-CONTACT FLASH-FLOOD INTELLIGENCE &amp; HYDROSTATIC PRESSURE</span>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <span class="hw-role-tag" id="hwFloodSourceBadge" style="background: rgba(2, 132, 199, 0.15); color: #0284c7; font-weight: 700; border: 1px solid rgba(2, 132, 199, 0.3);">SIMULATION DATA</span>
+            <span class="hw-status-indicator" id="hwFloodStatusBadge">
+              <span class="hw-dot is-online" id="hwFloodDot"></span> <span id="hwFloodStatusText">MONITORING</span>
+            </span>
+          </div>
+        </div>
+        <div class="hw-visual-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-top: 10px;">
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Measured Surface Distance (d)</div>
+            <div class="hw-visual-stat-val" id="hwFloodDist" style="color: #0284c7; font-family: var(--font-mono);">4.80 m</div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Water Column Depth (h)</div>
+            <div class="hw-visual-stat-val" id="hwFloodDepth" style="color: #0369a1; font-family: var(--font-mono);">1.20 m</div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Hydrostatic Pressure (P=ρgh)</div>
+            <div class="hw-visual-stat-val" id="hwFloodPressure" style="color: #0c4a6e; font-family: var(--font-mono);">11.77 kPa</div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Water Level Rise Rate</div>
+            <div class="hw-visual-stat-val" id="hwFloodRiseRate" style="color: #0284c7; font-family: var(--font-mono);">+0.12 m/min</div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Time to Critical Inundation</div>
+            <div class="hw-visual-stat-val" id="hwFloodTimeToInund" style="color: #ea580c; font-weight: 700;">6.7 min</div>
+          </div>
+          <div class="hw-visual-stat">
+            <div class="hw-visual-stat-label">Evacuation Assembly Refuge</div>
+            <div class="hw-visual-stat-val" id="hwFloodAssemblyPoint" style="font-size: 12px; color: #15803d; font-weight: 600;">Melamchi Upper Ridge (4,120m)</div>
+          </div>
+        </div>
+        <div style="margin-top: 10px; padding: 10px 14px; background: rgba(2, 132, 199, 0.08); border: 1px solid rgba(2, 132, 199, 0.2); border-radius: 6px; font-size: 11.5px; color: var(--ink-dim); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <strong style="color: #0369a1;">Physical Principle:</strong>
+            <span style="font-family: var(--font-mono); color: #0284c7; margin-left: 6px;">P = ρ · g · h</span>
+            <span style="color: var(--ink-dim); margin-left: 6px;">(Derived from top-mounted non-contact radar/ultrasonic ranging; ρ=1000 kg/m³, g=9.80665 m/s²)</span>
+          </div>
+          <div>
+            <span style="color: #16a34a; font-weight: 600;">✓ Swiftwater SAR Ready</span> ·
+            <span style="color: #0284c7; font-weight: 600;">✓ Zero-Submersion Gauge</span> ·
+            <span style="color: #0284c7; font-weight: 600;">✓ Multi-Bearer Mesh Enabled</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. SENSOR DETAIL MODAL / DRAWER (WHITE + BLUE) -->
+    <div id="hwDetailOverlay" class="hw-detail-overlay" hidden>
+      <div class="hw-detail-card" id="hwDetailCard">
+        <div class="hw-detail-head">
+          <div class="hw-detail-title">
+            <span id="hwDetailIcon">💧</span>
+            <span id="hwDetailName">Water Level Sensor</span>
+          </div>
+          <button type="button" class="hw-detail-close" id="btnDetailClose" title="Close detail view">✕</button>
+        </div>
+        <div class="hw-detail-body">
+          <div class="hw-detail-reading-box">
+            <div>
+              <div style="font-size: 10.5px; font-weight: 700; color: var(--ink-dim); text-transform: uppercase;">Current Live Value</div>
+              <div class="hw-detail-big-val" id="hwDetailBigVal">72.0 cm</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="hw-status-indicator" id="hwDetailHealthBadge"><span class="hw-dot is-online"></span> ONLINE</span>
+              <div style="font-size: 11px; font-family: var(--font-mono); color: var(--ink-dim); margin-top: 4px;" id="hwDetailTrendVal">↑ RISING</div>
+            </div>
+          </div>
+
+          <div class="hw-detail-specs-grid">
+            <div class="hw-detail-spec-item">
+              <div class="hw-detail-spec-label">Scenario Role</div>
+              <div class="hw-detail-spec-val" id="hwDetailRoleVal">PRIMARY — FLOOD</div>
+            </div>
+            <div class="hw-detail-spec-item">
+              <div class="hw-detail-spec-label">Hardware Product</div>
+              <div class="hw-detail-spec-val" id="hwDetailModelVal">Submersible 316L Transducer</div>
+            </div>
+            <div class="hw-detail-spec-item">
+              <div class="hw-detail-spec-label">Bus Interface</div>
+              <div class="hw-detail-spec-val" id="hwDetailProtocolVal">4-20mA / Analog ADC (CH1)</div>
+            </div>
+            <div class="hw-detail-spec-item">
+              <div class="hw-detail-spec-label">Power Rail</div>
+              <div class="hw-detail-spec-val" id="hwDetailPowerVal">3.3V DC (Regulated)</div>
+            </div>
+            <div class="hw-detail-spec-item">
+              <div class="hw-detail-spec-label">Rate of Change</div>
+              <div class="hw-detail-spec-val" id="hwDetailRateVal">+1.2 cm/cycle</div>
+            </div>
+            <div class="hw-detail-spec-item">
+              <div class="hw-detail-spec-label">Confidence Rating</div>
+              <div class="hw-detail-spec-val" id="hwDetailConfVal">98.5%</div>
+            </div>
+          </div>
+
+          <div style="background: var(--bg-panel-raised); border: 1px solid var(--border-soft); border-radius: 6px; padding: 10px 12px;">
+            <div style="font-size: 10.5px; font-weight: 700; color: var(--ink-dim); text-transform: uppercase;">Operational Doctrine</div>
+            <div style="font-size: 11.5px; color: var(--ink); margin-top: 4px; line-height: 1.4;" id="hwDetailDoctrineVal">
+              Directly measures flood water depth. Critical indicator for inundation hazard gating.
+            </div>
+          </div>
+
+          <div id="hwDetailExtraContainer" style="display: none;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. COLLAPSIBLE ADVANCED SECTIONS: EDGE PIPELINE & RESCUE DISPATCH -->
+    <section class="hw-advanced-section" style="margin-top: 8px;">
+      <details class="hw-details-accordion" id="hwAccordionPipeline">
+        <summary class="hw-accordion-summary">
+          <span class="hw-acc-title">⛓️ Sensor → ESP32 → Pi 5 → LoRa Edge AI Pipeline</span>
+          <span class="hw-acc-sub" id="hwPipelineSub">Click to view 5-stage edge processing diagram</span>
+        </summary>
+        <div class="hw-accordion-content">
+          <svg id="hwPipelineSvg" viewBox="0 0 1000 640" class="hw-pipeline-svg" preserveAspectRatio="xMidYMin meet" role="img" aria-label="Sensor to edge to rescue hardware pipeline"></svg>
+        </div>
+      </details>
+
+      <details class="hw-details-accordion" id="hwAccordionDispatch">
+        <summary class="hw-accordion-summary">
+          <span class="hw-acc-title">🚑 Live Rescue Team Field Status &amp; Dispatch Strip</span>
+          <span class="hw-acc-sub">Click to inspect active responder teams &amp; assignments</span>
+        </summary>
+        <div class="hw-accordion-content">
+          <div id="hwDispatchStrip" class="hw-dispatch-strip">
+            <p class="empty-note">No dispatch data yet.</p>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- FOOTER STATUS BAR -->
+    <footer class="statusbar" style="margin-top: 8px;">
+      <span id="hwStatusMessage">Connecting…</span>
+      <span class="statusbar-right" id="hwStatusPoll">poll: —</span>
+    </footer>
+
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/hardware.js"></script>
+</body>
+</html>
+

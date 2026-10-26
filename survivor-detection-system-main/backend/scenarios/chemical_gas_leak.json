@@ -1,0 +1,138 @@
+{
+  "scenario_id": "chemical_gas_leak",
+  "name": "Chemical / Toxic Gas Industrial Hazard",
+  "description": "Hazardous toxic chemical gas breach in an industrial chemical synthesis facility near Vadodara Industrial Estate. Four casualties trapped within the contaminated toxic vapor dispersion radius, requiring HazMat breathing apparatus and rapid decontamination extraction.",
+  "site_label": "Synthesis Plant Sector 4 \u00b7 HazMat Chemical Zone \u00b7 38 m",
+  "site_origin": {
+    "latitude": 22.3072,
+    "longitude": 73.1812,
+    "altitude_m": 38
+  },
+  "rescue_teams": [
+    {
+      "team_id": "ALPHA",
+      "team_name": "Rescue Team Alpha",
+      "lat_offset": -0.0008,
+      "lon_offset": -0.0006,
+      "members": 2
+    },
+    {
+      "team_id": "BRAVO",
+      "team_name": "Rescue Team Bravo",
+      "lat_offset": 0.001,
+      "lon_offset": -0.0009,
+      "members": 2
+    }
+  ],
+  "site_environment": {
+    "initial_ambient_temp_c": 33.0,
+    "ambient_temp_volatility_c": 1.0,
+    "temp_diurnal_swing_c": 5.0,
+    "initial_humidity_pct": 60.0,
+    "humidity_volatility_pct": 3.0,
+    "initial_gas_ppm": 140.0,
+    "initial_smoke_pct": 25.0
+  },
+  "victims": [
+    {
+      "victim_id": "V1",
+      "label": "Victim 1 - Critical (Chemical Asphyxiation)",
+      "status": "critical",
+      "location": {
+        "latitude": 22.3075,
+        "longitude": 73.1809,
+        "altitude_m": 38
+      },
+      "burial_depth_m": 0.0,
+      "signature_range": {
+        "thermal_imaging_c": [35.0, 36.8],
+        "pir_motion": [0.01, 0.1],
+        "acoustic_db": [5.0, 20.0],
+        "co2_ppm": [1200.0, 2200.0],
+        "heart_rate_radar_bpm": [45.0, 65.0],
+        "rgb_camera_conf": [0.35, 0.65]
+      },
+      "notes": "Plant operator collapsed near primary chlorine reaction vessel; severe toxic gas exposure.",
+      "hazard": {
+        "burial_depth_m": 0.0,
+        "secondary_hazard": true,
+        "exposure_minutes": 50
+      }
+    },
+    {
+      "victim_id": "V2",
+      "label": "Victim 2 - Minor Injury (Protected Control Room)",
+      "status": "minor_injury",
+      "location": {
+        "latitude": 22.3069,
+        "longitude": 73.1815,
+        "altitude_m": 40
+      },
+      "burial_depth_m": 0.0,
+      "signature_range": {
+        "thermal_imaging_c": [36.4, 37.2],
+        "pir_motion": [0.4, 0.75],
+        "acoustic_db": [40.0, 65.0],
+        "co2_ppm": [500.0, 700.0],
+        "heart_rate_radar_bpm": [90.0, 110.0],
+        "rgb_camera_conf": [0.8, 0.95]
+      },
+      "notes": "Technician in secondary control booth with partial air seal; conscious and responding.",
+      "hazard": {
+        "burial_depth_m": 0.0,
+        "secondary_hazard": true,
+        "exposure_minutes": 25
+      }
+    },
+    {
+      "victim_id": "V3",
+      "label": "Victim 3 - Safe (Exterior Muster Point)",
+      "status": "safe",
+      "location": {
+        "latitude": 22.3065,
+        "longitude": 73.1805,
+        "altitude_m": 37
+      },
+      "burial_depth_m": 0.0,
+      "signature_range": {
+        "thermal_imaging_c": [36.5, 37.1],
+        "pir_motion": [0.6, 0.9],
+        "acoustic_db": [25.0, 45.0],
+        "co2_ppm": [410.0, 450.0],
+        "heart_rate_radar_bpm": [72.0, 88.0],
+        "rgb_camera_conf": [0.9, 0.99]
+      },
+      "notes": "Worker evacuated to upwind decontamination staging zone.",
+      "hazard": {
+        "burial_depth_m": 0.0,
+        "secondary_hazard": false,
+        "exposure_minutes": 10
+      }
+    },
+    {
+      "victim_id": "V4",
+      "label": "Victim 4 - Critical (Unconscious Under Scaffolding)",
+      "status": "critical",
+      "location": {
+        "latitude": 22.3078,
+        "longitude": 73.1818,
+        "altitude_m": 38
+      },
+      "burial_depth_m": 0.5,
+      "signature_range": {
+        "thermal_imaging_c": [34.8, 36.2],
+        "pir_motion": [0.0, 0.08],
+        "acoustic_db": [5.0, 18.0],
+        "co2_ppm": [1100.0, 1900.0],
+        "heart_rate_radar_bpm": [50.0, 70.0],
+        "rgb_camera_conf": [0.25, 0.55]
+      },
+      "notes": "Maintenance contractor trapped under pipe rack structure with toxic gas vapor pooling in low ground.",
+      "hazard": {
+        "burial_depth_m": 0.5,
+        "secondary_hazard": true,
+        "exposure_minutes": 55
+      }
+    }
+  ]
+}

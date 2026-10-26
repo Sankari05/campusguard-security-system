@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RIDGEWATCH — Doppler Heart-Rate Analysis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Isolated Doppler HR Styling within RidgeWatch Theme */
+    .doppler-page {
+      background: var(--bg-body, #f8fafd);
+      color: var(--ink, #0f2547);
+      min-height: 100vh;
+    }
+
+    .doppler-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .doppler-stat-card {
+      background: #ffffff;
+      border: 1px solid var(--border, #d3e1f5);
+      border-radius: 8px;
+      padding: 14px 16px;
+      box-shadow: 0 1px 3px rgba(15, 37, 71, 0.04);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .doppler-stat-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--stat-color, #2563eb);
+    }
+
+    .doppler-stat-title {
+      font-size: 11px;
+      font-family: var(--font-mono, monospace);
+      font-weight: 700;
+      color: var(--ink-dim, #4d5f80);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .doppler-stat-value {
+      font-size: 26px;
+      font-weight: 800;
+      font-family: var(--font-mono, monospace);
+      color: var(--ink, #0f2547);
+      margin: 6px 0 2px 0;
+    }
+
+    .doppler-stat-sub {
+      font-size: 11px;
+      color: var(--ink-faint, #64748b);
+      font-family: var(--font-mono, monospace);
+    }
+
+    .doppler-control-bar {
+      background: #ffffff;
+      border: 1px solid var(--border, #d3e1f5);
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      box-shadow: 0 1px 3px rgba(15, 37, 71, 0.04);
+    }
+
+    .doppler-filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .doppler-input,
+    .doppler-select {
+      background: #ffffff;
+      border: 1px solid var(--border, #d3e1f5);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-family: var(--font-mono, monospace);
+      color: var(--ink, #0f2547);
+      outline: none;
+    }
+
+    .doppler-input:focus,
+    .doppler-select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+    }
+
+    .doppler-survivor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    .doppler-survivor-card {
+      background: #ffffff;
+      border: 1px solid var(--border, #d3e1f5);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: 0 1px 3px rgba(15, 37, 71, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .doppler-survivor-card:hover {
+      border-color: #93c5fd;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .doppler-mini-canvas {
+      width: 100%;
+      height: 56px;
+      background: #f8fafc;
+      border: 1px solid var(--border-soft, #e2ecfa);
+      border-radius: 6px;
+    }
+
+    /* Modal / Drawer Styling */
+    .doppler-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 37, 71, 0.45);
+      backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      padding: 16px;
+    }
+
+    .doppler-modal-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .doppler-modal-content {
+      background: #ffffff;
+      border: 1px solid var(--border, #d3e1f5);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 820px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 16px 36px rgba(15, 37, 71, 0.18);
+      display: flex;
+      flex-direction: column;
+      transform: scale(0.96);
+      transition: transform 0.2s ease;
+    }
+
+    .doppler-modal-backdrop.is-open .doppler-modal-content {
+      transform: scale(1);
+    }
+
+    .doppler-modal-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border-soft, #e2ecfa);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafd;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+
+    .doppler-modal-body {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .doppler-detail-canvas {
+      width: 100%;
+      height: 120px;
+      background: #ffffff;
+      border: 1px solid var(--border, #d3e1f5);
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body class="doppler-page">
+
+  <div class="app-shell">
+
+    <!-- ============================================================ -->
+    <!-- SIDEBAR NAVIGATION                                            -->
+    <!-- ============================================================ -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-mark" aria-hidden="true">▲</span>
+        <div class="brand-text">
+          <span class="brand-name">RIDGEWATCH</span>
+          <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="sidebar-link">📡 <span>Dashboard</span></a>
+        <a href="visual.html" class="sidebar-link">🌐 <span>Visual 3D</span></a>
+        <a href="hardware.html" class="sidebar-link">🔧 <span>Hardware</span></a>
+        <a href="logic.html" class="sidebar-link">🧠 <span>Logic</span></a>
+        <a href="testing.html" class="sidebar-link">📊 <span>Testing</span></a>
+        <a href="commander.html" class="sidebar-link">🎖️ <span>Commander</span></a>
+        <a href="doppler.html" class="sidebar-link is-active">💓 <span>Doppler HR</span></a>
+        <a href="watch.html" class="sidebar-link">⌚ <span>Watch</span></a>
+        <a href="alerts.html" class="sidebar-link">🚨 <span>Alerts</span></a>
+        <a href="notification.html" class="sidebar-link">🔔 <span>Notification</span></a>
+        <a href="analytics.html" class="sidebar-link">📈 <span>Analytics</span></a>
+        <a href="scenarios.html" class="sidebar-link">🗺️ <span>Scenarios</span></a>
+        <a href="victims.html" class="sidebar-link">🧍 <span>Victims</span></a>
+        <a href="teams.html" class="sidebar-link">🚁 <span>Teams</span></a>
+      </nav>
+      <div class="sidebar-foot">
+        <span class="sidebar-foot-avatar" aria-hidden="true">R</span>
+        <div class="sidebar-foot-text">
+          <span class="sidebar-foot-name">RidgeWatch Ops</span>
+          <span class="sidebar-foot-role">Doppler DSP · v1.0</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ============================================================ -->
+    <!-- MAIN CONTENT                                                 -->
+    <!-- ============================================================ -->
+    <div class="main-content">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="site-tag">
+          <span class="site-tag-label">MODULE</span>
+          <span class="site-tag-value">Subsurface Doppler Radar · Cardiac Heart-Rate Analysis</span>
+        </div>
+        <div class="topbar-right" style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="font-size: 11px; font-family: var(--font-mono); color: #2563eb; background: #eff6ff; padding: 3px 8px; border-radius: 4px; border: 1px solid #bfdbfe; font-weight: 600;">
+            ● RADAR TELEMETRY SYNCED
+          </div>
+          <a href="notification.html" class="topbar-bell" title="Notification Center"
+            aria-label="Notification Center">🔔<span class="topbar-bell-dot" id="topbarAlertDot" hidden></span></a>
+          <span class="topbar-avatar" title="RidgeWatch Ops">R</span>
+        </div>
+      </header>
+
+      <main style="padding: 16px 20px;">
+
+        <!-- Prominent Simulation / Non-Medical Disclaimer Banner -->
+        <div
+          style="background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #2563eb; border-radius: 6px; padding: 10px 14px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-family: var(--font-mono);">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 16px;">🔬</span>
+            <div>
+              <strong style="color: #1e40af;">SIMULATED ESTIMATE · NON-MEDICAL RADAR DSP ANALYSIS</strong>
+              <div style="color: #4b5563; margin-top: 2px;">
+                Heart-rate values are extracted via slow-time Doppler demodulation &amp; Fourier spectral decomposition (0.8–2.2 Hz cardiac band). Not intended for medical diagnostic use.
+              </div>
+            </div>
+          </div>
+          <div style="text-align: right; flex-shrink: 0;">
+            <span id="dopplerActivePresetBadge"
+              style="font-size: 10px; font-weight: 700; color: #2563eb; background: #ffffff; padding: 3px 8px; border-radius: 4px; border: 1px solid #d3e1f5;">PRESET: DEMO</span>
+          </div>
+        </div>
+
+        <!-- 4 Summary Metric Cards -->
+        <div class="doppler-summary-grid">
+          <div class="doppler-stat-card" style="--stat-color: #2563eb;">
+            <div class="doppler-stat-title">Total Detected Survivors</div>
+            <div class="doppler-stat-value" id="statTotalSurvivors">0</div>
+            <div class="doppler-stat-sub">Subsurface &amp; Operation Targets</div>
+          </div>
+
+          <div class="doppler-stat-card" style="--stat-color: #16a34a;">
+            <div class="doppler-stat-title">Heart Signals Available</div>
+            <div class="doppler-stat-value" id="statHeartAvailable" style="color: #16a34a;">0</div>
+            <div class="doppler-stat-sub">Coherent Doppler cardiac echo</div>
+          </div>
+
+          <div class="doppler-stat-card" style="--stat-color: #dc2626;">
+            <div class="doppler-stat-title">Abnormal HR Signals</div>
+            <div class="doppler-stat-value" id="statAbnormalHr" style="color: #dc2626;">0</div>
+            <div class="doppler-stat-sub">&lt;50 BPM (Brady) or &gt;100 BPM (Tachy)</div>
+          </div>
+
+          <div class="doppler-stat-card" style="--stat-color: #d97706;">
+            <div class="doppler-stat-title">Weak / Uncertain Signals</div>
+            <div class="doppler-stat-value" id="statWeakSignals" style="color: #d97706;">0</div>
+            <div class="doppler-stat-sub">Confidence &lt;50% or SNR &lt;6.0 dB</div>
+          </div>
+        </div>
+
+        <!-- Control Bar: Filter, Search, Sort & Refresh -->
+        <div class="doppler-control-bar">
+          <div class="doppler-filter-group">
+            <input type="text" id="dopplerSearchInput" class="doppler-input" placeholder="🔍 Search survivor ID..."
+              style="min-width: 180px;">
+
+            <select id="dopplerTriageFilter" class="doppler-select">
+              <option value="ALL">All Triage Classes</option>
+              <option value="CRITICAL">Critical</option>
+              <option value="HIGH">High</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="LOW">Low</option>
+              <option value="NO_VITAL_SIGNS">No Vital Signs</option>
+            </select>
+
+            <select id="dopplerSortSelect" class="doppler-select">
+              <option value="ID_ASC">Sort: Target ID</option>
+              <option value="HR_DESC">Sort: Heart Rate (High to Low)</option>
+              <option value="HR_ASC">Sort: Heart Rate (Low to High)</option>
+              <option value="CONF_DESC" selected>Sort: Highest Confidence</option>
+              <option value="DEPTH_ASC">Sort: Shallowest Depth</option>
+            </select>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" id="dopplerRefreshBtn" class="btn"
+              style="padding: 6px 12px; font-size: 11px; font-family: var(--font-mono); background: #ffffff; border: 1px solid var(--border, #d3e1f5); color: var(--ink, #0f2547); border-radius: 6px; cursor: pointer;">
+              🔄 Refresh Radar Telemetry
+            </button>
+            <a href="commander.html" class="btn"
+              style="padding: 6px 12px; font-size: 11px; font-family: var(--font-mono); background: #2563eb; color: #ffffff; border: none; border-radius: 6px; text-decoration: none; font-weight: 600;">
+              🎖️ Commander Console
+            </a>
+          </div>
+        </div>
+
+        <!-- Survivor List Container (Virtualized / Lazy Loaded) -->
+        <div id="dopplerSurvivorList" class="doppler-survivor-grid">
+          <!-- Populated dynamically by doppler.js -->
+        </div>
+
+        <!-- Empty State / No Data Fallback -->
+        <div id="dopplerEmptyState"
+          style="display: none; background: #ffffff; border: 1px solid var(--border, #d3e1f5); border-radius: 8px; padding: 40px 20px; text-align: center;">
+          <div style="font-size: 32px; margin-bottom: 8px;">📡</div>
+          <div style="font-size: 14px; font-weight: 700; color: #0f2547; font-family: var(--font-mono);">No Doppler Signal Available</div>
+          <div style="font-size: 12px; color: #64748b; margin-top: 4px; font-family: var(--font-mono);">
+            No matching survivors detected or subsurface bioradar is currently scanning empty soil.
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- ISOLATED DETAIL DIAGNOSTIC MODAL                             -->
+  <!-- ============================================================ -->
+  <div id="dopplerDetailModal" class="doppler-modal-backdrop">
+    <div class="doppler-modal-content">
+
+      <div class="doppler-modal-header">
+        <div>
+          <div style="font-size: 10px; font-family: var(--font-mono); color: var(--ink-dim, #4d5f80); font-weight: 700;">
+            DOPPLER CARDIAC SPECTRAL DIAGNOSTIC
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 2px;">
+            <span id="modalTargetId" style="font-size: 16px; font-weight: 800; font-family: var(--font-mono); color: #0f2547;">--</span>
+            <span id="modalTriageBadge"
+              style="font-size: 10px; font-weight: 700; font-family: var(--font-mono); padding: 2px 6px; border-radius: 4px; color: #dc2626; background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.2);">--</span>
+          </div>
+        </div>
+        <button type="button" id="modalCloseBtn"
+          style="background: none; border: 1px solid var(--border, #d3e1f5); border-radius: 6px; width: 28px; height: 28px; font-size: 14px; color: var(--ink-dim, #4d5f80); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+          ✕
+        </button>
+      </div>
+
+      <div class="doppler-modal-body">
+
+        <!-- Top Metrics Row inside Modal -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;">
+          <div style="background: #f8fafc; border: 1px solid var(--border, #d3e1f5); border-radius: 6px; padding: 10px;">
+            <div style="font-size: 9px; font-family: var(--font-mono); color: #4d5f80; font-weight: 700;">ESTIMATED HEART RATE</div>
+            <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 4px;">
+              <span id="modalHeartRate" style="font-size: 22px; font-weight: 800; font-family: var(--font-mono); color: #dc2626;">--</span>
+              <span style="font-size: 11px; font-family: var(--font-mono); color: #4d5f80;">BPM</span>
+            </div>
+            <div style="font-size: 9px; font-family: var(--font-mono); color: #64748b; margin-top: 2px;">Simulated Doppler Estimate</div>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid var(--border, #d3e1f5); border-radius: 6px; padding: 10px;">
+            <div style="font-size: 9px; font-family: var(--font-mono); color: #4d5f80; font-weight: 700;">INTER-BEAT (RR) INTERVAL</div>
+            <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 4px;">
+              <span id="modalRrInterval" style="font-size: 22px; font-weight: 800; font-family: var(--font-mono); color: #2563eb;">--</span>
+              <span style="font-size: 11px; font-family: var(--font-mono); color: #4d5f80;">ms</span>
+            </div>
+            <div style="font-size: 9px; font-family: var(--font-mono); color: #64748b; margin-top: 2px;">Cardiac Cycle Period</div>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid var(--border, #d3e1f5); border-radius: 6px; padding: 10px;">
+            <div style="font-size: 9px; font-family: var(--font-mono); color: #4d5f80; font-weight: 700;">DOPPLER CONFIDENCE</div>
+            <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 4px;">
+              <span id="modalConfidence" style="font-size: 22px; font-weight: 800; font-family: var(--font-mono); color: #16a34a;">--</span>
+              <span style="font-size: 11px; font-family: var(--font-mono); color: #4d5f80;">%</span>
+            </div>
+            <div style="font-size: 9px; font-family: var(--font-mono); color: #64748b; margin-top: 2px;" id="modalSnrText">SNR: -- dB</div>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid var(--border, #d3e1f5); border-radius: 6px; padding: 10px;">
+            <div style="font-size: 9px; font-family: var(--font-mono); color: #4d5f80; font-weight: 700;">ESTIMATED DEPTH</div>
+            <div style="display: flex; align-items: baseline; gap: 4px; margin-top: 4px;">
+              <span id="modalDepth" style="font-size: 22px; font-weight: 800; font-family: var(--font-mono); color: #d97706;">--</span>
+              <span style="font-size: 11px; font-family: var(--font-mono); color: #4d5f80;">m</span>
+            </div>
+            <div style="font-size: 9px; font-family: var(--font-mono); color: #64748b; margin-top: 2px;" id="modalDepthUncertText">±--m uncertainty</div>
+          </div>
+        </div>
+
+        <!-- 1. Raw Slow-Time Doppler Displacement Signal -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 11px; font-family: var(--font-mono); font-weight: 700; color: #2563eb;">
+              1. RAW SLOW-TIME DOPPLER RADAR SIGNAL (CHEST DISPLACEMENT + CLUTTER)
+            </span>
+            <span style="font-size: 9px; font-family: var(--font-mono); color: #64748b;">Fs = 20 Hz (0 to 6.4s Window)</span>
+          </div>
+          <canvas id="rawDopplerCanvas" width="760" height="110" class="doppler-detail-canvas"></canvas>
+        </div>
+
+        <!-- 2. Bandpass Filtered Cardiac Signal (0.8–2.2 Hz) + Detected Peaks -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 11px; font-family: var(--font-mono); font-weight: 700; color: #dc2626;">
+              2. FILTERED CARDIAC SIGNAL (0.8–2.2 Hz) &amp; DETECTED SYSTOLIC PEAKS
+            </span>
+            <span style="font-size: 9px; font-family: var(--font-mono); color: #dc2626; font-weight: 700;">
+              ● Heartbeat Peak Markers
+            </span>
+          </div>
+          <canvas id="cardiacPeaksCanvas" width="760" height="110" class="doppler-detail-canvas"></canvas>
+        </div>
+
+        <!-- Detected Beat Interval Timeline Log -->
+        <div style="background: #f8fafc; border: 1px solid var(--border, #d3e1f5); border-radius: 6px; padding: 10px;">
+          <div style="font-size: 10px; font-family: var(--font-mono); font-weight: 700; color: #0f2547; margin-bottom: 6px;">
+            DETECTED BEAT TIMINGS &amp; INSTANTANEOUS RR INTERVALS
+          </div>
+          <div id="modalBeatsLog" style="display: flex; gap: 8px; flex-wrap: wrap; font-size: 10px; font-family: var(--font-mono);">
+            <!-- Dynamic peak chips injected here -->
+          </div>
+        </div>
+
+      </div>
+
+      <div style="padding: 12px 20px; border-top: 1px solid var(--border-soft, #e2ecfa); background: #f8fafd; display: flex; justify-content: space-between; align-items: center; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;">
+        <span style="font-size: 10px; font-family: var(--font-mono); color: #64748b;">
+          Radar Target: <strong id="modalFooterTarget">--</strong>
+        </span>
+        <button type="button" id="modalDismissBtn" class="btn"
+          style="padding: 6px 14px; font-size: 11px; font-family: var(--font-mono); background: #2563eb; color: #ffffff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+          Close Analysis
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/doppler.js"></script>
+</body>
+
+</html>

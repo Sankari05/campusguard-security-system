@@ -1,0 +1,911 @@
+/* ==========================================================================
+   RIDGEWATCH 3D / 4D SMARTWATCH RESCUE CONCEPT VISUALIZATION
+   Dedicated Light Theme (White & Blue Palette) for spatial 3D Wave Call Plus
+   model, signal flow pipeline, tactical vector map, and 4D timeline.
+   ========================================================================== */
+
+/* ==========================================================================
+   VIEW TOGGLE STYLING (WATCH CONSOLE vs RESCUE FLOW)
+   ========================================================================== */
+.watch-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: #f0f7ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 4px;
+}
+
+.view-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #475569;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.view-toggle-btn:hover {
+  color: #1e40af;
+  background: #ffffff;
+}
+
+.view-toggle-btn.is-active {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.view-toggle-btn.is-active span:first-child {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+}
+
+/* View Sections visibility control */
+.watch-view-container {
+  display: block;
+  animation: fadeInView 0.22s ease-in-out;
+}
+
+.watch-view-container.is-hidden {
+  display: none !important;
+}
+
+@keyframes fadeInView {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Main Container */
+.rw-concept-section {
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px -2px rgba(37, 99, 235, 0.06), 0 2px 6px -1px rgba(37, 99, 235, 0.03);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Concept Header Bar (White with Blue Tint) */
+.rw-concept-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+  color: #0f172a;
+  border-bottom: 1px solid #dbeafe;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.rw-concept-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rw-concept-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #2563eb;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
+}
+
+.rw-concept-title {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #1e3a8a;
+  text-transform: uppercase;
+}
+
+.rw-concept-subtitle {
+  font-size: 11px;
+  color: #64748b;
+  display: block;
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+.rw-concept-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.concept-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.badge-live-concept {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.badge-wave-call-plus {
+  background: #f5f3ff;
+  color: #7c3aed;
+  border: 1px solid #ddd6fe;
+}
+
+.badge-on-hold {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+/* Controls Toolbar */
+.rw-concept-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.toolbar-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.toolbar-select {
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.toolbar-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.btn-concept-ctrl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.btn-play-sim {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #1d4ed8;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
+}
+.btn-play-sim:hover {
+  background: #1d4ed8;
+}
+
+.btn-pause-sim {
+  background: #ffffff;
+  color: #334155;
+  border-color: #cbd5e1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.btn-pause-sim:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.btn-step-sim {
+  background: #ffffff;
+  color: #2563eb;
+  border-color: #bfdbfe;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.btn-step-sim:hover {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.btn-reset-sim {
+  background: #ffffff;
+  color: #64748b;
+  border-color: #cbd5e1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.btn-reset-sim:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.sim-state-pill {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  transition: all 0.25s ease;
+}
+.sim-state-pill.state-standby { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+.sim-state-pill.state-go { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+.sim-state-pill.state-accepted { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
+.sim-state-pill.state-enroute { background: #dbeafe; color: #2563eb; border: 1px solid #93c5fd; }
+.sim-state-pill.state-arrived { background: #e0e7ff; color: #4f46e5; border: 1px solid #a5b4fc; }
+.sim-state-pill.state-rescued { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
+
+/* 3-Column Spatial Grid */
+.rw-concept-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  gap: 16px;
+  padding: 20px;
+  background: #f8fafc;
+}
+
+@media (max-width: 1100px) {
+  .rw-concept-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   LEFT COLUMN: COMMANDER DISPATCH & SIGNAL FLOW
+   ========================================================================== */
+.concept-col-card {
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.04);
+}
+
+.col-card-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #1e3a8a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0effe;
+}
+
+.commander-dispatch-box {
+  background: #f0f7ff;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 11.5px;
+}
+
+.dispatch-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.dispatch-row:last-child {
+  margin-bottom: 0;
+}
+.dispatch-label {
+  color: #64748b;
+  font-weight: 600;
+}
+.dispatch-val {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+/* Signal Pipeline Track */
+.signal-pipeline-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+
+.pipeline-node {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.pipeline-node.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 1px #2563eb;
+}
+
+.pipeline-node.pulsing {
+  animation: nodePulse 1s infinite alternate;
+}
+
+@keyframes nodePulse {
+  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+  100% { box-shadow: 0 0 0 6px rgba(37, 99, 235, 0); }
+}
+
+.node-icon {
+  font-size: 16px;
+  width: 24px;
+  text-align: center;
+}
+
+.node-info {
+  flex: 1;
+}
+
+.node-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.node-status {
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.pipeline-connector {
+  width: 2px;
+  height: 10px;
+  background: #cbd5e1;
+  margin-left: 23px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pipeline-connector.pulse-active::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 0;
+  width: 2px;
+  height: 10px;
+  background: #2563eb;
+  animation: pulseTravel 0.6s linear infinite;
+}
+
+@keyframes pulseTravel {
+  0% { top: -10px; }
+  100% { top: 10px; }
+}
+
+/* ==========================================================================
+   CENTER COLUMN: 3D REALISTIC WAVE CALL PLUS SMARTWATCH (WHITE & BLUE STAGE)
+   ========================================================================== */
+.concept-watch-stage {
+  background: radial-gradient(circle at center, #ffffff 0%, #f0f7ff 60%, #e0effe 100%);
+  border-radius: 12px;
+  border: 1px solid #bfdbfe;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 380px;
+  perspective: 1000px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 10px rgba(37, 99, 235, 0.04), 0 4px 16px -2px rgba(37, 99, 235, 0.06);
+}
+
+.watch-stage-label {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #1e40af;
+  text-transform: uppercase;
+}
+
+.watch-stage-disclaimer {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #1d4ed8;
+  background: #eff6ff;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid #bfdbfe;
+}
+
+/* 3D Smartwatch Wrapper */
+.watch-3d-wrapper {
+  position: relative;
+  width: 210px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-style: preserve-3d;
+  transform: rotateX(8deg) rotateY(-6deg);
+  transition: transform 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+  cursor: grab;
+}
+
+.watch-3d-wrapper:hover {
+  transform: rotateX(0deg) rotateY(0deg) scale(1.03);
+}
+
+/* Top and Bottom Watch Straps */
+.watch-strap-top, .watch-strap-bottom {
+  width: 110px;
+  height: 48px;
+  background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+  border-radius: 6px;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.15), 0 4px 10px rgba(15, 23, 42, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+.watch-strap-top::before, .watch-strap-bottom::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 12px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 0 rgba(255, 255, 255, 0.1), 0 12px 0 rgba(255, 255, 255, 0.1), 0 18px 0 rgba(255, 255, 255, 0.1);
+}
+
+.watch-strap-bottom {
+  background: linear-gradient(180deg, #334155 0%, #1e293b 100%);
+}
+
+/* Smartwatch Casing (Wave Call Plus Form Factor) */
+.watch-case-body {
+  width: 200px;
+  height: 245px;
+  background: linear-gradient(145deg, #475569 0%, #1e293b 60%, #0f172a 100%);
+  border-radius: 36px;
+  padding: 10px;
+  box-sizing: border-box;
+  box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.25), 
+              0 0 0 1.5px rgba(148, 163, 184, 0.4),
+              inset 0 1px 2px rgba(255, 255, 255, 0.3);
+  position: relative;
+  z-index: 2;
+  margin: -10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Right Side Crown / Button */
+.watch-side-crown {
+  position: absolute;
+  right: -6px;
+  top: 60px;
+  width: 7px;
+  height: 32px;
+  background: linear-gradient(90deg, #94a3b8 0%, #cbd5e1 50%, #475569 100%);
+  border-radius: 0 4px 4px 0;
+  box-shadow: 1px 0 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Haptic Ripple Animation */
+.watch-haptic-ripple {
+  position: absolute;
+  top: -15px;
+  left: -15px;
+  right: -15px;
+  bottom: -15px;
+  border-radius: 46px;
+  border: 2px solid rgba(59, 130, 246, 0.6);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.watch-haptic-ripple.pulsing {
+  animation: hapticPulse 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
+
+@keyframes hapticPulse {
+  0% { transform: scale(0.95); opacity: 0.8; border-color: rgba(239, 68, 68, 0.8); }
+  100% { transform: scale(1.15); opacity: 0; border-color: rgba(37, 99, 235, 0); }
+}
+
+/* OLED Screen (Crisp True Black for Display) */
+.watch-oled-screen {
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px 12px;
+  box-sizing: border-box;
+  color: #ffffff;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9);
+}
+
+/* Screen Glass Reflection Sheen */
+.watch-oled-screen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 60%);
+  pointer-events: none;
+  border-radius: 28px 28px 0 0;
+}
+
+/* Top Watch Screen Status Bar */
+.screen-status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #94a3b8;
+  z-index: 3;
+}
+
+.screen-time {
+  font-family: var(--font-mono, monospace);
+  color: #f8fafc;
+}
+
+.screen-battery {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Watch Screen Main Dynamic Display */
+.screen-main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 3;
+  flex: 1;
+}
+
+.screen-state-header {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.screen-big-text {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  color: #ffffff;
+  margin: 4px 0;
+}
+
+.screen-big-text.text-go {
+  color: #ef4444;
+  text-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
+}
+
+.screen-big-text.text-accepted {
+  color: #f59e0b;
+}
+
+.screen-big-text.text-enroute {
+  color: #38bdf8;
+}
+
+.screen-big-text.text-arrived {
+  color: #a855f7;
+}
+
+.screen-big-text.text-rescued {
+  color: #22c55e;
+  text-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+}
+
+.screen-sub-detail {
+  font-size: 11px;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.screen-dist-badge {
+  display: inline-block;
+  background: rgba(37, 99, 235, 0.35);
+  border: 1px solid rgba(59, 130, 246, 0.6);
+  color: #93c5fd;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 6px;
+  font-family: var(--font-mono, monospace);
+}
+
+/* Bottom Watch Screen Footer */
+.screen-footer-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  z-index: 3;
+}
+
+/* Hover HUD Information (Light Glassmorphism) */
+.watch-hover-hud {
+  position: absolute;
+  bottom: 10px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(6px);
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 9.5px;
+  color: #334155;
+  display: flex;
+  gap: 14px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
+}
+
+/* ==========================================================================
+   RIGHT COLUMN: SPATIAL TACTICAL RESCUE MAP (LIGHT BLUE THEME)
+   ========================================================================== */
+.tactical-map-wrap {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #bfdbfe;
+  box-shadow: inset 0 1px 4px rgba(37, 99, 235, 0.05);
+}
+
+.tactical-map-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.map-badge-overlay {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #93c5fd;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #1d4ed8;
+  text-transform: uppercase;
+  font-family: var(--font-mono, monospace);
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
+}
+
+.map-telemetry-readout {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  font-size: 11px;
+}
+
+.telemetry-item {
+  background: #f0f7ff;
+  border: 1px solid #dbeafe;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+.telemetry-item-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+.telemetry-item-val {
+  font-size: 12px;
+  font-weight: 800;
+  color: #1e3a8a;
+  font-family: var(--font-mono, monospace);
+}
+
+/* ==========================================================================
+   BOTTOM: 4D OPERATION TIMELINE
+   ========================================================================== */
+.concept-timeline-wrap {
+  padding: 16px 20px;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+}
+
+.concept-timeline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.concept-timeline-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #1e3a8a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.concept-timeline-disclaimer {
+  font-size: 10px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.concept-timeline-track {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  position: relative;
+  gap: 8px;
+}
+
+.concept-timeline-track::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  right: 20px;
+  height: 2px;
+  background: #e2e8f0;
+  z-index: 1;
+}
+
+.concept-track-progress {
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  height: 2px;
+  background: #2563eb;
+  z-index: 2;
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.concept-step-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 3;
+  cursor: pointer;
+}
+
+.concept-step-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748b;
+  transition: all 0.2s ease;
+  margin-bottom: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.concept-step-node.completed .concept-step-dot {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+.concept-step-node.active .concept-step-dot {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+  transform: scale(1.1);
+}
+
+.concept-step-time {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #64748b;
+  font-family: var(--font-mono, monospace);
+}
+
+.concept-step-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #334155;
+  margin-top: 2px;
+}
+
+.concept-step-node.active .concept-step-label {
+  color: #2563eb;
+  font-weight: 800;
+}

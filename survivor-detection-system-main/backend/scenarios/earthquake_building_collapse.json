@@ -1,0 +1,225 @@
+{
+  "scenario_id": "earthquake_building_collapse",
+  "name": "Urban Earthquake - Building Collapse",
+  "description": "Collapsed four-story residential block following a magnitude-6.8 urban earthquake. Four victims trapped at varying depths in the rubble pile, with an active aftershock risk affecting the two most deeply-buried casualties.",
+  "site_label": "Collapsed Apartment Block \u00b7 Sector 12 Urban USAR Site \u00b7 216 m",
+  "site_origin": {
+    "latitude": 28.6139,
+    "longitude": 77.209,
+    "altitude_m": 216
+  },
+  "site_environment": {
+    "baseline_vibration_mm_s": 1.2,
+    "aftershock_prob_per_cycle": 0.04,
+    "aftershock_peak_min_mm_s": 10.0,
+    "aftershock_peak_max_mm_s": 28.0,
+    "aftershock_decay_cycles": 5,
+    "baseline_tilt_deg": 2.0,
+    "tilt_creep_rate_deg_per_cycle": 0.03,
+    "tilt_shift_probability": 0.025,
+    "tilt_shift_range_deg": [
+      1.5,
+      4.0
+    ],
+    "kit_vibration_baseline_g": 0.05,
+    "kit_vibration_spike_probability": 0.05,
+    "kit_tilt_creep_rate_deg_per_cycle": 0.03,
+    "kit_tilt_shift_probability": 0.04,
+    "initial_ambient_temp_c": 29.0,
+    "ambient_temp_volatility_c": 1.0,
+    "temp_diurnal_swing_c": 6.0,
+    "initial_humidity_pct": 38.0,
+    "humidity_volatility_pct": 3.0,
+    "humidity_rain_amplifier_pct_per_mm_hr": 1.0
+  },
+  "rescue_teams": [
+    {
+      "team_id": "ALPHA",
+      "team_name": "Rescue Team Alpha",
+      "lat_offset": -0.0008,
+      "lon_offset": -0.0006,
+      "members": 2
+    },
+    {
+      "team_id": "BRAVO",
+      "team_name": "Rescue Team Bravo",
+      "lat_offset": 0.001,
+      "lon_offset": -0.0009,
+      "members": 2
+    }
+  ],
+  "victims": [
+    {
+      "victim_id": "V1",
+      "label": "Victim 1 - Deceased",
+      "status": "deceased",
+      "location": {
+        "latitude": 28.61375,
+        "longitude": 77.2087,
+        "altitude_m": 213
+      },
+      "burial_depth_m": 2.2,
+      "signature_range": {
+        "thermal_imaging_c": [
+          -5.0,
+          2.0
+        ],
+        "pir_motion": [
+          0.0,
+          0.02
+        ],
+        "acoustic_db": [
+          0.0,
+          5.0
+        ],
+        "co2_ppm": [
+          400.0,
+          420.0
+        ],
+        "heart_rate_radar_bpm": [
+          0.0,
+          0.0
+        ],
+        "rgb_camera_conf": [
+          0.0,
+          0.1
+        ]
+      },
+      "notes": "No vital signs on any channel; thermal signature has decayed to the sensor's ambient floor reading. Pinned beneath a collapsed concrete slab in the basement void.",
+      "hazard": {
+        "burial_depth_m": 2.2,
+        "secondary_hazard": true,
+        "exposure_minutes": 300
+      }
+    },
+    {
+      "victim_id": "V2",
+      "label": "Victim 2 - Critical",
+      "status": "critical",
+      "location": {
+        "latitude": 28.6141,
+        "longitude": 77.20905,
+        "altitude_m": 214
+      },
+      "burial_depth_m": 1.5,
+      "signature_range": {
+        "thermal_imaging_c": [
+          24.0,
+          29.0
+        ],
+        "pir_motion": [
+          0.01,
+          0.08
+        ],
+        "acoustic_db": [
+          5.0,
+          15.0
+        ],
+        "co2_ppm": [
+          600.0,
+          900.0
+        ],
+        "heart_rate_radar_bpm": [
+          35.0,
+          55.0
+        ],
+        "rgb_camera_conf": [
+          0.1,
+          0.3
+        ]
+      },
+      "notes": "Faint vitals, crush-injury suspected; pinned under debris in a small survivable void, aftershock risk overhead.",
+      "hazard": {
+        "burial_depth_m": 1.5,
+        "secondary_hazard": true,
+        "exposure_minutes": 240
+      }
+    },
+    {
+      "victim_id": "V3",
+      "label": "Victim 3 - Minor Injury",
+      "status": "minor_injury",
+      "location": {
+        "latitude": 28.61395,
+        "longitude": 77.2094,
+        "altitude_m": 216
+      },
+      "burial_depth_m": 0.6,
+      "signature_range": {
+        "thermal_imaging_c": [
+          30.0,
+          34.0
+        ],
+        "pir_motion": [
+          0.15,
+          0.45
+        ],
+        "acoustic_db": [
+          25.0,
+          45.0
+        ],
+        "co2_ppm": [
+          900.0,
+          1500.0
+        ],
+        "heart_rate_radar_bpm": [
+          80.0,
+          110.0
+        ],
+        "rgb_camera_conf": [
+          0.4,
+          0.7
+        ]
+      },
+      "notes": "Trapped in a stairwell void behind light debris; conscious, calling for help, stable.",
+      "hazard": {
+        "burial_depth_m": 0.6,
+        "secondary_hazard": false,
+        "exposure_minutes": 120
+      }
+    },
+    {
+      "victim_id": "V4",
+      "label": "Victim 4 - Safe",
+      "status": "safe",
+      "location": {
+        "latitude": 28.6135,
+        "longitude": 77.2083,
+        "altitude_m": 218
+      },
+      "burial_depth_m": 0.0,
+      "signature_range": {
+        "thermal_imaging_c": [
+          32.0,
+          37.0
+        ],
+        "pir_motion": [
+          0.5,
+          1.0
+        ],
+        "acoustic_db": [
+          40.0,
+          70.0
+        ],
+        "co2_ppm": [
+          1500.0,
+          2500.0
+        ],
+        "heart_rate_radar_bpm": [
+          70.0,
+          100.0
+        ],
+        "rgb_camera_conf": [
+          0.8,
+          1.0
+        ]
+      },
+      "notes": "Self-extricated, ambulatory survivor sheltering in the courtyard clear of the collapse zone.",
+      "hazard": {
+        "burial_depth_m": 0.0,
+        "secondary_hazard": false,
+        "exposure_minutes": 30
+      }
+    }
+  ]
+}

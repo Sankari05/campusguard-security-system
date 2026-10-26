@@ -1,0 +1,138 @@
+name: EduTrack Pro · Enterprise CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── STAGE 1: FRONTEND QUALITY & BUILD GATE ─────────────────────────────────
+  frontend-build:
+    name: Frontend Build (React 18 + Vite)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package.json
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Compile Production Bundle
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Upload Compiled Frontend Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+          retention-days: 1
+
+  # ── STAGE 2: BACKEND INTEGRATION & SCHEMAS ─────────────────────────────────
+  backend-test:
+    name: Backend Tests & Pydantic Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install System Libraries for OpenCV & Vision
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libglib2.0-0 libgomp1
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest httpx
+
+      - name: Python Syntax & Bytecode Compilation Check
+        run: |
+          python -m compileall app/ scripts/ tests/
+
+      - name: Run Backend Integration & AI Vector Tests
+        run: |
+          python -m pytest tests/test_api_integration.py tests/test_schemas.py tests/test_faiss_vector_scale.py tests/test_attendance_idempotency.py tests/test_backup_disaster_recovery.py -v
+
+  # ── STAGE 3: PLAYWRIGHT E2E BROWSER VALIDATION ─────────────────────────────
+  e2e-browser-tests:
+    name: Playwright E2E Browser Automation
+    runs-on: ubuntu-latest
+    needs: [ frontend-build, backend-test ]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Download Compiled Frontend Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+
+      - name: Install System Vision Libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libglib2.0-0
+
+      - name: Install Python Dependencies & Playwright
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest playwright httpx
+          playwright install --with-deps chromium
+
+      - name: Launch Backend Server Daemon
+        run: |
+          python -c "from app.main import app; import uvicorn; uvicorn.run(app, host='0.0.0.0', port=8000)" &
+          sleep 5
+
+      - name: Run Playwright Chromium E2E Flows
+        run: |
+          python -m pytest tests/e2e/test_admin_portal_e2e.py -v
+
+  # ── STAGE 4: DOCKER MULTI-STAGE BUILD VERIFICATION ─────────────────────────
+  docker-build:
+    name: Production Docker Multi-Stage Image Check
+    runs-on: ubuntu-latest
+    needs: [ frontend-build, backend-test ]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Production Container Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: edutrack-pro:ci-test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

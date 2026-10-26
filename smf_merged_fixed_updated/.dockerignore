@@ -1,0 +1,39 @@
+# Git & IDE
+.git
+.gitignore
+.agents
+.gemini
+brain
+.vscode
+.idea
+
+# Node & Frontend
+frontend/node_modules/
+frontend/.vite/
+frontend/package-lock.json
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+venv311/
+
+# Testing & Coverage
+.pytest_cache/
+tests/
+coverage/
+.coverage
+htmlcov/
+
+# Logs & Temporary files
+*.log
+logs/*.log
+scratch/
+tmp/
+*.tmp
+attendance_test.db

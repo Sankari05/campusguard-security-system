@@ -1,0 +1,48 @@
+# =============================================================
+# .gitignore - SMF Smart Attendance System
+# Enterprise Security Baseline (OWASP & 12-Factor App)
+# =============================================================
+
+# ── Secrets & Credentials ─────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+
+# ── Database & Storage Isolation ──────────────────────────────
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+data/*.db
+data/*.db-wal
+data/*.db-shm
+attendance.db*
+
+# ── Biometric & AI Trained Weights ────────────────────────────
+models/*.pkl
+models/*.yml
+data/known_faces/
+data/dataset/
+
+# ── Python / Virtual Environments ─────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+venv*/
+.venv/
+
+# ── Logs & Temporary Files ────────────────────────────────────
+logs/
+*.log
+scratch/
+.pytest_cache/
+.coverage
+htmlcov/

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIDGEWATCH — Alerts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="alerts-body">
+
+<div class="app-shell alerts-shell">
+
+  <!-- ============================================================ -->
+  <!-- SIDEBAR NAVIGATION                                            -->
+  <!-- ============================================================ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">▲</span>
+      <div class="brand-text">
+        <span class="brand-name">RIDGEWATCH</span>
+        <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="sidebar-link">📡 <span>Dashboard</span></a>
+      <a href="visual.html" class="sidebar-link">🌐 <span>Visual 3D</span></a>
+      <a href="hardware.html" class="sidebar-link">🔧 <span>Hardware</span></a>
+      <a href="logic.html" class="sidebar-link">🧠 <span>Logic</span></a>
+      <a href="testing.html" class="sidebar-link">📊 <span>Testing</span></a>
+      <a href="commander.html" class="sidebar-link">🎖️ <span>Commander</span></a>
+      <a href="doppler.html" class="sidebar-link">💓 <span>Doppler HR</span></a>
+      <a href="watch.html" class="sidebar-link">⌚ <span>Watch</span></a>
+      <a href="alerts.html" class="sidebar-link is-active">🚨 <span>Alerts</span></a>
+      <a href="notification.html" class="sidebar-link">🔔 <span>Notification</span></a>
+      <a href="analytics.html" class="sidebar-link">📈 <span>Analytics</span></a>
+      <a href="scenarios.html" class="sidebar-link">🗺️ <span>Scenarios</span></a>
+      <a href="victims.html" class="sidebar-link">🧍 <span>Victims</span></a>
+      <a href="teams.html" class="sidebar-link">🚁 <span>Teams</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="sidebar-foot-avatar" aria-hidden="true">R</span>
+      <div class="sidebar-foot-text">
+        <span class="sidebar-foot-name">RidgeWatch Ops</span>
+        <span class="sidebar-foot-role">System v2.0 · Direct Access</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================ -->
+  <!-- MAIN CONTENT CONTAINER                                       -->
+  <!-- ============================================================ -->
+  <div class="main-content">
+
+    <!-- TOPBAR -->
+    <header class="alerts-topbar">
+      <div class="alerts-title-group">
+        <h1>Alerts</h1>
+        <p>Rescue Operations Alert Center — Real-time Events &amp; Notifications</p>
+      </div>
+
+      <div class="alerts-actions">
+        <div class="alerts-live-badge" id="alertsLiveBadge">
+          <span class="live-pulse-dot"></span>
+          <span id="alertsLiveStatusText">LIVE STREAM</span>
+        </div>
+
+        <div class="alerts-date-badge" id="alertsDateRange">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <span>Today · Live Session</span>
+        </div>
+
+        <button class="alerts-btn-icon" id="alertsRefreshBtn" type="button" title="Refresh Alert Data">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+        </button>
+
+        <div class="alerts-notif-wrap" title="Notifications">
+          <button class="alerts-btn-icon" id="alertsBellBtn" type="button" title="Unread Notifications">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+            <span class="alerts-notif-dot" id="alertsBellDot" hidden></span>
+          </button>
+        </div>
+
+        <div class="alerts-user-avatar" title="RidgeWatch Ops · Operational Commander">R</div>
+      </div>
+    </header>
+
+    <!-- ALERTS DASHBOARD CONTAINER -->
+    <main class="alerts-container">
+
+      <!-- ============================================================ -->
+      <!-- 5 SUMMARY CARDS                                              -->
+      <!-- ============================================================ -->
+      <section class="alerts-kpi-grid">
+        <!-- CARD 1: UNREAD ALERTS -->
+        <article class="alerts-kpi-card" data-filter="unread" id="cardUnread" title="Click to filter by unread alerts">
+          <div class="alerts-kpi-icon icon-blue">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          </div>
+          <div class="alerts-kpi-info">
+            <div class="alerts-kpi-label">UNREAD ALERTS</div>
+            <div class="alerts-kpi-value" id="kpiUnreadCount">0</div>
+            <div class="alerts-kpi-sub">Require attention</div>
+          </div>
+        </article>
+
+        <!-- CARD 2: CRITICAL -->
+        <article class="alerts-kpi-card" data-filter="critical" id="cardCritical" title="Click to filter by critical alerts">
+          <div class="alerts-kpi-icon icon-red">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          </div>
+          <div class="alerts-kpi-info">
+            <div class="alerts-kpi-label">CRITICAL</div>
+            <div class="alerts-kpi-value text-red" id="kpiCriticalCount">0</div>
+            <div class="alerts-kpi-sub">High priority events</div>
+          </div>
+        </article>
+
+        <!-- CARD 3: WARNING -->
+        <article class="alerts-kpi-card" data-filter="warning" id="cardWarning" title="Click to filter by warning alerts">
+          <div class="alerts-kpi-icon icon-orange">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          </div>
+          <div class="alerts-kpi-info">
+            <div class="alerts-kpi-label">WARNING</div>
+            <div class="alerts-kpi-value text-orange" id="kpiWarningCount">0</div>
+            <div class="alerts-kpi-sub">Medium priority events</div>
+          </div>
+        </article>
+
+        <!-- CARD 4: INFO -->
+        <article class="alerts-kpi-card" data-filter="info" id="cardInfo" title="Click to filter by info alerts">
+          <div class="alerts-kpi-icon icon-cyan">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+          </div>
+          <div class="alerts-kpi-info">
+            <div class="alerts-kpi-label">INFO</div>
+            <div class="alerts-kpi-value text-blue" id="kpiInfoCount">0</div>
+            <div class="alerts-kpi-sub">Informational alerts</div>
+          </div>
+        </article>
+
+        <!-- CARD 5: TOTAL TODAY -->
+        <article class="alerts-kpi-card" data-filter="all" id="cardTotal" title="Click to show all alerts">
+          <div class="alerts-kpi-icon icon-purple">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          </div>
+          <div class="alerts-kpi-info">
+            <div class="alerts-kpi-label">TOTAL TODAY</div>
+            <div class="alerts-kpi-value" id="kpiTotalCount">0</div>
+            <div class="alerts-kpi-sub">Total events logged</div>
+          </div>
+        </article>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- FILTER TOOLBAR                                               -->
+      <!-- ============================================================ -->
+      <section class="alerts-filter-toolbar">
+        <div class="alerts-filter-pills" id="alertsFilterPills">
+          <button type="button" class="filter-pill is-active" data-filter="all">All <span class="filter-count" id="filterCountAll">0</span></button>
+          <button type="button" class="filter-pill" data-filter="critical">Critical <span class="filter-count count-critical" id="filterCountCritical">0</span></button>
+          <button type="button" class="filter-pill" data-filter="warning">Warning <span class="filter-count count-warning" id="filterCountWarning">0</span></button>
+          <button type="button" class="filter-pill" data-filter="dispatch">Dispatch <span class="filter-count count-dispatch" id="filterCountDispatch">0</span></button>
+          <button type="button" class="filter-pill" data-filter="safety">Safety <span class="filter-count count-safety" id="filterCountSafety">0</span></button>
+          <button type="button" class="filter-pill" data-filter="arrival">Arrival <span class="filter-count count-arrival" id="filterCountArrival">0</span></button>
+          <button type="button" class="filter-pill" data-filter="system">System <span class="filter-count count-system" id="filterCountSystem">0</span></button>
+        </div>
+
+        <div class="alerts-search-and-actions">
+          <div class="alerts-search-box">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="alertsSearchInput" placeholder="Search alerts..." autocomplete="off">
+            <button type="button" id="alertsSearchClear" class="search-clear-btn" hidden>×</button>
+          </div>
+
+          <button type="button" id="alertsMarkAllReadBtn" class="btn btn-secondary btn-small">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            Mark all as read
+          </button>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- MAIN DUAL-COLUMN GRID                                        -->
+      <!-- ============================================================ -->
+      <section class="alerts-main-grid">
+
+        <!-- LEFT COLUMN: ALERTS & EVENTS TABLE -->
+        <div class="alerts-table-panel panel">
+          <div class="panel-head">
+            <div class="panel-title-with-badge">
+              <h2>🚨 ALERTS &amp; EVENTS</h2>
+              <span class="alerts-table-count-badge" id="tableVisibleCount">0 events</span>
+            </div>
+            <div class="table-legend">
+              <span class="legend-dot-unread"></span> Unread
+              <span class="legend-dot-read"></span> Read
+            </div>
+          </div>
+
+          <div class="alerts-table-wrap">
+            <table class="alerts-data-table" id="alertsTable">
+              <thead>
+                <tr>
+                  <th class="col-status" title="Read Status"></th>
+                  <th class="col-time">TIME</th>
+                  <th class="col-sev">SEVERITY</th>
+                  <th class="col-type">TYPE</th>
+                  <th class="col-msg">MESSAGE</th>
+                  <th class="col-src">SOURCE</th>
+                  <th class="col-tgt">TARGET</th>
+                  <th class="col-st">STATUS</th>
+                  <th class="col-act">ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="alertsTableBody">
+                <!-- Dynamically populated rows -->
+              </tbody>
+            </table>
+
+            <div id="alertsEmptyMsg" class="alerts-empty-state" hidden>
+              <div class="empty-icon">🔔</div>
+              <div class="empty-title">No alerts found</div>
+              <div class="empty-sub" id="alertsEmptySubText">No events match the current filter or search criteria.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: DETAILS + CHART + ACTIVITIES -->
+        <div class="alerts-side-column">
+
+          <!-- CARD 1: SELECTED ALERT DETAILS -->
+          <div class="panel alert-detail-panel" id="alertDetailPanel">
+            <div class="panel-head">
+              <h2>SELECTED ALERT DETAILS</h2>
+              <span class="detail-status-pill" id="detailStatusPill">No Selection</span>
+            </div>
+            <div class="alert-detail-content" id="alertDetailContent">
+              <div class="detail-placeholder" id="detailPlaceholder">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <p>Select an alert row from the table to inspect detailed telemetry, victim status, and operational actions.</p>
+              </div>
+              <div class="detail-body" id="detailBody" hidden>
+                <div class="detail-header-row">
+                  <span class="severity-badge" id="detailSeverityBadge">CRITICAL</span>
+                  <span class="detail-type" id="detailType">Victim Detected</span>
+                </div>
+
+                <div class="detail-msg-box" id="detailMsgBox">
+                  High priority victim detected. Immediate assessment and rescue team assignment required.
+                </div>
+
+                <div class="detail-meta-grid">
+                  <div class="detail-meta-item" id="metaVictimWrap">
+                    <span class="meta-label">Victim ID</span>
+                    <span class="meta-val id-badge" id="detailVictimId">—</span>
+                  </div>
+                  <div class="detail-meta-item" id="metaPriorityWrap">
+                    <span class="meta-label">Priority / SPS</span>
+                    <span class="meta-val" id="detailPriority">—</span>
+                  </div>
+                  <div class="detail-meta-item" id="metaTeamWrap">
+                    <span class="meta-label">Team / Callsign</span>
+                    <span class="meta-val" id="detailTeam">—</span>
+                  </div>
+                  <div class="detail-meta-item" id="metaLocationWrap">
+                    <span class="meta-label">Location</span>
+                    <span class="meta-val coord-val" id="detailLocation">—</span>
+                  </div>
+                  <div class="detail-meta-item">
+                    <span class="meta-label">Detected At</span>
+                    <span class="meta-val" id="detailTime">—</span>
+                  </div>
+                  <div class="detail-meta-item">
+                    <span class="meta-label">Source</span>
+                    <span class="meta-val" id="detailSource">—</span>
+                  </div>
+                  <div class="detail-meta-item">
+                    <span class="meta-label">Target</span>
+                    <span class="meta-val" id="detailTarget">—</span>
+                  </div>
+                </div>
+
+                <div class="detail-action-footer">
+                  <a href="#" id="detailActionBtn" class="btn btn-primary btn-block">
+                    <span>View Details</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 2: ALERTS BY SEVERITY (TODAY) -->
+          <div class="panel alerts-severity-panel">
+            <div class="panel-head">
+              <h2>ALERTS BY SEVERITY (TODAY)</h2>
+            </div>
+            <div class="severity-chart-content">
+              <div class="severity-bars-list">
+                <div class="sev-bar-row">
+                  <div class="sev-bar-label">
+                    <span class="sev-dot dot-critical"></span>
+                    <span>Critical</span>
+                    <span class="sev-count" id="sevBarCountCritical">0</span>
+                  </div>
+                  <div class="sev-bar-track">
+                    <div class="sev-bar-fill fill-critical" id="sevBarFillCritical" style="width: 0%;"></div>
+                  </div>
+                </div>
+                <div class="sev-bar-row">
+                  <div class="sev-bar-label">
+                    <span class="sev-dot dot-warning"></span>
+                    <span>Warning</span>
+                    <span class="sev-count" id="sevBarCountWarning">0</span>
+                  </div>
+                  <div class="sev-bar-track">
+                    <div class="sev-bar-fill fill-warning" id="sevBarFillWarning" style="width: 0%;"></div>
+                  </div>
+                </div>
+                <div class="sev-bar-row">
+                  <div class="sev-bar-label">
+                    <span class="sev-dot dot-dispatch"></span>
+                    <span>Dispatch</span>
+                    <span class="sev-count" id="sevBarCountDispatch">0</span>
+                  </div>
+                  <div class="sev-bar-track">
+                    <div class="sev-bar-fill fill-dispatch" id="sevBarFillDispatch" style="width: 0%;"></div>
+                  </div>
+                </div>
+                <div class="sev-bar-row">
+                  <div class="sev-bar-label">
+                    <span class="sev-dot dot-info"></span>
+                    <span>Info</span>
+                    <span class="sev-count" id="sevBarCountInfo">0</span>
+                  </div>
+                  <div class="sev-bar-track">
+                    <div class="sev-bar-fill fill-info" id="sevBarFillInfo" style="width: 0%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD 3: RECENT TEAM ACTIVITIES -->
+          <div class="panel recent-activities-panel">
+            <div class="panel-head">
+              <h2>RECENT TEAM ACTIVITIES</h2>
+            </div>
+            <div class="activities-timeline" id="activitiesTimeline">
+              <div class="activities-empty dim">No team activities logged yet.</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- BOTTOM OPERATION STATUS                                      -->
+      <!-- ============================================================ -->
+      <section class="alerts-operation-status-bar">
+        <div class="status-tile">
+          <div class="status-tile-icon">🚁</div>
+          <div class="status-tile-info">
+            <div class="status-tile-label">ACTIVE TEAMS</div>
+            <div class="status-tile-value" id="opActiveTeams">0</div>
+            <div class="status-tile-sub" id="opActiveTeamsSub">0 En-route • 0 Available</div>
+          </div>
+        </div>
+
+        <div class="status-tile">
+          <div class="status-tile-icon">🎯</div>
+          <div class="status-tile-info">
+            <div class="status-tile-label">ACTIVE MISSIONS</div>
+            <div class="status-tile-value" id="opActiveMissions">0</div>
+            <div class="status-tile-sub" id="opActiveMissionsSub">Standby</div>
+          </div>
+        </div>
+
+        <div class="status-tile">
+          <div class="status-tile-icon">🔴</div>
+          <div class="status-tile-info">
+            <div class="status-tile-label">HIGH PRIORITY VICTIMS</div>
+            <div class="status-tile-value" id="opHighVictims">0</div>
+            <div class="status-tile-sub" id="opHighVictimsSub">No critical survivors</div>
+          </div>
+        </div>
+
+        <div class="status-tile">
+          <div class="status-tile-icon">⚙️</div>
+          <div class="status-tile-info">
+            <div class="status-tile-label">SYSTEM STATUS</div>
+            <div class="status-tile-value status-good" id="opSystemStatus">Operational</div>
+            <div class="status-tile-sub" id="opSystemStatusSub">Telemetry Normal</div>
+          </div>
+        </div>
+
+        <div class="status-tile">
+          <div class="status-tile-icon">📡</div>
+          <div class="status-tile-info">
+            <div class="status-tile-label">COMMUNICATION</div>
+            <div class="status-tile-value status-good" id="opCommStatus">Good</div>
+            <div class="status-tile-sub" id="opCommStatusSub">Network Healthy</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/alerts.js"></script>
+</body>
+</html>

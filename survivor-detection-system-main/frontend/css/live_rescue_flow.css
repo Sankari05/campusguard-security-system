@@ -1,0 +1,474 @@
+/* ==========================================================================
+   RIDGEWATCH LIVE RESCUE FLOW (OPERATIONAL HARDWARE PIPELINE)
+   Dedicated Light Theme (White & Blue Palette) for Real-Time Integration
+   ========================================================================== */
+
+.lrf-container {
+  padding: 20px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.lrf-section {
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px -2px rgba(37, 99, 235, 0.06), 0 2px 6px -1px rgba(37, 99, 235, 0.03);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Header Bar */
+.lrf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+  border-bottom: 1px solid #dbeafe;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.lrf-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lrf-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  font-size: 18px;
+  color: #2563eb;
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.1);
+}
+
+.lrf-title {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #1e3a8a;
+  text-transform: uppercase;
+}
+
+.lrf-subtitle {
+  font-size: 11.5px;
+  color: #64748b;
+  display: block;
+  font-weight: 500;
+  margin-top: 1px;
+}
+
+/* System Status Bar */
+.lrf-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.lrf-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+.lrf-status-pill.online {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.lrf-status-pill.success {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #15803d;
+}
+
+.lrf-status-pill.warning {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #b45309;
+}
+
+.lrf-status-pill.offline {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+.lrf-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.lrf-status-dot.pulse {
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+  animation: lrfDotPulse 1.5s infinite;
+}
+
+@keyframes lrfDotPulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+/* 3-Column Operational Grid */
+.lrf-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr 340px;
+  gap: 16px;
+  padding: 20px;
+  background: #f8fafc;
+}
+
+@media (max-width: 1100px) {
+  .lrf-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card Styling */
+.lrf-card {
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.04);
+}
+
+.lrf-card-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #1e3a8a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0effe;
+}
+
+/* Details Box */
+.lrf-details-box {
+  background: #f0f7ff;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 11.5px;
+}
+
+.lrf-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.lrf-row:last-child {
+  margin-bottom: 0;
+}
+.lrf-label {
+  color: #64748b;
+  font-weight: 600;
+}
+.lrf-val {
+  color: #0f172a;
+  font-weight: 700;
+  font-family: inherit;
+}
+.lrf-val.highlight {
+  color: #1d4ed8;
+  font-weight: 800;
+}
+.lrf-val.cmd-go {
+  color: #dc2626;
+  font-weight: 800;
+  background: #fee2e2;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Hardware Box Note */
+.lrf-hw-note {
+  font-size: 10.5px;
+  color: #475569;
+  background: #f1f5f9;
+  border-left: 3px solid #2563eb;
+  padding: 8px 10px;
+  border-radius: 0 6px 6px 0;
+  line-height: 1.4;
+}
+
+/* Visual Pipeline */
+.lrf-pipeline-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+}
+
+.lrf-pipe-node {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.lrf-pipe-node.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 1px #2563eb, 0 2px 6px rgba(37, 99, 235, 0.08);
+}
+
+.lrf-pipe-node.completed {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.lrf-pipe-node.unconfirmed {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.lrf-pipe-icon {
+  font-size: 18px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.lrf-pipe-node.active .lrf-pipe-icon {
+  background: #dbeafe;
+}
+
+.lrf-pipe-info {
+  flex: 1;
+}
+
+.lrf-pipe-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.lrf-pipe-status {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.lrf-pipe-time {
+  font-size: 10px;
+  color: #94a3b8;
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+}
+
+.lrf-pipe-connector {
+  width: 2px;
+  height: 12px;
+  background: #cbd5e1;
+  margin-left: 27px;
+  position: relative;
+  overflow: hidden;
+}
+
+.lrf-pipe-connector.pulse-active::after {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 0;
+  width: 2px;
+  height: 12px;
+  background: #2563eb;
+  animation: lrfPulseTravel 0.6s linear infinite;
+}
+
+@keyframes lrfPulseTravel {
+  0% { top: -12px; }
+  100% { top: 12px; }
+}
+
+/* Command Status Banner */
+.lrf-cmd-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e3a8a;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+/* Watch Monitor Chassis */
+.lrf-watch-monitor-stage {
+  background: radial-gradient(circle at center, #ffffff 0%, #f0f7ff 65%, #e0effe 100%);
+  border-radius: 10px;
+  border: 1px solid #bfdbfe;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 220px;
+}
+
+.lrf-mini-watch-frame {
+  width: 170px;
+  height: 205px;
+  background: linear-gradient(145deg, #334155 0%, #1e293b 70%, #0f172a 100%);
+  border-radius: 28px;
+  padding: 8px;
+  box-sizing: border-box;
+  box-shadow: 0 12px 24px -6px rgba(37, 99, 235, 0.2), 0 0 0 1.5px rgba(148, 163, 184, 0.4);
+  position: relative;
+}
+
+.lrf-mini-screen {
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 8px;
+  box-sizing: border-box;
+  color: #ffffff;
+  text-align: center;
+}
+
+.lrf-mini-header {
+  font-size: 8px;
+  font-weight: 700;
+  color: #94a3b8;
+  display: flex;
+  justify-content: space-between;
+}
+
+.lrf-mini-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lrf-mini-big-cmd {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  margin: 2px 0;
+}
+
+.lrf-mini-big-cmd.text-go {
+  color: #ef4444;
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+.lrf-mini-big-cmd.text-enroute {
+  color: #38bdf8;
+}
+
+.lrf-mini-big-cmd.text-arrived {
+  color: #a855f7;
+}
+
+.lrf-mini-big-cmd.text-rescued {
+  color: #22c55e;
+}
+
+.lrf-mini-target {
+  font-size: 9.5px;
+  color: #cbd5e1;
+  font-weight: 700;
+}
+
+.lrf-mini-sub {
+  font-size: 8px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.lrf-mini-footer {
+  font-size: 7.5px;
+  font-weight: 700;
+  color: #64748b;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Location Readout */
+.lrf-location-box {
+  background: #f0f7ff;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.lrf-loc-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  font-size: 11px;
+}
+
+.lrf-loc-item {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.lrf-loc-item-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.lrf-loc-item-val {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #1e3a8a;
+  font-family: var(--font-mono, monospace);
+  margin-top: 2px;
+}

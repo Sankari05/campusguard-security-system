@@ -1,0 +1,139 @@
+{
+  "scenario_id": "wildfire_forest",
+  "name": "Wildfire / Forest Fire Emergency",
+  "description": "Rapidly advancing forest fire spreading across dry timberland near Rajaji National Park perimeter. Four casualties trapped in forestry outpost and trail cabins, facing dense toxic smoke obscuration, high thermal signatures, and spot fire hazards.",
+  "site_label": "Rajaji Forest Perimeter \u00b7 Wilderness Wildfire Zone \u00b7 480 m",
+  "site_origin": {
+    "latitude": 30.3165,
+    "longitude": 78.0322,
+    "altitude_m": 480
+  },
+  "rescue_teams": [
+    {
+      "team_id": "ALPHA",
+      "team_name": "Rescue Team Alpha",
+      "lat_offset": -0.0008,
+      "lon_offset": -0.0006,
+      "members": 2
+    },
+    {
+      "team_id": "BRAVO",
+      "team_name": "Rescue Team Bravo",
+      "lat_offset": 0.001,
+      "lon_offset": -0.0009,
+      "members": 2
+    }
+  ],
+  "site_environment": {
+    "initial_ambient_temp_c": 44.0,
+    "ambient_temp_volatility_c": 2.5,
+    "temp_diurnal_swing_c": 8.0,
+    "initial_humidity_pct": 18.0,
+    "humidity_volatility_pct": 2.0,
+    "initial_gas_ppm": 75.0,
+    "initial_smoke_pct": 45.0,
+    "initial_soil_moisture_pct": 12.0
+  },
+  "victims": [
+    {
+      "victim_id": "V1",
+      "label": "Victim 1 - Critical (Smoke Inhalation)",
+      "status": "critical",
+      "location": {
+        "latitude": 30.3168,
+        "longitude": 78.0318,
+        "altitude_m": 482
+      },
+      "burial_depth_m": 0.0,
+      "signature_range": {
+        "thermal_imaging_c": [38.5, 41.0],
+        "pir_motion": [0.05, 0.25],
+        "acoustic_db": [15.0, 35.0],
+        "co2_ppm": [850.0, 1400.0],
+        "heart_rate_radar_bpm": [120.0, 145.0],
+        "rgb_camera_conf": [0.4, 0.7]
+      },
+      "notes": "Severe smoke inhalation in wooden cabin structure; rapid breathing radar signature.",
+      "hazard": {
+        "burial_depth_m": 0.0,
+        "secondary_hazard": true,
+        "exposure_minutes": 45
+      }
+    },
+    {
+      "victim_id": "V2",
+      "label": "Victim 2 - Minor Injury (Trapped in Outpost)",
+      "status": "minor_injury",
+      "location": {
+        "latitude": 30.3162,
+        "longitude": 78.0326,
+        "altitude_m": 479
+      },
+      "burial_depth_m": 0.0,
+      "signature_range": {
+        "thermal_imaging_c": [36.5, 37.5],
+        "pir_motion": [0.3, 0.8],
+        "acoustic_db": [45.0, 70.0],
+        "co2_ppm": [550.0, 800.0],
+        "heart_rate_radar_bpm": [85.0, 105.0],
+        "rgb_camera_conf": [0.75, 0.95]
+      },
+      "notes": "Conscious ranger calling on radio; exit blocked by burning vegetation.",
+      "hazard": {
+        "burial_depth_m": 0.0,
+        "secondary_hazard": true,
+        "exposure_minutes": 30
+      }
+    },
+    {
+      "victim_id": "V3",
+      "label": "Victim 3 - Safe (Cleared Lookout Tower)",
+      "status": "safe",
+      "location": {
+        "latitude": 30.3159,
+        "longitude": 78.0315,
+        "altitude_m": 495
+      },
+      "burial_depth_m": 0.0,
+      "signature_range": {
+        "thermal_imaging_c": [36.2, 37.0],
+        "pir_motion": [0.5, 0.9],
+        "acoustic_db": [30.0, 50.0],
+        "co2_ppm": [420.0, 480.0],
+        "heart_rate_radar_bpm": [70.0, 85.0],
+        "rgb_camera_conf": [0.85, 0.98]
+      },
+      "notes": "Casualty reached cleared concrete tower with safety air filtration.",
+      "hazard": {
+        "burial_depth_m": 0.0,
+        "secondary_hazard": false,
+        "exposure_minutes": 15
+      }
+    },
+    {
+      "victim_id": "V4",
+      "label": "Victim 4 - Critical (Thermal Burn Casualty)",
+      "status": "critical",
+      "location": {
+        "latitude": 30.3171,
+        "longitude": 78.0329,
+        "altitude_m": 477
+      },
+      "burial_depth_m": 0.2,
+      "signature_range": {
+        "thermal_imaging_c": [39.0, 42.0],
+        "pir_motion": [0.02, 0.15],
+        "acoustic_db": [10.0, 25.0],
+        "co2_ppm": [950.0, 1600.0],
+        "heart_rate_radar_bpm": [130.0, 160.0],
+        "rgb_camera_conf": [0.3, 0.6]
+      },
+      "notes": "Semi-conscious casualty with heat shock near western fire break.",
+      "hazard": {
+        "burial_depth_m": 0.2,
+        "secondary_hazard": true,
+        "exposure_minutes": 60
+      }
+    }
+  ]
+}

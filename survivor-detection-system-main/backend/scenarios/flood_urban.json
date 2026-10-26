@@ -1,0 +1,252 @@
+{
+  "scenario_id": "flood_urban",
+  "name": "Urban Flash Flood",
+  "description": "Monsoon flash flood inundating a riverside residential ward. Four victims spread between submerged ground-floor debris, partially-submerged wreckage, and rooftops, with fast-moving current adding secondary risk near the water line.",
+  "site_label": "Riverside Ward \u00b7 Flood Inundation Zone \u00b7 55 m",
+  "site_origin": {
+    "latitude": 26.1445,
+    "longitude": 91.7362,
+    "altitude_m": 55
+  },
+  "rescue_teams": [
+    {
+      "team_id": "ALPHA",
+      "team_name": "Rescue Team Alpha",
+      "lat_offset": -0.0008,
+      "lon_offset": -0.0006,
+      "members": 2
+    },
+    {
+      "team_id": "BRAVO",
+      "team_name": "Rescue Team Bravo",
+      "lat_offset": 0.001,
+      "lon_offset": -0.0009,
+      "members": 2
+    }
+  ],
+  "site_environment": {
+    "initial_rainfall_mm_hr": 22.0,
+    "rainfall_volatility_mm_hr": 4.0,
+    "rain_to_water_rise_amplifier": 0.06,
+    "initial_ambient_temp_c": 31.0,
+    "ambient_temp_volatility_c": 0.8,
+    "temp_diurnal_swing_c": 3.0,
+    "initial_humidity_pct": 88.0,
+    "humidity_volatility_pct": 2.0,
+    "humidity_rain_amplifier_pct_per_mm_hr": 1.4
+  },
+  "victims": [
+    {
+      "victim_id": "V1",
+      "label": "Victim 1 - Deceased",
+      "status": "deceased",
+      "location": {
+        "latitude": 26.14395,
+        "longitude": 91.73555,
+        "altitude_m": 53
+      },
+      "burial_depth_m": 1.0,
+      "signature_range": {
+        "thermal_imaging_c": [
+          -5.0,
+          2.0
+        ],
+        "pir_motion": [
+          0.0,
+          0.02
+        ],
+        "acoustic_db": [
+          0.0,
+          5.0
+        ],
+        "co2_ppm": [
+          400.0,
+          420.0
+        ],
+        "heart_rate_radar_bpm": [
+          0.0,
+          0.0
+        ],
+        "rgb_camera_conf": [
+          0.0,
+          0.1
+        ],
+        "water_level_cm": [
+          150.0,
+          220.0
+        ]
+      },
+      "notes": "No vital signs on any channel; thermal signature has decayed to the sensor's ambient floor reading. Found submerged against collapsed wall debris near the ground floor.",
+      "hazard": {
+        "burial_depth_m": 1.0,
+        "secondary_hazard": true,
+        "exposure_minutes": 200
+      },
+      "water_exposure": {
+        "initial_water_level_cm": 180,
+        "rising_rate_cm_per_cycle": 1.0,
+        "initial_water_flow_ms": 1.8,
+        "water_flow_volatility_ms": 0.4
+      }
+    },
+    {
+      "victim_id": "V2",
+      "label": "Victim 2 - Critical",
+      "status": "critical",
+      "location": {
+        "latitude": 26.1448,
+        "longitude": 91.7368,
+        "altitude_m": 56
+      },
+      "burial_depth_m": 0.3,
+      "signature_range": {
+        "thermal_imaging_c": [
+          22.0,
+          27.0
+        ],
+        "pir_motion": [
+          0.01,
+          0.08
+        ],
+        "acoustic_db": [
+          5.0,
+          15.0
+        ],
+        "co2_ppm": [
+          600.0,
+          900.0
+        ],
+        "heart_rate_radar_bpm": [
+          35.0,
+          55.0
+        ],
+        "rgb_camera_conf": [
+          0.1,
+          0.3
+        ],
+        "water_level_cm": [
+          60.0,
+          200.0
+        ]
+      },
+      "notes": "Weak vitals, hypothermic; clinging to partially-submerged debris in fast-moving current.",
+      "hazard": {
+        "burial_depth_m": 0.3,
+        "secondary_hazard": true,
+        "exposure_minutes": 150
+      },
+      "water_exposure": {
+        "initial_water_level_cm": 90,
+        "rising_rate_cm_per_cycle": 4.0,
+        "initial_water_flow_ms": 2.2,
+        "water_flow_volatility_ms": 0.5
+      }
+    },
+    {
+      "victim_id": "V3",
+      "label": "Victim 3 - Minor Injury",
+      "status": "minor_injury",
+      "location": {
+        "latitude": 26.1453,
+        "longitude": 91.7361,
+        "altitude_m": 59
+      },
+      "burial_depth_m": 0.0,
+      "signature_range": {
+        "thermal_imaging_c": [
+          29.0,
+          33.0
+        ],
+        "pir_motion": [
+          0.15,
+          0.45
+        ],
+        "acoustic_db": [
+          25.0,
+          45.0
+        ],
+        "co2_ppm": [
+          900.0,
+          1500.0
+        ],
+        "heart_rate_radar_bpm": [
+          80.0,
+          110.0
+        ],
+        "rgb_camera_conf": [
+          0.4,
+          0.7
+        ],
+        "water_level_cm": [
+          0.0,
+          60.0
+        ]
+      },
+      "notes": "Stranded on a rooftop above the waterline; conscious, waving/calling for rescue, stable.",
+      "hazard": {
+        "burial_depth_m": 0.0,
+        "secondary_hazard": false,
+        "exposure_minutes": 90
+      },
+      "water_exposure": {
+        "initial_water_level_cm": 10,
+        "rising_rate_cm_per_cycle": 1.5,
+        "initial_water_flow_ms": 0,
+        "water_flow_volatility_ms": 0.2
+      }
+    },
+    {
+      "victim_id": "V4",
+      "label": "Victim 4 - Safe",
+      "status": "safe",
+      "location": {
+        "latitude": 26.144,
+        "longitude": 91.7345,
+        "altitude_m": 61
+      },
+      "burial_depth_m": 0.0,
+      "signature_range": {
+        "thermal_imaging_c": [
+          31.0,
+          36.0
+        ],
+        "pir_motion": [
+          0.5,
+          1.0
+        ],
+        "acoustic_db": [
+          40.0,
+          70.0
+        ],
+        "co2_ppm": [
+          1500.0,
+          2500.0
+        ],
+        "heart_rate_radar_bpm": [
+          70.0,
+          100.0
+        ],
+        "rgb_camera_conf": [
+          0.8,
+          1.0
+        ],
+        "water_level_cm": [
+          0.0,
+          0.0
+        ]
+      },
+      "notes": "Self-evacuated to high ground clear of the flood plain, ambulatory and dry.",
+      "hazard": {
+        "burial_depth_m": 0.0,
+        "secondary_hazard": false,
+        "exposure_minutes": 20
+      },
+      "water_exposure": {
+        "initial_water_level_cm": 0,
+        "rising_rate_cm_per_cycle": 0.0,
+        "initial_water_flow_ms": 0,
+        "water_flow_volatility_ms": 0.0
+      }
+    }
+  ]
+}

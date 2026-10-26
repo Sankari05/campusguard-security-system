@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIDGEWATCH — Add Rescue Team</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">▲</span>
+      <div class="brand-text">
+        <span class="brand-name">RIDGEWATCH</span>
+        <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">TESTING</div>
+      <a href="testing.html" class="sidebar-link is-active">📊 <span>Testing Console</span></a>
+      <a href="testing-persons.html" class="sidebar-link">👤 <span>Persons</span></a>
+      <a href="testing-scenarios.html" class="sidebar-link">🗺️ <span>Scenarios</span></a>
+      <a href="testing-teams.html" class="sidebar-link">👥 <span>Rescue Teams</span></a>
+      <a href="victims.html" class="sidebar-link">🩹 <span>Live Victims</span></a>
+
+      <div class="sidebar-section-title">OPERATIONS</div>
+      <a href="commander.html" class="sidebar-link">🎖️ <span>Commander</span></a>
+      <a href="watch.html" class="sidebar-link">⌚ <span>Watch</span></a>
+      <a href="index.html" class="sidebar-link">📡 <span>Dashboard</span></a>
+      <a href="hardware.html" class="sidebar-link">🔧 <span>Hardware</span></a>
+
+      <div class="sidebar-section-title">SYSTEM</div>
+      <a href="logic.html" class="sidebar-link">🧠 <span>Logic</span></a>
+      <a href="alerts.html" class="sidebar-link">🚨 <span>Alerts</span></a>
+      <a href="analytics.html" class="sidebar-link">📈 <span>Analytics</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="sidebar-foot-avatar" aria-hidden="true">T</span>
+      <div class="sidebar-foot-text">
+        <span class="sidebar-foot-name">Testing Controls</span>
+        <span class="sidebar-foot-role">Direct Access · No Login</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+
+  <!-- TOPBAR HEADER -->
+  <header class="topbar">
+    <div class="site-tag">
+      <span class="site-tag-label">TESTING CONSOLE</span>
+      <span class="site-tag-value">Create Rescue Team</span>
+    </div>
+    <div class="topbar-right">
+      <a href="notification.html" class="topbar-bell" title="Notification Center" aria-label="Notification Center">🔔<span class="topbar-bell-dot" id="topbarAlertDot" hidden></span></a>
+      <span class="topbar-avatar" title="Testing Operations" style="background: var(--accent-ice);">T</span>
+    </div>
+  </header>
+
+  <!-- MAIN PAGE CONTENT -->
+  <main class="page-content" style="padding: 24px;">
+
+    <div class="admin-form-container">
+      
+      <!-- BREADCRUMB -->
+      <nav class="admin-breadcrumb">
+        <a href="testing.html" class="breadcrumb-link">Testing Console</a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current">Add Rescue Team</span>
+      </nav>
+
+      <!-- FORM CARD -->
+      <div class="admin-card">
+        <div class="admin-card-head">
+          <h1 class="admin-card-title">👥 Create Rescue Team &amp; Assign Personnel</h1>
+          <p class="admin-card-subtitle">Form an organizational rescue squad by naming the team and assigning registered personnel staff members.</p>
+        </div>
+
+        <form id="createTeamForm">
+          
+          <!-- SECTION 1: TEAM INFO -->
+          <div style="margin-bottom: 24px;">
+            <h3 style="margin: 0 0 12px; font-size: 14px; font-weight: 700; color: var(--ink); text-transform: uppercase; letter-spacing: 0.05em;">
+              1. Team Information
+            </h3>
+            
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label" for="teamName">Team Name <span class="required-star">*</span></label>
+                <input type="text" id="teamName" class="form-input" placeholder="e.g. ALPHA Quick Response Squad" required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="teamType">Team Specialization Type</label>
+                <select id="teamType" class="form-select">
+                  <option value="Search & Rescue" selected>Search &amp; Rescue (SAR)</option>
+                  <option value="Medical Evacuation">Medical Evacuation (MEDEVAC)</option>
+                  <option value="Technical Support">Technical &amp; Comms Support</option>
+                  <option value="Rapid Response">Rapid Response / First Attack</option>
+                  <option value="Hazmat & Containment">Hazmat &amp; Containment</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label" for="teamDesc">Description / Mission Scope</label>
+              <textarea id="teamDesc" class="form-textarea" placeholder="e.g. Primary mountain search and triage team equipped with thermal and acoustic radar kits."></textarea>
+            </div>
+          </div>
+
+          <!-- SECTION 2: TEAM MEMBERS SELECTION -->
+          <div style="margin-bottom: 24px;">
+            <h3 style="margin: 0 0 12px; font-size: 14px; font-weight: 700; color: var(--ink); text-transform: uppercase; letter-spacing: 0.05em;">
+              2. Assign Registered Personnel Staff
+            </h3>
+            
+            <!-- PERSONNEL PICKER -->
+            <div class="team-member-selector">
+              <div class="member-picker-header">
+                <span class="member-picker-title">Available Personnel</span>
+                <input type="text" id="personnelSearchInput" class="form-input member-picker-search" placeholder="Filter personnel…">
+              </div>
+
+              <div id="personnelPickerGrid" class="member-picker-grid">
+                <div style="padding: 12px; text-align: center; color: var(--ink-faint); grid-column: 1/-1;">
+                  Loading registered personnel…
+                </div>
+              </div>
+            </div>
+
+            <!-- SELECTED MEMBERS LIST / PREVIEW TABLE -->
+            <div class="selected-members-section">
+              <div class="selected-members-title">
+                <span>Selected Team Members (<span id="selectedCount">0</span>)</span>
+                <span style="font-size: 11px; font-weight: normal; color: var(--ink-faint);">Assign specific role within this team</span>
+              </div>
+
+              <div class="ledger-table-wrap">
+                <table class="ledger-table" id="selectedMembersTable">
+                  <thead>
+                    <tr>
+                      <th style="width: 100px;">Person ID</th>
+                      <th>Full Name</th>
+                      <th>Primary Staff Role</th>
+                      <th style="width: 220px;">Role on Team</th>
+                      <th>Contact</th>
+                      <th style="width: 80px; text-align: center;">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="selectedMembersTableBody">
+                    <tr>
+                      <td colspan="6" style="text-align: center; color: var(--ink-faint); padding: 24px;">
+                        No personnel selected yet. Choose staff members from the list above.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ACTIONS -->
+          <div class="form-actions">
+            <a href="testing.html" class="btn-cancel">Cancel</a>
+            <button type="submit" class="btn-submit" id="createTeamSubmitBtn">
+              <span>👥</span> <span>Create Rescue Team</span>
+            </button>
+          </div>
+
+          <div id="createTeamMsg" class="admin-msg-box"></div>
+        </form>
+
+      </div>
+    </div>
+
+  </main>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/testing-common.js"></script>
+<script src="js/testing-add-team.js"></script>
+</body>
+</html>

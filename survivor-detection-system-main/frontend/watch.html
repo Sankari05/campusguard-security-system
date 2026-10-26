@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RIDGEWATCH — Wearable Smartwatch Console</title>
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/watch_concept_3d.css" />
+<link rel="stylesheet" href="css/live_rescue_flow.css" />
+<style>
+  /* Base page typography and layout adjustments */
+  body {
+    background: #f8fafc;
+    color: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .watch-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .watch-topbar-title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .watch-topbar-tag {
+    font-size: 10px;
+    font-weight: 800;
+    color: #64748b;
+    background: #f1f5f9;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .watch-topbar-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .watch-topbar-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .mode-switch-pill {
+    display: inline-flex;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 20px;
+    padding: 2px;
+  }
+  .mode-switch-btn {
+    border: none;
+    background: transparent;
+    padding: 4px 10px;
+    border-radius: 16px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .mode-switch-btn.is-active {
+    background: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .phone-bridge-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2563eb;
+    text-decoration: none;
+    padding: 5px 11px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+  }
+  .phone-bridge-link:hover {
+    background: #dbeafe;
+  }
+
+  .user-avatar-badge {
+    width: 28px;
+    height: 28px;
+    background: #e2e8f0;
+    color: #475569;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  /* 2-Column Grid Layout for Watch Console */
+  .watch-main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    padding: 20px;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  .watch-col {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* Card Containers */
+  .rw-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  }
+  .rw-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    color: #475569;
+    text-transform: uppercase;
+  }
+  .rw-card-header-icon {
+    font-size: 13px;
+    margin-right: 6px;
+  }
+
+  /* Hardware Specifications List */
+  .hw-rows-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .hw-row-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 6px;
+  }
+  .hw-icon-box {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .hw-col-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .hw-col-model {
+    font-size: 10.5px;
+    color: #64748b;
+  }
+
+  /* Status Badge Grid */
+  .status-badge-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+  }
+  .status-badge-cell {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 8px;
+  }
+  .status-badge-lbl {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .status-badge-val {
+    font-size: 11px;
+    font-weight: 700;
+    color: #16a34a;
+  }
+  .status-badge-sub {
+    font-size: 9.5px;
+    color: #94a3b8;
+  }
+
+  /* Live Watch Preview Elements */
+  .preview-member-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .preview-member-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+  }
+  .preview-member-select {
+    flex: 1;
+    max-width: 300px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #0f172a;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .watch-circle-screen {
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    border: 3.5px solid #14b8a6;
+    margin: 14px auto 12px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fafdfc;
+    box-shadow: 0 2px 10px rgba(20, 184, 166, 0.12);
+  }
+  .watch-sphere-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #86efac, #16a34a 60%, #14532d);
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.4);
+    margin-bottom: 4px;
+  }
+  .watch-go-text {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: 0.8px;
+    line-height: 1;
+  }
+  .watch-sub-bearing {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    margin-top: 4px;
+    text-align: center;
+    max-width: 145px;
+    line-height: 1.25;
+  }
+
+  /* Compass Visual */
+  .watch-compass-wrap {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: 1.5px dashed #cbd5e1;
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .compass-label-n { position: absolute; top: 4px; left: 50%; transform: translateX(-50%); font-size: 9.5px; font-weight: 700; color: #64748b; }
+  .compass-label-s { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); font-size: 9.5px; font-weight: 700; color: #64748b; }
+  .compass-label-e { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 9.5px; font-weight: 700; color: #64748b; }
+  .compass-label-w { position: absolute; left: 6px; top: 50%; transform: translateY(-50%); font-size: 9.5px; font-weight: 700; color: #64748b; }
+
+  .compass-line {
+    position: absolute;
+    top: 34px;
+    bottom: 50px;
+    left: 50%;
+    width: 1px;
+    border-left: 1.5px dashed #94a3b8;
+    transform: translateX(-50%);
+  }
+  .compass-node-target {
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .compass-target-label { font-size: 10.5px; font-weight: 800; color: #dc2626; margin-bottom: 2px; }
+  .compass-target-dot { width: 9px; height: 9px; border-radius: 50%; background: #ef4444; box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15); }
+  
+  .compass-node-you {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .compass-you-dot { width: 8px; height: 8px; border-radius: 50%; background: #2563eb; margin-bottom: 2px; }
+  .compass-you-label { font-size: 9.5px; font-weight: 600; color: #475569; }
+
+  /* Info Strip */
+  .watch-info-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .info-strip-cell {
+    text-align: center;
+  }
+  .info-strip-lbl {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .info-strip-val {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  /* Current Rescue Location Card Split Layout */
+  .rescue-location-split {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 16px;
+    align-items: center;
+  }
+  .loc-param-group {
+    margin-bottom: 8px;
+  }
+  .loc-param-group:last-child {
+    margin-bottom: 0;
+  }
+  .loc-param-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 1px;
+  }
+  .loc-param-val {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .loc-param-dist {
+    font-size: 12px;
+    font-weight: 700;
+    color: #2563eb;
+  }
+
+  /* Vector Mini Map */
+  .mini-map-container {
+    height: 120px;
+    background: #eef7f0;
+    border: 1px solid #d1e7dd;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mini-map-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Timeline Styles */
+  .timeline-nodes-track {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin: 14px 0 6px 0;
+  }
+  .timeline-bar-bg {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    right: 12px;
+    height: 2px;
+    background: #e2e8f0;
+    z-index: 1;
+  }
+  .timeline-bar-progress {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    height: 2px;
+    background: #16a34a;
+    z-index: 2;
+    transition: width 0.3s ease;
+  }
+  .timeline-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 3;
+    width: 60px;
+  }
+  .timeline-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 4px;
+  }
+  .timeline-node.completed .timeline-circle {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: #ffffff;
+  }
+  .timeline-node.active .timeline-circle {
+    border-color: #2563eb;
+    color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  }
+  .timeline-node-time {
+    font-size: 9px;
+    font-weight: 700;
+    color: #64748b;
+  }
+  .timeline-node-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: #475569;
+    text-align: center;
+    line-height: 1.1;
+    margin-top: 2px;
+  }
+
+  @media (max-width: 1024px) {
+    .watch-main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ============================================================ -->
+  <!-- LEFT SIDEBAR                                                 -->
+  <!-- ============================================================ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">▲</span>
+      <div class="brand-text">
+        <span class="brand-name">RIDGEWATCH</span>
+        <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="sidebar-link"><span>📡</span> <span>Dashboard</span></a>
+      <a href="hardware.html" class="sidebar-link"><span>🔧</span> <span>Hardware</span></a>
+      <a href="logic.html" class="sidebar-link"><span>🧠</span> <span>Logic</span></a>
+      <a href="testing.html" class="sidebar-link"><span>📊</span> <span>Testing</span></a>
+      <a href="commander.html" class="sidebar-link"><span>🎖️</span> <span>Commander</span></a>
+      <a href="watch.html" class="sidebar-link is-active"><span>⌚</span> <span>Watch</span></a>
+      <a href="alerts.html" class="sidebar-link"><span>🚨</span> <span>Alerts</span></a>
+      <a href="notification.html" class="sidebar-link"><span>🔔</span> <span>Notification</span></a>
+      <a href="analytics.html" class="sidebar-link"><span>📊</span> <span>Analytics</span></a>
+      <a href="scenarios.html" class="sidebar-link"><span>🗺️</span> <span>Scenarios</span></a>
+      <a href="victims.html" class="sidebar-link"><span>🧍</span> <span>Victims</span></a>
+      <a href="teams.html" class="sidebar-link"><span>🚁</span> <span>Teams</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="sidebar-foot-avatar" aria-hidden="true">R</span>
+      <div class="sidebar-foot-text">
+        <span class="sidebar-foot-name">RidgeWatch Ops</span>
+        <span class="sidebar-foot-role">Demo build · v1.0</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================ -->
+  <!-- MAIN VIEWPORT                                                -->
+  <!-- ============================================================ -->
+  <div class="main-content">
+
+    <!-- TOP HEADER -->
+    <header class="watch-topbar">
+      <div class="watch-topbar-title-group">
+        <span class="watch-topbar-tag">MODULE</span>
+        <span class="watch-topbar-title">Smartwatch Operations</span>
+      </div>
+
+      <!-- Center Three-View Switcher Toggle -->
+      <div class="watch-view-toggle" id="watchViewToggle" role="tablist" aria-label="Watch Module View Selector">
+        <button type="button" class="view-toggle-btn is-active" id="btnViewConsole" data-view="console" role="tab" aria-selected="true">
+          <span>📟</span> <span>WATCH CONSOLE</span>
+        </button>
+        <button type="button" class="view-toggle-btn" id="btnViewRescueFlow" data-view="rescue_flow" role="tab" aria-selected="false">
+          <span>🎮</span> <span>SIMULATION</span>
+        </button>
+        <button type="button" class="view-toggle-btn" id="btnViewLiveRescueFlow" data-view="live_rescue_flow" role="tab" aria-selected="false">
+          <span>🚨</span> <span>LIVE RESCUE FLOW</span>
+        </button>
+      </div>
+
+      <div class="watch-topbar-controls">
+        <div class="mode-switch-pill" id="modeSwitchWrap" title="Toggle Operation Mode">
+          <button type="button" class="mode-switch-btn" id="btnModeSim">SIMULATION</button>
+          <button type="button" class="mode-switch-btn is-active" id="btnModeReal">REAL HARDWARE</button>
+        </div>
+        <a href="bridge.html" class="phone-bridge-link">
+          <span>📲</span> <span>Open Phone Bridge</span>
+        </a>
+        <div class="user-avatar-badge" title="RidgeWatch Ops">R</div>
+      </div>
+    </header>
+
+    <!-- ============================================================ -->
+    <!-- VIEW A: WATCH CONSOLE (Default View)                          -->
+    <!-- ============================================================ -->
+    <div class="watch-view-container" id="viewWatchConsole" role="tabpanel" aria-labelledby="btnViewConsole">
+      <div class="watch-main-grid">
+
+        <!-- LEFT COLUMN -->
+        <div class="watch-col">
+
+          <!-- 1. WEARABLE HARDWARE CARD -->
+          <section class="rw-card">
+            <div class="rw-card-header">
+              <div>
+                <span class="rw-card-header-icon">🔧</span>
+                <span>WEARABLE HARDWARE</span>
+              </div>
+            </div>
+            <div class="hw-rows-list">
+              <div class="hw-row-item">
+                <div class="hw-icon-box">📍</div>
+                <div>
+                  <div class="hw-col-title">GPS/GNSS module</div>
+                  <div class="hw-col-model">u-blox NEO-M9N</div>
+                </div>
+              </div>
+              <div class="hw-row-item">
+                <div class="hw-icon-box">📡</div>
+                <div>
+                  <div class="hw-col-title">BLE/LoRa receiver</div>
+                  <div class="hw-col-model">Nordic nRF52840</div>
+                </div>
+              </div>
+              <div class="hw-row-item">
+                <div class="hw-icon-box">📺</div>
+                <div>
+                  <div class="hw-col-title">Display</div>
+                  <div class="hw-col-model">1.83" AMOLED (240x284)</div>
+                </div>
+              </div>
+              <div class="hw-row-item">
+                <div class="hw-icon-box">📳</div>
+                <div>
+                  <div class="hw-col-title">Haptic motor</div>
+                  <div class="hw-col-model">ERM Vibration (Active on GO)</div>
+                </div>
+              </div>
+              <div class="hw-row-item">
+                <div class="hw-icon-box">🔋</div>
+                <div>
+                  <div class="hw-col-title">Battery</div>
+                  <div class="hw-col-model">380 mAh Li-Po (~18h)</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 2. HARDWARE & BRIDGE STATUS CARD -->
+          <section class="rw-card">
+            <div class="rw-card-header">
+              <div>
+                <span class="rw-card-header-icon">📡</span>
+                <span>HARDWARE &amp; BRIDGE STATUS</span>
+              </div>
+              <span style="font-size: 10px; color: #94a3b8; text-transform: none;">
+                Sync: <span id="statSyncTime">--:--:--</span> · <span id="statSyncDate">-- --- ----</span>
+              </span>
+            </div>
+
+            <div class="status-badge-grid">
+              <div class="status-badge-cell">
+                <div class="status-badge-lbl">Bridge (Phone)</div>
+                <div class="status-badge-val" id="statBridgeVal">● ONLINE</div>
+                <div class="status-badge-sub" id="statBridgeSub">Connected (Sim)</div>
+              </div>
+              <div class="status-badge-cell">
+                <div class="status-badge-lbl">Bluetooth (BLE)</div>
+                <div class="status-badge-val" id="statBleVal">● ENABLED</div>
+                <div class="status-badge-sub" id="statBleSub">Adapter active</div>
+              </div>
+              <div class="status-badge-cell">
+                <div class="status-badge-lbl">Watch (CALLPLUS)</div>
+                <div class="status-badge-val" id="statWatchVal">● CONNECTED</div>
+                <div class="status-badge-sub" id="statWatchSub">Signal strong</div>
+              </div>
+              <div class="status-badge-cell">
+                <div class="status-badge-lbl">GPS/GNSS</div>
+                <div class="status-badge-val" id="statGpsVal">● AVAILABLE</div>
+                <div class="status-badge-sub" id="statGpsSub">Location active</div>
+              </div>
+              <div class="status-badge-cell">
+                <div class="status-badge-lbl">Sync Protocol</div>
+                <div class="status-badge-val" id="statProtocolVal">● DETECTED</div>
+                <div class="status-badge-sub" id="statProtocolSub">BLE services found</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 3. CURRENT RESCUE LOCATION CARD -->
+          <section class="rw-card">
+            <div class="rw-card-header">
+              <div>
+                <span class="rw-card-header-icon">📍</span>
+                <span>CURRENT RESCUE LOCATION</span>
+              </div>
+            </div>
+            
+            <div class="rescue-location-split">
+              <div>
+                <div class="loc-param-group">
+                  <div class="loc-param-label">Latitude</div>
+                  <div class="loc-param-val" id="locValLat">12.9798° N</div>
+                </div>
+                <div class="loc-param-group">
+                  <div class="loc-param-label">Longitude</div>
+                  <div class="loc-param-val" id="locValLon">77.5901° E</div>
+                </div>
+                <div class="loc-param-group">
+                  <div class="loc-param-label">Assigned Sector</div>
+                  <div class="loc-param-val" id="locValLabel">Base Operations · Sector 1</div>
+                </div>
+                <div class="loc-param-group">
+                  <div class="loc-param-label">Distance to Target</div>
+                  <div class="loc-param-dist" id="locValDist">0 m</div>
+                </div>
+              </div>
+
+              <!-- Vector Mini Map -->
+              <div class="mini-map-container">
+                <svg class="mini-map-svg" viewBox="0 0 200 120">
+                  <rect width="200" height="120" fill="#eef7f0"></rect>
+                  <path d="M0,40 Q50,20 100,60 T200,30" fill="none" stroke="#d1e7dd" stroke-width="1.5"></path>
+                  <path d="M0,80 Q70,60 140,90 T200,70" fill="none" stroke="#d1e7dd" stroke-width="1.5"></path>
+                  <line x1="150" y1="90" x2="150" y2="35" stroke="#94a3b8" stroke-dasharray="3,3" stroke-width="1.5"></line>
+                  <!-- Target Dot (Red) -->
+                  <circle cx="150" cy="35" r="5" fill="#ef4444"></circle>
+                  <text x="150" y="24" font-size="8" font-weight="bold" fill="#b91c1c" text-anchor="middle">TARGET</text>
+                  <!-- Member Dot (Blue) -->
+                  <circle cx="150" cy="90" r="5" fill="#2563eb"></circle>
+                  <text x="150" y="106" font-size="8" font-weight="bold" fill="#1d4ed8" text-anchor="middle">RESCUER</text>
+                </svg>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="watch-col">
+
+          <!-- 4. LIVE WATCH PREVIEW CARD -->
+          <section class="rw-card">
+            <div class="rw-card-header">
+              <div>
+                <span class="rw-card-header-icon">📱</span>
+                <span>LIVE WATCH PREVIEW</span>
+              </div>
+            </div>
+
+            <!-- Member Selector -->
+            <div class="preview-member-bar">
+              <span class="preview-member-label" id="watchMemberLabel">Assigned member:</span>
+              <select class="preview-member-select" id="watchMemberSelect">
+                <option value="ALPHA-M001">Rescue Team Alpha - Alpha Member 1</option>
+                <option value="ALPHA-M002">Rescue Team Alpha - Alpha Member 2</option>
+                <option value="BRAVO-M001">Rescue Team Bravo - Bravo Member 1</option>
+                <option value="BRAVO-M002">Rescue Team Bravo - Bravo Member 2</option>
+              </select>
+            </div>
+
+            <div style="text-align: center;">
+              <span style="font-size: 10.5px; font-weight: 800; color: #16a34a; letter-spacing: 0.5px;" id="watchStateTag">ACTIVE RESCUE</span>
+            </div>
+
+            <!-- Big Circular Watch Display -->
+            <div class="watch-circle-screen" id="watchCircleScreen">
+              <div class="watch-sphere-icon" id="watchSphereIcon"></div>
+              <div class="watch-go-text" id="watchGoText">GO</div>
+              <div class="watch-sub-bearing" id="watchSubBearing">Rescue assignment received</div>
+              <div style="font-size: 9.5px; font-weight: 700; color: #2563eb; margin-top: 4px;" id="watchDeliveryBadge">GO — SENT TO PHONE</div>
+            </div>
+
+            <!-- Compass Visual -->
+            <div class="watch-compass-wrap" id="watchCompassWrap">
+              <span class="compass-label-n">N</span>
+              <span class="compass-label-s">S</span>
+              <span class="compass-label-e">E</span>
+              <span class="compass-label-w">W</span>
+              <div class="compass-line"></div>
+              
+              <div class="compass-node-target" id="compassTargetNode">
+                <span class="compass-target-label" id="compassTargetLabel">V3</span>
+                <div class="compass-target-dot"></div>
+              </div>
+
+              <div class="compass-node-you">
+                <div class="compass-you-dot"></div>
+                <span class="compass-you-label">You</span>
+              </div>
+            </div>
+
+            <!-- Minimal Info Strip -->
+            <div class="watch-info-strip">
+              <div class="info-strip-cell">
+                <div class="info-strip-lbl">Scenario</div>
+                <div class="info-strip-val" id="watchInfoScenario">Landslide</div>
+              </div>
+              <div class="info-strip-cell">
+                <div class="info-strip-lbl">Priority</div>
+                <div class="info-strip-val" id="watchInfoPriority" style="color: #ef4444;">HIGH</div>
+              </div>
+              <div class="info-strip-cell">
+                <div class="info-strip-lbl">Command</div>
+                <div class="info-strip-val" id="watchInfoCommand" style="color: #2563eb;">GO</div>
+              </div>
+              <div class="info-strip-cell">
+                <div class="info-strip-lbl">Assignment</div>
+                <div class="info-strip-val" id="watchInfoAssignment" style="color: #16a34a;">Active</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 5. RESCUE OPERATION TIMELINE CARD -->
+          <section class="rw-card">
+            <div class="rw-card-header">
+              <div>
+                <span class="rw-card-header-icon">📊</span>
+                <span>RESCUE OPERATION TIMELINE</span>
+              </div>
+            </div>
+
+            <div class="timeline-nodes-track">
+              <div class="timeline-bar-bg"></div>
+              <div class="timeline-bar-progress" id="timelineTrackProgress" style="width: 25%;"></div>
+
+              <!-- Node 1 -->
+              <div class="timeline-node completed" id="tlNode1">
+                <div class="timeline-circle">✓</div>
+                <div class="timeline-node-time" id="tlTime1">23:31:12</div>
+                <div class="timeline-node-label">Command received</div>
+              </div>
+
+              <!-- Node 2 -->
+              <div class="timeline-node completed" id="tlNode2">
+                <div class="timeline-circle">✓</div>
+                <div class="timeline-node-time" id="tlTime2">23:31:35</div>
+                <div class="timeline-node-label">Command accepted</div>
+              </div>
+
+              <!-- Node 3 -->
+              <div class="timeline-node active" id="tlNode3">
+                <div class="timeline-circle">●</div>
+                <div class="timeline-node-time" id="tlTime3">23:32:48</div>
+                <div class="timeline-node-label">En route</div>
+              </div>
+
+              <!-- Node 4 -->
+              <div class="timeline-node" id="tlNode4">
+                <div class="timeline-circle">○</div>
+                <div class="timeline-node-time" id="tlTime4">--:--:--</div>
+                <div class="timeline-node-label">Arrived at target</div>
+              </div>
+
+              <!-- Node 5 -->
+              <div class="timeline-node" id="tlNode5">
+                <div class="timeline-circle">○</div>
+                <div class="timeline-node-time" id="tlTime5">--:--:--</div>
+                <div class="timeline-node-label">Rescue complete</div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- VIEW B: RESCUE FLOW (3D / 4D Concept Visualization)           -->
+    <!-- ============================================================ -->
+    <div class="watch-view-container is-hidden" id="viewRescueFlow" role="tabpanel" aria-labelledby="btnViewRescueFlow">
+      <div style="padding: 20px; max-width: 1440px; margin: 0 auto;">
+        
+        <section class="rw-concept-section" aria-label="Smartwatch Rescue Concept 3D Visualization">
+          
+          <!-- Section Header -->
+          <div class="rw-concept-header">
+            <div class="rw-concept-title-group">
+              <div class="rw-concept-icon-badge">🌐</div>
+              <div>
+                <span class="rw-concept-title">Smartwatch Rescue Flow · 3D / 4D Concept Visualization</span>
+                <span class="rw-concept-subtitle">End-to-End Operational Concept: Commander Dispatch ➔ Signal Flow ➔ Smartwatch ➔ Tactical Movement ➔ Rescue</span>
+              </div>
+            </div>
+            <div class="rw-concept-badges">
+              <span class="concept-badge badge-live-concept">● LIVE CONCEPT VISUALIZATION</span>
+              <span class="concept-badge badge-wave-call-plus">⌚ SIMULATION — WAVE CALL PLUS</span>
+              <span class="concept-badge badge-on-hold">⚠ REAL HARDWARE ON HOLD</span>
+            </div>
+          </div>
+
+          <!-- Interactive Toolbar -->
+          <div class="rw-concept-toolbar">
+            <div class="toolbar-group">
+              <span class="toolbar-label">Scenario:</span>
+              <select class="toolbar-select" id="conceptScenarioSelect">
+                <option value="Landslide" selected>Landslide Zone</option>
+                <option value="Heavy Rain">Heavy Rain / Flood</option>
+                <option value="Building Collapse">Building Collapse</option>
+                <option value="Missing Person">Missing Person Search</option>
+              </select>
+
+              <span class="toolbar-label" style="margin-left: 8px;">Assigned Member:</span>
+              <select class="toolbar-select" id="conceptMemberSelect">
+                <option value="ALPHA-M001" selected>Rescue Team Alpha — Alpha Member 1</option>
+                <option value="ALPHA-M002">Rescue Team Alpha — Alpha Member 2</option>
+                <option value="BRAVO-M001">Rescue Team Bravo — Bravo Member 1</option>
+              </select>
+            </div>
+
+            <div class="toolbar-group">
+              <button type="button" class="btn-concept-ctrl btn-play-sim" id="btnConceptPlay">
+                <span>▶</span> <span>PLAY SIMULATION</span>
+              </button>
+              <button type="button" class="btn-concept-ctrl btn-pause-sim" id="btnConceptPause">
+                <span>⏸</span> <span>PAUSE</span>
+              </button>
+              <button type="button" class="btn-concept-ctrl btn-step-sim" id="btnConceptStep" title="Advance one operational stage">
+                <span>⏭</span> <span>STEP</span>
+              </button>
+              <button type="button" class="btn-concept-ctrl btn-reset-sim" id="btnConceptReset">
+                <span>↺</span> <span>RESET</span>
+              </button>
+              <span class="sim-state-pill state-standby" id="conceptStatePill">T+00 · STANDBY</span>
+            </div>
+          </div>
+
+          <!-- 3-Column Spatial Grid -->
+          <div class="rw-concept-grid">
+
+            <!-- 1. LEFT COLUMN: COMMANDER DISPATCH & SIGNAL FLOW -->
+            <div class="concept-col-card">
+              <div class="col-card-title">
+                <span>🎖️</span> <span>Commander Dispatch</span>
+              </div>
+
+              <div class="commander-dispatch-box">
+                <div class="dispatch-row">
+                  <span class="dispatch-label">Operation ID:</span>
+                  <span class="dispatch-val" id="dispConceptOpId">—</span>
+                </div>
+                <div class="dispatch-row">
+                  <span class="dispatch-label">Scenario:</span>
+                  <span class="dispatch-val" id="dispConceptScenario">—</span>
+                </div>
+                <div class="dispatch-row">
+                  <span class="dispatch-label">Priority:</span>
+                  <span class="dispatch-val" id="dispConceptPriority" style="color: #ef4444;">—</span>
+                </div>
+                <div class="dispatch-row">
+                  <span class="dispatch-label">Target:</span>
+                  <span class="dispatch-val" id="dispConceptTarget">—</span>
+                </div>
+                <div class="dispatch-row">
+                  <span class="dispatch-label">Rescuer:</span>
+                  <span class="dispatch-val" id="dispConceptMember">—</span>
+                </div>
+              </div>
+
+              <button type="button" class="btn-concept-ctrl btn-play-sim" id="btnConceptSendGo" style="width: 100%; justify-content: center; background: #dc2626; border-color: #b91c1c;">
+                <span>🚨</span> <span>SEND RESCUE GO</span>
+              </button>
+
+              <!-- Signal Pipeline Track -->
+              <div class="col-card-title" style="margin-top: 4px;">
+                <span>📡</span> <span>Rescue Signal Pipeline</span>
+              </div>
+
+              <div class="signal-pipeline-wrap">
+                <div class="pipeline-node active" id="pipeCommander">
+                  <span class="node-icon">🎖️</span>
+                  <div class="node-info">
+                    <div class="node-title">1. Commander Console</div>
+                    <div class="node-status" id="pipeCommanderStatus">Dispatch created</div>
+                  </div>
+                </div>
+
+                <div class="pipeline-connector" id="pipeConn1"></div>
+
+                <div class="pipeline-node" id="pipeCore">
+                  <span class="node-icon">🌐</span>
+                  <div class="node-info">
+                    <div class="node-title">2. RidgeWatch Core</div>
+                    <div class="node-status" id="pipeCoreStatus">Rescue command routed</div>
+                  </div>
+                </div>
+
+                <div class="pipeline-connector" id="pipeConn2"></div>
+
+                <div class="pipeline-node" id="pipeBridge">
+                  <span class="node-icon">📲</span>
+                  <div class="node-info">
+                    <div class="node-title">3. Android Companion Bridge</div>
+                    <div class="node-status" id="pipeBridgeStatus">BLE Gateway mirror</div>
+                  </div>
+                </div>
+
+                <div class="pipeline-connector" id="pipeConn3"></div>
+
+                <div class="pipeline-node" id="pipeWatch">
+                  <span class="node-icon">⌚</span>
+                  <div class="node-info">
+                    <div class="node-title">4. Wave Call Plus</div>
+                    <div class="node-status" id="pipeWatchStatus">Smartwatch Display</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. CENTER COLUMN: 3D REALISTIC WAVE CALL PLUS SMARTWATCH -->
+            <div class="concept-watch-stage">
+              <span class="watch-stage-label">3D Wave Call Plus (CALLPLUS_7F1B)</span>
+              <span class="watch-stage-disclaimer" id="watchStageModeBadge">LIVE BACKEND</span>
+
+              <!-- 3D Smartwatch Model -->
+              <div class="watch-3d-wrapper" id="watch3dWrapper" title="Wave Call Plus (Interactive 3D View — Move pointer to rotate)">
+                
+                <!-- Top Strap -->
+                <div class="watch-strap-top"></div>
+
+                <!-- Smartwatch Casing -->
+                <div class="watch-case-body">
+                  <div class="watch-side-crown"></div>
+                  <div class="watch-haptic-ripple" id="watchHapticRipple"></div>
+
+                  <!-- OLED Screen Display -->
+                  <div class="watch-oled-screen">
+                    
+                    <!-- Status Header -->
+                    <div class="screen-status-bar">
+                      <span class="screen-time" id="conceptScreenTime">--:--</span>
+                      <div class="screen-battery">
+                        <span>94%</span>
+                        <span>🔋</span>
+                      </div>
+                    </div>
+
+                    <!-- Main Display Area -->
+                    <div class="screen-main-content">
+                      <div class="screen-state-header" id="conceptScreenStateHeader">AWAITING ASSIGNMENT</div>
+                      <div class="screen-big-text" id="conceptScreenBigText">STANDBY</div>
+                      <div class="screen-sub-detail" id="conceptScreenSubDetail">Listening on rescue channel</div>
+                      <div class="screen-dist-badge" id="conceptScreenDistBadge" style="display: none;">-- m</div>
+                    </div>
+
+                    <!-- Footer Team Badge -->
+                    <div class="screen-footer-bar">
+                      <span id="conceptScreenFooterTeam">—</span>
+                      <span>RIDGEWATCH</span>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Bottom Strap -->
+                <div class="watch-strap-bottom"></div>
+
+              </div>
+
+              <!-- Hover HUD -->
+              <div class="watch-hover-hud">
+                <span><strong>Device:</strong> Wave Call Plus</span>
+                <span><strong>Chassis:</strong> Rectangular OLED</span>
+                <span><strong>Status:</strong> Live State Synchronized</span>
+              </div>
+            </div>
+
+            <!-- 3. RIGHT COLUMN: SPATIAL TACTICAL RESCUE MAP (LIVE LOCATION CONCEPT) -->
+            <div class="concept-col-card">
+              <div class="col-card-title">
+                <span>🗺️</span> <span>Tactical Rescue Map</span>
+              </div>
+
+              <div class="tactical-map-wrap">
+                <span class="map-badge-overlay" id="conceptMapLocationBadge">SIMULATED LOCATION</span>
+                <svg class="tactical-map-svg" viewBox="0 0 280 250" preserveAspectRatio="none">
+                  <!-- Grid background -->
+                  <defs>
+                    <pattern id="gridPattern" width="20" height="20" patternUnits="userSpaceOnUse">
+                      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#bfdbfe" stroke-width="0.75"></path>
+                    </pattern>
+                  </defs>
+                  <rect width="100%" height="100%" fill="url(#gridPattern)"></rect>
+
+                  <!-- Topographic contour paths -->
+                  <path d="M0,60 Q80,20 160,80 T280,40" fill="none" stroke="#93c5fd" stroke-width="1.2" opacity="0.6"></path>
+                  <path d="M0,140 Q100,100 180,160 T280,120" fill="none" stroke="#93c5fd" stroke-width="1.2" opacity="0.6"></path>
+                  <path d="M0,200 Q120,170 200,220 T280,190" fill="none" stroke="#93c5fd" stroke-width="1.2" opacity="0.6"></path>
+
+                  <!-- Full Planned Route (Dashed) -->
+                  <line x1="50" y1="200" x2="230" y2="55" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="4,4" id="conceptMapRouteLine"></line>
+
+                  <!-- Active Traversed Path (Solid blue) -->
+                  <line x1="50" y1="200" x2="50" y2="200" stroke="#2563eb" stroke-width="3" id="conceptMapActivePath"></line>
+
+                  <!-- Survivor Target Marker (Red) -->
+                  <g id="conceptMapTargetMarker">
+                    <circle cx="230" cy="55" r="14" fill="none" stroke="#ef4444" stroke-width="1.5" opacity="0.6">
+                      <animate attributeName="r" values="10;18;10" dur="2s" repeatCount="indefinite" />
+                      <animate attributeName="opacity" values="0.8;0.2;0.8" dur="2s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx="230" cy="55" r="6" fill="#ef4444"></circle>
+                    <text x="230" y="36" fill="#dc2626" font-size="9" font-weight="bold" text-anchor="middle" id="conceptMapTargetLabel">SURVIVOR</text>
+                  </g>
+
+                  <!-- Rescue Team Marker (Blue) -->
+                  <g id="conceptMapTeamGroup">
+                    <circle cx="50" cy="200" r="10" fill="rgba(37, 99, 235, 0.3)" id="conceptMapTeamPulse">
+                      <animate attributeName="r" values="6;14;6" dur="1.5s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx="50" cy="200" r="5.5" fill="#2563eb" id="conceptMapTeamMarker"></circle>
+                    <text x="50" y="222" fill="#1d4ed8" font-size="9" font-weight="bold" text-anchor="middle" id="conceptMapTeamLabel">TEAM</text>
+                  </g>
+                </svg>
+              </div>
+
+              <!-- Telemetry Readout Box -->
+              <div class="map-telemetry-readout">
+                <div class="telemetry-item">
+                  <span class="telemetry-item-label">Distance to Target</span>
+                  <div class="telemetry-item-val" id="conceptTelemDist" style="color: #2563eb;">—</div>
+                </div>
+                <div class="telemetry-item">
+                  <span class="telemetry-item-label">Estimated ETA</span>
+                  <div class="telemetry-item-val" id="conceptTelemEta">—</div>
+                </div>
+                <div class="telemetry-item">
+                  <span class="telemetry-item-label">Vector Heading</span>
+                  <div class="telemetry-item-val" id="conceptTelemBearing">—</div>
+                </div>
+                <div class="telemetry-item">
+                  <span class="telemetry-item-label">Target Callsign</span>
+                  <div class="telemetry-item-val" id="conceptTelemTarget">—</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 4. BOTTOM: 4D OPERATION TIMELINE -->
+          <div class="concept-timeline-wrap">
+            <div class="concept-timeline-header">
+              <span class="concept-timeline-title" id="conceptTimelineTitle">📊 4D Operation Timeline (Simulated Timeline)</span>
+              <span class="concept-timeline-disclaimer" id="conceptTimelineDisclaimer">Live operation events synchronized with backend state</span>
+            </div>
+
+            <div class="concept-timeline-track">
+              <div class="concept-track-progress" id="conceptTrackProgress"></div>
+
+              <!-- Step 0 -->
+              <div class="concept-step-node active" id="conceptTl0">
+                <div class="concept-step-dot">01</div>
+                <span class="concept-step-time" id="conceptTlTime0">T+00</span>
+                <span class="concept-step-label" id="conceptTlLabel0">COMMAND CREATED</span>
+              </div>
+
+              <!-- Step 1 -->
+              <div class="concept-step-node" id="conceptTl1">
+                <div class="concept-step-dot">02</div>
+                <span class="concept-step-time" id="conceptTlTime1">T+02</span>
+                <span class="concept-step-label" id="conceptTlLabel1">GO ALERT</span>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="concept-step-node" id="conceptTl2">
+                <div class="concept-step-dot">03</div>
+                <span class="concept-step-time" id="conceptTlTime2">T+05</span>
+                <span class="concept-step-label" id="conceptTlLabel2">TEAM ACCEPTED</span>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="concept-step-node" id="conceptTl3">
+                <div class="concept-step-dot">04</div>
+                <span class="concept-step-time" id="conceptTlTime3">T+15</span>
+                <span class="concept-step-label" id="conceptTlLabel3">EN ROUTE</span>
+              </div>
+
+              <!-- Step 4 -->
+              <div class="concept-step-node" id="conceptTl4">
+                <div class="concept-step-dot">05</div>
+                <span class="concept-step-time" id="conceptTlTime4">T+45</span>
+                <span class="concept-step-label" id="conceptTlLabel4">ARRIVED</span>
+              </div>
+
+              <!-- Step 5 -->
+              <div class="concept-step-node" id="conceptTl5">
+                <div class="concept-step-dot">06</div>
+                <span class="concept-step-time" id="conceptTlTime5">T+60</span>
+                <span class="concept-step-label" id="conceptTlLabel5">RESCUE COMPLETE</span>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- VIEW C: LIVE RESCUE FLOW (OPERATIONAL HARDWARE PIPELINE)     -->
+    <!-- ============================================================ -->
+    <div class="watch-view-container is-hidden" id="viewLiveRescueFlow" role="tabpanel" aria-labelledby="btnViewLiveRescueFlow">
+      <div class="lrf-container">
+        
+        <section class="lrf-section" aria-label="Live Smartwatch Rescue Flow Operational Dashboard">
+          
+          <!-- Header Bar -->
+          <div class="lrf-header">
+            <div class="lrf-title-group">
+              <div class="lrf-icon-badge">🚨</div>
+              <div>
+                <span class="lrf-title">LIVE RESCUE FLOW</span>
+                <span class="lrf-subtitle">Real-Time Commander ➔ Backend ➔ Bridge ➔ Physical Watch</span>
+              </div>
+            </div>
+
+            <!-- High-Level Hardware & Backend Status Bar -->
+            <div class="lrf-status-bar">
+              <div class="lrf-status-pill success" id="lrfStatBackend">
+                <span class="lrf-status-dot pulse"></span> BACKEND ● CONNECTED
+              </div>
+              <div class="lrf-status-pill online" id="lrfStatCommander">
+                <span class="lrf-status-dot pulse"></span> COMMANDER ● READY
+              </div>
+              <div class="lrf-status-pill success" id="lrfStatBridge">
+                <span class="lrf-status-dot pulse"></span> BRIDGE ● ONLINE
+              </div>
+              <div class="lrf-status-pill success" id="lrfStatBluetooth">
+                <span class="lrf-status-dot pulse"></span> BLUETOOTH ● CONNECTED
+              </div>
+              <div class="lrf-status-pill success" id="lrfStatWatch">
+                <span class="lrf-status-dot pulse"></span> WATCH ● CONNECTED
+              </div>
+            </div>
+          </div>
+
+          <!-- 3-Column Operational Grid -->
+          <div class="lrf-grid">
+
+            <!-- 1. LEFT COLUMN: LOGICAL ASSIGNMENT & PHYSICAL ENDPOINT -->
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              
+              <!-- Logical Assignment Card -->
+              <div class="lrf-card">
+                <div class="lrf-card-title">
+                  <span>🎖️ LOGICAL ASSIGNMENT</span>
+                  <span style="font-size: 10px; color: #2563eb; font-weight: 700;">COMMANDER</span>
+                </div>
+                <div class="lrf-details-box">
+                  <div class="lrf-row">
+                    <span class="lrf-label">Team:</span>
+                    <span class="lrf-val" id="lrfValTeam">Rescue Team Alpha</span>
+                  </div>
+                  <div class="lrf-row">
+                    <span class="lrf-label">Member:</span>
+                    <span class="lrf-val" id="lrfValMember">Alpha Member 1</span>
+                  </div>
+                  <div class="lrf-row">
+                    <span class="lrf-label">Operation ID:</span>
+                    <span class="lrf-val" id="lrfValOpId">—</span>
+                  </div>
+                  <div class="lrf-row">
+                    <span class="lrf-label">Target:</span>
+                    <span class="lrf-val" id="lrfValTarget">—</span>
+                  </div>
+                  <div class="lrf-row">
+                    <span class="lrf-label">Priority:</span>
+                    <span class="lrf-val" id="lrfValPriority">—</span>
+                  </div>
+                  <div class="lrf-row">
+                    <span class="lrf-label">Command:</span>
+                    <span class="lrf-val cmd-go" id="lrfValCommand">STANDBY</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Physical Hardware Endpoint Card -->
+              <div class="lrf-card">
+                <div class="lrf-card-title">
+                  <span>⌚ PHYSICAL ENDPOINT</span>
+                  <span style="font-size: 10px; color: #15803d; font-weight: 700;">HARDWARE</span>
+                </div>
+                <div class="lrf-details-box">
+                  <div class="lrf-row">
+                    <span class="lrf-label">Device:</span>
+                    <span class="lrf-val highlight" id="lrfValHwDevice">Wave Call Plus</span>
+                  </div>
+                  <div class="lrf-row">
+                    <span class="lrf-label">Device ID:</span>
+                    <span class="lrf-val" id="lrfValHwId">CALLPLUS_7F1B</span>
+                  </div>
+                  <div class="lrf-row">
+                    <span class="lrf-label">MAC Address:</span>
+                    <span class="lrf-val" id="lrfValHwMac">CB:4E:FD:EE:7F:1B</span>
+                  </div>
+                  <div class="lrf-row">
+                    <span class="lrf-label">Bluetooth:</span>
+                    <span class="lrf-val" id="lrfValHwBtState" style="color: #15803d;">CONNECTED (GATT)</span>
+                  </div>
+                </div>
+                <div class="lrf-hw-note">
+                  💡 <strong>Dynamic Hardware Routing:</strong> Commander selects the logical team/member. The backend routes the command to the currently connected active physical watch on your hand.
+                </div>
+              </div>
+
+            </div>
+
+            <!-- 2. CENTER COLUMN: LIVE COMMAND PIPELINE -->
+            <div class="lrf-card">
+              <div class="lrf-card-title">
+                <span>📡 LIVE COMMAND PIPELINE</span>
+                <span style="font-size: 10px; color: #64748b; font-weight: 600;" id="lrfBannerTimestamp">LIVE</span>
+              </div>
+
+              <div class="lrf-pipeline-wrap">
+                <!-- 1. Commander -->
+                <div class="lrf-pipe-node active" id="lrfPipeCommander">
+                  <div class="lrf-pipe-icon">🎖️</div>
+                  <div class="lrf-pipe-info">
+                    <div class="lrf-pipe-title">1. Commander Console</div>
+                    <div class="lrf-pipe-status" id="lrfPipeCommanderStatus">Assignment created</div>
+                  </div>
+                  <div class="lrf-pipe-time" id="lrfPipeCommanderTime">READY</div>
+                </div>
+
+                <div class="lrf-pipe-connector" id="lrfConn1"></div>
+
+                <!-- 2. Backend -->
+                <div class="lrf-pipe-node" id="lrfPipeBackend">
+                  <div class="lrf-pipe-icon">🌐</div>
+                  <div class="lrf-pipe-info">
+                    <div class="lrf-pipe-title">2. RidgeWatch Backend</div>
+                    <div class="lrf-pipe-status" id="lrfPipeBackendStatus">Command routed to BLE Gateway</div>
+                  </div>
+                  <div class="lrf-pipe-time" id="lrfPipeBackendTime">SYNC</div>
+                </div>
+
+                <div class="lrf-pipe-connector" id="lrfConn2"></div>
+
+                <!-- 3. Android Companion Bridge -->
+                <div class="lrf-pipe-node" id="lrfPipeBridge">
+                  <div class="lrf-pipe-icon">📲</div>
+                  <div class="lrf-pipe-info">
+                    <div class="lrf-pipe-title">3. Android Companion Bridge</div>
+                    <div class="lrf-pipe-status" id="lrfPipeBridgeStatus">BLE Gateway mirror</div>
+                  </div>
+                  <div class="lrf-pipe-time" id="lrfPipeBridgeTime">GATT</div>
+                </div>
+
+                <div class="lrf-pipe-connector" id="lrfConn3"></div>
+
+                <!-- 4. Bluetooth -->
+                <div class="lrf-pipe-node" id="lrfPipeBluetooth">
+                  <div class="lrf-pipe-icon">📶</div>
+                  <div class="lrf-pipe-info">
+                    <div class="lrf-pipe-title">4. Bluetooth Transmission</div>
+                    <div class="lrf-pipe-status" id="lrfPipeBluetoothStatus">BLE Notification payload pushed</div>
+                  </div>
+                  <div class="lrf-pipe-time" id="lrfPipeBluetoothTime">RF</div>
+                </div>
+
+                <div class="lrf-pipe-connector" id="lrfConn4"></div>
+
+                <!-- 5. Physical Watch -->
+                <div class="lrf-pipe-node" id="lrfPipeWatch">
+                  <div class="lrf-pipe-icon">⌚</div>
+                  <div class="lrf-pipe-info">
+                    <div class="lrf-pipe-title">5. Wave Call Plus (Physical Watch)</div>
+                    <div class="lrf-pipe-status" id="lrfPipeWatchStatus">Hardware endpoint active on wrist</div>
+                  </div>
+                  <div class="lrf-pipe-time" id="lrfPipeWatchTime">RX</div>
+                </div>
+
+                <div class="lrf-pipe-connector" id="lrfConn5"></div>
+
+                <!-- 6. Display / Execution -->
+                <div class="lrf-pipe-node" id="lrfPipeDisplay">
+                  <div class="lrf-pipe-icon">🚨</div>
+                  <div class="lrf-pipe-info">
+                    <div class="lrf-pipe-title">6. GO Command Displayed</div>
+                    <div class="lrf-pipe-status" id="lrfPipeDisplayStatus">Hardware command active</div>
+                  </div>
+                  <div class="lrf-pipe-time" id="lrfPipeDisplayTime">OLED</div>
+                </div>
+              </div>
+
+              <!-- Live Command Status Banner -->
+              <div class="lrf-cmd-banner" id="lrfBannerStatus">
+                STATUS: STANDBY — Awaiting rescue assignment from Commander Console
+              </div>
+            </div>
+
+            <!-- 3. RIGHT COLUMN: WATCH MONITOR & LOCATION TELEMETRY -->
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              
+              <!-- Physical Watch Monitor -->
+              <div class="lrf-card">
+                <div class="lrf-card-title">
+                  <span>⌚ WATCH MONITOR</span>
+                  <span style="font-size: 10px; color: #1d4ed8; font-weight: 700;">LIVE HARDWARE</span>
+                </div>
+                <div class="lrf-watch-monitor-stage">
+                  <div class="lrf-mini-watch-frame">
+                    <div class="lrf-mini-screen">
+                      <div class="lrf-mini-header">
+                        <span id="lrfMonitorTime">--:--</span>
+                        <span>94% 🔋</span>
+                      </div>
+                      <div class="lrf-mini-body">
+                        <div class="lrf-mini-big-cmd" id="lrfMonitorBigCmd">STANDBY</div>
+                        <div class="lrf-mini-target" id="lrfMonitorTarget">Awaiting Assignment</div>
+                        <div class="lrf-mini-sub" id="lrfMonitorSub">Listening on rescue channel</div>
+                      </div>
+                      <div class="lrf-mini-footer">
+                        <span>WAVE CALL PLUS</span>
+                        <span>RIDGEWATCH</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Real-Time Rescuer Location Readout -->
+              <div class="lrf-card">
+                <div class="lrf-card-title">
+                  <span>🗺️ LOCATION & NAVIGATION</span>
+                  <span style="font-size: 10px; color: #64748b; font-weight: 600;">GNSS / TELEMETRY</span>
+                </div>
+                <div class="lrf-loc-grid">
+                  <div class="lrf-loc-item">
+                    <div class="lrf-loc-item-label">Rescuer GPS</div>
+                    <div class="lrf-loc-item-val" id="lrfLocRescuer">GPS DATA WAITING</div>
+                  </div>
+                  <div class="lrf-loc-item">
+                    <div class="lrf-loc-item-label">Target GPS</div>
+                    <div class="lrf-loc-item-val" id="lrfLocTarget">—</div>
+                  </div>
+                  <div class="lrf-loc-item">
+                    <div class="lrf-loc-item-label">Distance to Target</div>
+                    <div class="lrf-loc-item-val" id="lrfLocDist" style="color: #2563eb;">—</div>
+                  </div>
+                  <div class="lrf-loc-item">
+                    <div class="lrf-loc-item-label">Vector Heading</div>
+                    <div class="lrf-loc-item-val" id="lrfLocHeading">—</div>
+                  </div>
+                  <div class="lrf-loc-item">
+                    <div class="lrf-loc-item-label">Estimated ETA</div>
+                    <div class="lrf-loc-item-val" id="lrfLocEta">—</div>
+                  </div>
+                  <div class="lrf-loc-item">
+                    <div class="lrf-loc-item-label">Last GPS Update</div>
+                    <div class="lrf-loc-item-val" id="lrfLocLastGps">—</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/watch.js"></script>
+<script src="js/watch_concept_3d.js"></script>
+<script src="js/live_rescue_flow.js"></script>
+</body>
+</html>

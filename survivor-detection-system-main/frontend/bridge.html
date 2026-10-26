@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIDGEWATCH — Android Companion BLE Bridge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  /* ==========================================================================
+     RIDGEWATCH Android Bridge — Clean White & Blue Theme
+     ========================================================================== */
+
+  body {
+    background-color: #f0f4f9;
+    color: #0f172a;
+    font-family: var(--font-display, 'Space Grotesk', -apple-system, sans-serif);
+    margin: 0;
+    padding: 0;
+  }
+
+  .app-shell {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f0f4f9;
+  }
+
+  /* Sidebar Styles */
+  .sidebar {
+    width: 230px;
+    min-width: 230px;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 14px;
+    box-shadow: 1px 0 3px rgba(0, 0, 0, 0.02);
+  }
+  .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding-left: 6px;
+  }
+  .brand-mark {
+    color: #2563eb;
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .brand-name {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    color: #0f172a;
+    display: block;
+    line-height: 1.2;
+  }
+  .brand-sub {
+    font-size: 10px;
+    color: #64748b;
+    display: block;
+    font-weight: 500;
+  }
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+  .sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    color: #475569;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+  }
+  .sidebar-link:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
+  .sidebar-link.is-active {
+    background: #e0edff;
+    color: #2563eb;
+    font-weight: 700;
+    border-left: 3px solid #2563eb;
+    border-radius: 0 8px 8px 0;
+    padding-left: 9px;
+  }
+  .sidebar-foot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 6px 0 6px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .sidebar-foot-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #2563eb;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .sidebar-foot-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #0f172a;
+    display: block;
+  }
+  .sidebar-foot-role {
+    font-size: 10px;
+    color: #64748b;
+    display: block;
+  }
+
+  /* Main Viewport */
+  .main-content {
+    flex: 1;
+    padding: 24px 32px;
+    overflow-y: auto;
+  }
+
+  /* Bridge Container (White Card with Blue Accents) */
+  .bridge-container {
+    max-width: 760px;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px 28px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(37, 99, 235, 0.03);
+  }
+
+  .bridge-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .bridge-title {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .bridge-desc {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 4px 0 18px 0;
+    line-height: 1.4;
+  }
+
+  .bridge-status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .status-online {
+    background: #dcfce7;
+    color: #16a34a;
+    border: 1px solid #86efac;
+  }
+  .status-offline {
+    background: #fee2e2;
+    color: #ef4444;
+    border: 1px solid #fca5a5;
+  }
+
+  /* Status Cards Grid */
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .status-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  }
+  .status-card-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .status-card-val {
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  .val-ok { color: #16a34a; }
+  .val-warn { color: #d97706; }
+  .val-bad { color: #ef4444; }
+  .val-dim { color: #94a3b8; }
+
+  /* Info Split Grid */
+  .info-split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  /* Target Smartwatch Card */
+  .target-badge {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e3a8a;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .target-badge strong {
+    color: #1e40af;
+  }
+  .target-badge code {
+    background: #dbeafe;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #1e3a8a;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.8rem;
+  }
+  .target-badge-status {
+    font-size: 0.75rem;
+    color: #16a34a;
+    font-weight: 700;
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    padding: 3px 8px;
+    border-radius: 12px;
+  }
+
+  /* Form Controls */
+  .bridge-control-group {
+    margin: 14px 0;
+  }
+  .bridge-control-group label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 6px;
+  }
+  .bridge-control-group label code {
+    color: #2563eb;
+    font-family: var(--font-mono, monospace);
+  }
+  .bridge-control-group input,
+  .bridge-control-group select {
+    width: 100%;
+    padding: 10px 12px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #0f172a;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .bridge-control-group input:focus,
+  .bridge-control-group select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  /* Action Buttons */
+  .bridge-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    background: #2563eb;
+    color: #ffffff;
+    margin-top: 10px;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.2);
+  }
+  .bridge-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.3);
+  }
+  .bridge-btn-gps {
+    background: #16a34a;
+    box-shadow: 0 1px 3px rgba(22, 163, 74, 0.2);
+  }
+  .bridge-btn-gps:hover {
+    background: #15803d;
+    box-shadow: 0 3px 8px rgba(22, 163, 74, 0.3);
+  }
+
+  /* Log Console */
+  .bridge-log {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.8rem;
+    color: #1e293b;
+    height: 160px;
+    overflow-y: auto;
+    margin-top: 16px;
+    line-height: 1.6;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+  }
+
+  /* Bluetooth Modal */
+  .ble-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 16px;
+  }
+  .ble-modal-card {
+    width: 100%;
+    max-width: 480px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    animation: modalPop 0.18s ease-out;
+  }
+  @keyframes modalPop {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .ble-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+  }
+  .ble-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #64748b;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .ble-modal-close:hover {
+    color: #0f172a;
+    background: #e2e8f0;
+  }
+  .ble-modal-body {
+    padding: 20px;
+  }
+
+  /* Emergency Popup Styles */
+  .emergency-popup-overlay {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 10000;
+    max-width: 440px;
+    width: calc(100vw - 48px);
+    animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(40px) scale(0.96); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
+  }
+  .emergency-popup-card {
+    background: #ffffff;
+    border: 2px solid #ef4444;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(220, 38, 38, 0.25), 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+  .emergency-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #fef2f2;
+    border-bottom: 1px solid #fee2e2;
+  }
+  .emergency-badge-pulse {
+    display: inline-block;
+    animation: pulseRed 1.2s infinite ease-in-out;
+  }
+  @keyframes pulseRed {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.25); opacity: 0.8; }
+  }
+  .emergency-popup-body {
+    padding: 16px;
+  }
+  .emergency-pipeline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+  .pipe-step {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #64748b;
+  }
+  .pipe-step.is-active {
+    color: #16a34a;
+  }
+  .pipe-step.is-pending {
+    color: #d97706;
+  }
+  .pipe-step.is-error {
+    color: #dc2626;
+  }
+  .pipe-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .pipe-arrow {
+    color: #cbd5e1;
+    font-size: 0.7rem;
+  }
+
+  /* Notification Center Styles */
+  .notification-center-card {
+    margin-top: 24px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+  .notif-center-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .notif-count-badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #2563eb;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    padding: 2px 8px;
+    border-radius: 12px;
+  }
+  .notif-center-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  .notif-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #ef4444;
+    border-radius: 6px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.15s ease;
+  }
+  .notif-item:hover {
+    border-color: #cbd5e1;
+    background: #f1f5f9;
+  }
+  .notif-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .notif-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .notif-time {
+    font-size: 0.72rem;
+    color: #64748b;
+    font-weight: 600;
+  }
+  .notif-msg {
+    font-size: 0.8rem;
+    color: #334155;
+  }
+  .notif-badges-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-size: 0.72rem;
+    margin-top: 2px;
+  }
+  .notif-dist-pill {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .notif-status-pill {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .notif-status-pill.is-ok {
+    background: #dcfce7;
+    border-color: #86efac;
+    color: #15803d;
+  }
+  .notif-empty {
+    text-align: center;
+    padding: 24px;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ============================================================ -->
+  <!-- SIDEBAR                                                      -->
+  <!-- ============================================================ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">▲</span>
+      <div class="brand-text">
+        <span class="brand-name">RIDGEWATCH</span>
+        <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="sidebar-link"><span>📡</span> <span>Dashboard</span></a>
+      <a href="hardware.html" class="sidebar-link"><span>🔧</span> <span>Hardware</span></a>
+      <a href="logic.html" class="sidebar-link"><span>🧠</span> <span>Logic</span></a>
+      <a href="testing.html" class="sidebar-link"><span>📊</span> <span>Testing</span></a>
+      <a href="commander.html" class="sidebar-link"><span>🎖️</span> <span>Commander</span></a>
+      <a href="watch.html" class="sidebar-link"><span>⌚</span> <span>Watch</span></a>
+      <a href="bridge.html" class="sidebar-link is-active"><span>📲</span> <span>Bridge</span></a>
+      <a href="alerts.html" class="sidebar-link"><span>🚨</span> <span>Alerts</span></a>
+      <a href="analytics.html" class="sidebar-link"><span>📊</span> <span>Analytics</span></a>
+      <a href="scenarios.html" class="sidebar-link"><span>🗺️</span> <span>Scenarios</span></a>
+      <a href="victims.html" class="sidebar-link"><span>🧍</span> <span>Victims</span></a>
+      <a href="teams.html" class="sidebar-link"><span>🚁</span> <span>Teams</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="sidebar-foot-avatar" aria-hidden="true">R</span>
+      <div class="sidebar-foot-text">
+        <span class="sidebar-foot-name">RidgeWatch Ops</span>
+        <span class="sidebar-foot-role">Demo build · v1.0</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================ -->
+  <!-- MAIN VIEWPORT                                                -->
+  <!-- ============================================================ -->
+  <div class="main-content">
+    <div class="bridge-container">
+      <div class="bridge-header-row">
+        <h2 class="bridge-title">📲 Android Companion BLE Bridge</h2>
+        <span class="bridge-status-badge status-online" id="bridgeStatus">ONLINE</span>
+      </div>
+      <p class="bridge-desc">
+        Rescuer phone edge gateway connecting Wave Call Plus smartwatch to RIDGEWATCH backend over Web Bluetooth &amp; GNSS GPS.
+      </p>
+
+      <!-- Phase 9 Diagnostic Status Cards -->
+      <div class="status-grid">
+        <div class="status-card">
+          <div class="status-card-label">RIDGEWATCH CONNECTION</div>
+          <div class="status-card-val val-ok" id="statBackendConn">● CONNECTED</div>
+        </div>
+        <div class="status-card">
+          <div class="status-card-label">BLUETOOTH</div>
+          <div class="status-card-val val-ok" id="statBluetooth">● ENABLED</div>
+        </div>
+        <div class="status-card">
+          <div class="status-card-label">WAVE CALL PLUS</div>
+          <div class="status-card-val val-dim" id="statWatchConn">DISCONNECTED</div>
+        </div>
+        <div class="status-card">
+          <div class="status-card-label">ANDROID NOTIFICATIONS</div>
+          <div class="status-card-val val-warn" id="statNotifPerm">● PERMISSION REQUIRED</div>
+        </div>
+        <div class="status-card">
+          <div class="status-card-label">GPS (PHONE)</div>
+          <div class="status-card-val val-ok" id="statGps">● AVAILABLE</div>
+        </div>
+      </div>
+
+      <div class="info-split-grid">
+        <div class="status-card" style="text-align: left;">
+          <div class="status-card-label">LAST RESCUE COMMAND</div>
+          <div style="font-size: 0.95rem; font-family: var(--font-mono); color: #0f172a; font-weight: 800;" id="statLastCmdId">STANDBY</div>
+          <div style="font-size: 0.78rem; color: #475569; margin-top: 2px; font-weight: 600;" id="statLastCmdDesc">Awaiting Commander GO assignment</div>
+          <div style="font-size: 0.72rem; color: #2563eb; margin-top: 4px; font-weight: 600;" id="statLastCmdStatus">Bridge: ○ WAITING · Notification: ○ STANDBY · Watch: ○ UNCONFIRMED</div>
+        </div>
+        <div class="status-card" style="text-align: left;">
+          <div class="status-card-label">LAST BACKEND SYNCHRONIZATION</div>
+          <div style="font-size: 0.85rem; font-family: var(--font-mono); color: #2563eb; font-weight: 700;" id="statLastSync">—</div>
+          <div style="font-size: 0.75rem; color: #16a34a; margin-top: 2px; font-weight: 600;">Keepalive Interval: 5s</div>
+          <div style="font-size: 0.72rem; color: #64748b; margin-top: 2px;" id="statBridgeSession">Session: INITIALIZING</div>
+        </div>
+      </div>
+
+      <div class="bridge-control-group">
+        <label>Active Target Smartwatch Hardware:</label>
+        <div class="target-badge">
+          <div>
+            <strong>⌚ Wave Call Plus</strong> (<code>CALLPLUS_7F1B</code>)
+            <div style="font-size: 0.75rem; color: #475569; margin-top: 3px;">MAC: <code>CB:4E:FD:EE:7F:1B</code> | SN: <code>230105502503539</code> | SW: <code>6.4.3582.28</code></div>
+          </div>
+          <span class="target-badge-status" id="statWatchBadge">CONFIGURED</span>
+        </div>
+      </div>
+
+      <div class="bridge-control-group">
+        <label>Rescuer Team Assignment:</label>
+        <select id="bridgeTeamSelect">
+          <option value="ALPHA" selected>Rescue Team Alpha (ALPHA)</option>
+          <option value="BRAVO">Rescue Team Bravo (BRAVO)</option>
+          <option value="RESCUE-1">Rescue Team 1 (RESCUE-1)</option>
+          <option value="RESCUE-2">Rescue Team 2 (RESCUE-2)</option>
+          <option value="RESCUE-3">Rescue Team 3 (RESCUE-3)</option>
+        </select>
+      </div>
+
+      <div class="bridge-control-group">
+        <label>Assigned Team Member (Watch Owner):</label>
+        <select id="bridgeMemberSelect">
+          <option value="">Loading members…</option>
+        </select>
+      </div>
+
+      <div class="bridge-control-group">
+        <label>Phone GPS Location (Tagged honestly as <code>PHONE_GPS</code>):</label>
+        <div style="display: flex; gap: 0.5rem;">
+          <input type="text" id="bridgeLat" value="32.3739" placeholder="Latitude">
+          <input type="text" id="bridgeLon" value="77.2491" placeholder="Longitude">
+        </div>
+      </div>
+
+      <button class="bridge-btn" style="background: #475569;" id="btnEnableNotif">🔔 Enable Android System Notifications (Wave Call Plus Mirror)</button>
+      <button class="bridge-btn" id="btnConnectBle">🔵 Pair Wave Call Plus (CALLPLUS_7F1B) via Web Bluetooth</button>
+      <button class="bridge-btn" style="background: #dc2626; color: #ffffff;" id="btnTestWatchAlert">🚨 Send Live Hardware Test Alert to Watch</button>
+      <button class="bridge-btn" style="background: #16a34a; color: #ffffff;" id="btnManualWatchAck">👤 Operator Confirmation (Manual Rescuer Accept)</button>
+      <button class="bridge-btn bridge-btn-gps" id="btnSyncGps">📍 Send Rescuer GPS Heartbeat</button>
+
+      <div class="bridge-log" id="bridgeLog">
+        [SYS] Android companion bridge initialized.<br>
+        [SYS] Single watch architecture: Wave Call Plus (CALLPLUS_7F1B).<br>
+        [SYS] Web Bluetooth GATT ready (Services: 0x180A, 0x180D, 0x180F, 0xFEA0).
+      </div>
+
+      <!-- Notification Center Section -->
+      <div class="notification-center-card">
+        <div class="notif-center-header">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.15rem;">🔔</span>
+            <h3 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">NOTIFICATION CENTER</h3>
+          </div>
+          <span class="notif-count-badge" id="notifCenterCount">0 Alerts</span>
+        </div>
+        <div class="notif-center-list" id="notifCenterList">
+          <div class="notif-empty">No emergency alerts recorded yet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- LAPTOP SCREEN LIVE EMERGENCY ALERT POPUP (3-5s TRANSIENT)    -->
+<!-- ============================================================ -->
+<div class="emergency-popup-overlay" id="emergencyPopupOverlay" style="display: none;">
+  <div class="emergency-popup-card">
+    <div class="emergency-popup-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="emergency-badge-pulse">🔴</span>
+        <span style="font-weight: 800; font-size: 0.95rem; color: #dc2626; letter-spacing: 0.5px;">EMERGENCY ALERT</span>
+      </div>
+      <span id="emergencyPopupTime" style="font-size: 0.78rem; font-weight: 700; color: #64748b;">5:32 PM</span>
+    </div>
+    <div class="emergency-popup-body">
+      <div style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-bottom: 4px;" id="emergencyPopupTitle">Survivor Detected: VIC-001</div>
+      <div style="font-size: 0.85rem; color: #475569; margin-bottom: 10px;" id="emergencyPopupMsg">Rescue operation required immediately.</div>
+      
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; background: #fef2f2; border: 1px solid #fecaca; padding: 8px 12px; border-radius: 8px;">
+        <span style="font-size: 0.82rem; font-weight: 700; color: #991b1b;" id="emergencyPopupDist">📍 Distance: 125 m</span>
+        <span style="font-size: 0.82rem; font-weight: 700; color: #991b1b;" id="emergencyPopupTarget">🎯 Target: Sector Alpha</span>
+        <span style="font-size: 0.82rem; font-weight: 700; color: #991b1b;" id="emergencyPopupTeam">👥 Team: ALPHA</span>
+      </div>
+
+      <!-- Live Delivery State Tracker -->
+      <div class="emergency-pipeline">
+        <div class="pipe-step is-active" id="pipeBt"><span class="pipe-dot"></span> BLE: Connected</div>
+        <div class="pipe-arrow">➔</div>
+        <div class="pipe-step is-active" id="pipeGatt"><span class="pipe-dot"></span> GATT: Ready</div>
+        <div class="pipe-arrow">➔</div>
+        <div class="pipe-step is-pending" id="pipeSent"><span class="pipe-dot"></span> Watch: Sent</div>
+        <div class="pipe-arrow">➔</div>
+        <div class="pipe-step" id="pipeAck"><span class="pipe-dot"></span> ACK: Pending</div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 12px;">
+        <button class="bridge-btn" style="margin-top: 0; background: #16a34a; font-weight: 800; flex: 1;" id="btnPopupAccept">✅ ACCEPT MISSION</button>
+        <button class="bridge-btn" style="margin-top: 0; background: #64748b; flex: 1;" id="btnPopupDismiss">Dismiss Popup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- BLUETOOTH PAIRING & CONNECTION MODAL                         -->
+<!-- ============================================================ -->
+<div class="ble-modal-overlay" id="bleModalOverlay" style="display: none;">
+  <div class="ble-modal-card">
+    <div class="ble-modal-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-size: 1.3rem;">🔵</span>
+        <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;">Bluetooth Device Pairing Manager</h3>
+      </div>
+      <button class="ble-modal-close" id="btnBleModalClose">&times;</button>
+    </div>
+
+    <div class="ble-modal-body">
+      <p style="font-size: 0.85rem; color: #475569; margin-top: 0; margin-bottom: 14px; line-height: 1.5;">
+        Pair your <strong>Wave Call Plus</strong> smartwatch to connect to the RIDGEWATCH edge gateway for live rescue dispatch and GATT telemetry.
+      </p>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 0.85rem; font-weight: 700; color: #0f172a;">Wave Call Plus (CALLPLUS_7F1B)</span>
+          <span id="bleModalStatusBadge" style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 9999px; background: #fee2e2; color: #dc2626;">DISCONNECTED</span>
+        </div>
+        <div style="font-size: 0.75rem; color: #64748b; line-height: 1.5;">
+          MAC: <code>CB:4E:FD:EE:7F:1B</code> | Serial: <code>230105502503539</code><br>
+          GATT Services: <code>0x180A (Info)</code>, <code>0x180D (Heart)</code>, <code>0x180F (Battery)</code>, <code>0xFEA0 (Vendor)</code>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button class="bridge-btn" style="margin-top: 0; background: #2563eb;" id="btnBleModalScan">
+          🔍 Pair Wave Call Plus (Web Bluetooth)
+        </button>
+        
+        <button class="bridge-btn" style="margin-top: 0; background: #16a34a;" id="btnBleModalDirectConnect">
+          ⚡ Connect Physical BLE Device
+        </button>
+        
+        <button class="bridge-btn" style="margin-top: 0; background: #ef4444; display: none;" id="btnBleModalDisconnect">
+          🔌 Disconnect Wave Call Plus
+        </button>
+      </div>
+
+      <div id="bleModalMsg" style="font-size: 0.78rem; color: #475569; margin-top: 14px; padding: 8px 10px; border-radius: 6px; background: #f1f5f9; display: none; line-height: 1.4;"></div>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/bridge.js"></script>
+</body>
+</html>

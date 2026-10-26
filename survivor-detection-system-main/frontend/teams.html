@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIDGEWATCH — Rescue Teams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">▲</span>
+      <div class="brand-text">
+        <span class="brand-name">RIDGEWATCH</span>
+        <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="sidebar-link">📡 <span>Dashboard</span></a>
+      <a href="visual.html" class="sidebar-link">🌐 <span>Visual 3D</span></a>
+      <a href="hardware.html" class="sidebar-link">🔧 <span>Hardware</span></a>
+      <a href="logic.html" class="sidebar-link">🧠 <span>Logic</span></a>
+      <a href="testing.html" class="sidebar-link">📊 <span>Testing</span></a>
+      <a href="commander.html" class="sidebar-link">🎖️ <span>Commander</span></a>
+      <a href="watch.html" class="sidebar-link">⌚ <span>Watch</span></a>
+      <a href="alerts.html" class="sidebar-link">🚨 <span>Alerts</span></a>
+      <a href="notification.html" class="sidebar-link">🔔 <span>Notification</span></a>
+      <a href="analytics.html" class="sidebar-link">📊 <span>Analytics</span></a>
+      <a href="scenarios.html" class="sidebar-link">🗺️ <span>Scenarios</span></a>
+      <a href="victims.html" class="sidebar-link">🧍 <span>Victims</span></a>
+      <a href="teams.html" class="sidebar-link is-active">🚁 <span>Teams</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="sidebar-foot-avatar" aria-hidden="true">R</span>
+      <div class="sidebar-foot-text">
+        <span class="sidebar-foot-name">RidgeWatch Ops</span>
+        <span class="sidebar-foot-role">Demo build · v1.0</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content">
+
+  <!-- ============================================================ -->
+  <!-- HEADER / CONTROL BAR                                          -->
+  <!-- ============================================================ -->
+  <header class="topbar">
+    <div class="site-tag">
+      <span class="site-tag-label">VIEW</span>
+      <span class="site-tag-value">Rescue Teams · Roster &amp; Live Status</span>
+    </div>
+    <div class="topbar-right">
+      <a href="notification.html" class="topbar-bell" title="Notification Center" aria-label="Notification Center">🔔<span class="topbar-bell-dot" id="topbarAlertDot" hidden></span></a>
+      <span class="topbar-avatar" title="RidgeWatch Ops">R</span>
+    </div>
+  </header>
+
+  <!-- ============================================================ -->
+  <!-- MAIN LAYOUT                                                   -->
+  <!-- ============================================================ -->
+  <main class="page-content">
+    <section class="panel">
+      <div class="panel-head"><h2>🚁 Rescue Teams</h2></div>
+      <div id="teamsCardRow" class="teams-card-row">
+        <p class="empty-note">No scenario running yet.</p>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><h2>👤 Team Members</h2></div>
+      <table class="data-table" id="membersTable">
+        <thead><tr><th>Name</th><th>Role</th><th>Callsign</th><th>Team</th><th>Status</th><th>Assigned To</th></tr></thead>
+        <tbody id="membersTableBody">
+          <tr><td colspan="6" class="empty-note">No scenario running yet.</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/teams.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+# =============================================================
+# CampusGuard - Enterprise Python Backend
+# File: pyproject.toml
+# Purpose: Project metadata & tool configuration (like pom.xml in Java)
+#          Used by Amazon, Qualcomm, Google internally for Python projects
+# =============================================================
+
+[tool.poetry]
+name = "campusguard-backend"
+version = "2.0.0"
+description = "CampusGuard - Smart Watchman & Gate Management System"
+authors = ["CampusGuard Team"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.mypy]
+python_version = "3.11"
+strict = false
+ignore_missing_imports = true

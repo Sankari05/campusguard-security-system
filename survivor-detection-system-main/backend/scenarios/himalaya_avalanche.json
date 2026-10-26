@@ -1,0 +1,223 @@
+{
+  "scenario_id": "himalaya_avalanche",
+  "name": "Himalaya Avalanche",
+  "description": "Simulated avalanche debris field near the Rohtang Pass approach, Himachal Pradesh, India (~3,950 m). Four victims spread across a search-grid-sized debris cone, at varying burial depths and physiological states.",
+  "site_label": "Rohtang Pass Approach \u00b7 Himachal Pradesh \u00b7 3,950 m",
+  "site_origin": {
+    "latitude": 32.3739,
+    "longitude": 77.2491,
+    "altitude_m": 3950
+  },
+  "rescue_teams": [
+    {
+      "team_id": "ALPHA",
+      "team_name": "Rescue Team Alpha",
+      "lat_offset": -0.0008,
+      "lon_offset": -0.0006,
+      "members": 2
+    },
+    {
+      "team_id": "BRAVO",
+      "team_name": "Rescue Team Bravo",
+      "lat_offset": 0.001,
+      "lon_offset": -0.0009,
+      "members": 2
+    }
+  ],
+  "site_environment": {
+    "initial_soil_moisture_pct": 45.0,
+    "soil_moisture_volatility_pct": 1.5,
+    "soil_saturation_from_rain_pct_per_mm_hr": 0.35,
+    "aftershock_prob_per_cycle": 0.015,
+    "aftershock_peak_min_mm_s": 6.0,
+    "aftershock_peak_max_mm_s": 16.0,
+    "aftershock_decay_cycles": 5,
+    "baseline_tilt_deg": 1.5,
+    "tilt_creep_rate_deg_per_cycle": 0.02,
+    "tilt_shift_probability": 0.02,
+    "tilt_shift_range_deg": [
+      1.0,
+      3.0
+    ],
+    "initial_ambient_temp_c": -9.0,
+    "ambient_temp_volatility_c": 1.2,
+    "temp_diurnal_swing_c": 4.0,
+    "initial_humidity_pct": 55.0,
+    "humidity_volatility_pct": 2.5,
+    "humidity_rain_amplifier_pct_per_mm_hr": 0.8
+  },
+  "victims": [
+    {
+      "victim_id": "V1",
+      "label": "Victim 1 - Deceased",
+      "status": "deceased",
+      "location": {
+        "latitude": 32.37401,
+        "longitude": 77.24898,
+        "altitude_m": 3946
+      },
+      "burial_depth_m": 1.8,
+      "signature_range": {
+        "thermal_imaging_c": [
+          -5.0,
+          2.0
+        ],
+        "pir_motion": [
+          0.0,
+          0.02
+        ],
+        "acoustic_db": [
+          0.0,
+          5.0
+        ],
+        "co2_ppm": [
+          400.0,
+          420.0
+        ],
+        "heart_rate_radar_bpm": [
+          0.0,
+          0.0
+        ],
+        "rgb_camera_conf": [
+          0.0,
+          0.1
+        ]
+      },
+      "notes": "No vital signs on any channel; thermal signature has decayed to ambient.",
+      "hazard": {
+        "burial_depth_m": 1.8,
+        "secondary_hazard": true,
+        "exposure_minutes": 210
+      }
+    },
+    {
+      "victim_id": "V2",
+      "label": "Victim 2 - Critical",
+      "status": "critical",
+      "location": {
+        "latitude": 32.37378,
+        "longitude": 77.24935,
+        "altitude_m": 3948
+      },
+      "burial_depth_m": 1.2,
+      "signature_range": {
+        "thermal_imaging_c": [
+          8.0,
+          15.0
+        ],
+        "pir_motion": [
+          0.01,
+          0.08
+        ],
+        "acoustic_db": [
+          5.0,
+          15.0
+        ],
+        "co2_ppm": [
+          600.0,
+          900.0
+        ],
+        "heart_rate_radar_bpm": [
+          35.0,
+          55.0
+        ],
+        "rgb_camera_conf": [
+          0.1,
+          0.3
+        ]
+      },
+      "notes": "Faint vitals consistent with hypothermia/shock. Highest rescue priority.",
+      "hazard": {
+        "burial_depth_m": 1.2,
+        "secondary_hazard": true,
+        "exposure_minutes": 180
+      }
+    },
+    {
+      "victim_id": "V3",
+      "label": "Victim 3 - Minor Injury",
+      "status": "minor_injury",
+      "location": {
+        "latitude": 32.37415,
+        "longitude": 77.2496,
+        "altitude_m": 3952
+      },
+      "burial_depth_m": 0.4,
+      "signature_range": {
+        "thermal_imaging_c": [
+          20.0,
+          30.0
+        ],
+        "pir_motion": [
+          0.15,
+          0.45
+        ],
+        "acoustic_db": [
+          25.0,
+          45.0
+        ],
+        "co2_ppm": [
+          900.0,
+          1500.0
+        ],
+        "heart_rate_radar_bpm": [
+          80.0,
+          110.0
+        ],
+        "rgb_camera_conf": [
+          0.4,
+          0.7
+        ]
+      },
+      "notes": "Shallow burial, conscious and responsive; stable but needs extraction.",
+      "hazard": {
+        "burial_depth_m": 0.4,
+        "secondary_hazard": false,
+        "exposure_minutes": 150
+      }
+    },
+    {
+      "victim_id": "V4",
+      "label": "Victim 4 - Safe",
+      "status": "safe",
+      "location": {
+        "latitude": 32.3745,
+        "longitude": 77.2487,
+        "altitude_m": 3958
+      },
+      "burial_depth_m": 0.0,
+      "signature_range": {
+        "thermal_imaging_c": [
+          28.0,
+          34.0
+        ],
+        "pir_motion": [
+          0.5,
+          1.0
+        ],
+        "acoustic_db": [
+          40.0,
+          70.0
+        ],
+        "co2_ppm": [
+          1500.0,
+          2500.0
+        ],
+        "heart_rate_radar_bpm": [
+          70.0,
+          100.0
+        ],
+        "rgb_camera_conf": [
+          0.8,
+          1.0
+        ]
+      },
+      "notes": "Unburied, ambulatory survivor found on debris surface near the edge of the slide.",
+      "hazard": {
+        "burial_depth_m": 0.0,
+        "secondary_hazard": false,
+        "exposure_minutes": 90
+      }
+    }
+  ]
+}

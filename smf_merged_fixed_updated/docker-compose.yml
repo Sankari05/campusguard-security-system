@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # ── Core Application Container (FastAPI + React 18 SPA) ───────────────────
+  edutrack-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: edutrack-pro-core
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - PORT=8000
+      - LOG_LEVEL=INFO
+      - SECRET_KEY=enterprise_smart_attendance_secret_jwt_key_2026
+      - ACCESS_TOKEN_EXPIRE_MINUTES=480
+    volumes:
+      # Data persistence: SQLite database, captured face images, trained models, logs
+      - ./data:/app/data
+      - ./faces:/app/faces
+      - ./models:/app/models
+      - ./logs:/app/logs
+      - ./attendance:/app/attendance
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ── Optional Enterprise PostgreSQL Database (Profile: postgres) ─────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: edutrack-pro-db
+    profiles: ["postgres"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: edutrack
+      POSTGRES_USER: edutrack_admin
+      POSTGRES_PASSWORD: edutrack_secure_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U edutrack_admin -d edutrack"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

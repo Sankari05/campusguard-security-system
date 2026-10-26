@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIDGEWATCH — Testing Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">▲</span>
+      <div class="brand-text">
+        <span class="brand-name">RIDGEWATCH</span>
+        <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">TESTING</div>
+      <a href="testing.html" class="sidebar-link is-active">📊 <span>Testing Console</span></a>
+      <a href="testing-persons.html" class="sidebar-link">👤 <span>Persons</span></a>
+      <a href="testing-scenarios.html" class="sidebar-link">🗺️ <span>Scenarios</span></a>
+      <a href="testing-teams.html" class="sidebar-link">👥 <span>Rescue Teams</span></a>
+      <a href="victims.html" class="sidebar-link">🩹 <span>Live Victims</span></a>
+
+      <div class="sidebar-section-title">OPERATIONS</div>
+      <a href="commander.html" class="sidebar-link">🎖️ <span>Commander</span></a>
+      <a href="doppler.html" class="sidebar-link">💓 <span>Doppler HR</span></a>
+      <a href="watch.html" class="sidebar-link">⌚ <span>Watch</span></a>
+      <a href="index.html" class="sidebar-link">📡 <span>Dashboard</span></a>
+      <a href="visual.html" class="sidebar-link">🌐 <span>Visual 3D</span></a>
+      <a href="hardware.html" class="sidebar-link">🔧 <span>Hardware</span></a>
+
+      <div class="sidebar-section-title">SYSTEM</div>
+      <a href="logic.html" class="sidebar-link">🧠 <span>Logic</span></a>
+      <a href="alerts.html" class="sidebar-link">🚨 <span>Alerts</span></a>
+      <a href="analytics.html" class="sidebar-link">📈 <span>Analytics</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="sidebar-foot-avatar" aria-hidden="true">T</span>
+      <div class="sidebar-foot-text">
+        <span class="sidebar-foot-name">Testing Controls</span>
+        <span class="sidebar-foot-role">Direct Access · No Login</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-content testing-console">
+
+  <!-- TOPBAR HEADER -->
+  <header class="topbar">
+    <div class="site-tag">
+      <span class="site-tag-label">TESTING CONSOLE</span>
+      <span class="site-tag-value">Simulation, Control &amp; Data Hub</span>
+    </div>
+    <div class="topbar-right">
+      <a href="notification.html" class="topbar-bell" title="Notification Center" aria-label="Notification Center">🔔<span class="topbar-bell-dot" id="topbarAlertDot" hidden></span></a>
+      <span class="topbar-avatar" title="Testing Operations" style="background: var(--accent-ice);">T</span>
+    </div>
+  </header>
+
+  <!-- MAIN VIEW CONTENT -->
+  <main class="page-content" style="padding: 24px;">
+
+    <!-- HERO BANNER -->
+    <section class="admin-hero">
+      <div>
+        <h1 class="admin-hero-title">Testing Console &amp; Control Hub</h1>
+        <p class="admin-hero-subtitle">Direct access to create test entities, initiate disaster scenarios, and test live rescue simulation controls.</p>
+      </div>
+      <div class="admin-hero-stats">
+        <div class="admin-hero-stat-pill">
+          <span>👤 Personnel:</span> <b id="statPersonnelCount">—</b>
+        </div>
+        <div class="admin-hero-stat-pill">
+          <span>🗺️ Scenarios:</span> <b id="statScenariosCount">—</b>
+        </div>
+        <div class="admin-hero-stat-pill">
+          <span>👥 Rescue Teams:</span> <b id="statTeamsCount">—</b>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 LARGE CREATION CARDS -->
+    <section class="create-hub-section">
+      <h2 class="create-hub-heading">
+        <span>⚡ Creation Hub</span>
+        <span style="font-size: 12px; font-weight: 500; color: var(--ink-dim);">(Select an action to create new records)</span>
+      </h2>
+
+      <div class="create-cards-grid">
+        
+        <!-- CARD 1: ADD PERSON -->
+        <a href="testing-add-person.html" class="create-card" id="cardAddPerson">
+          <div class="create-card-icon">👤</div>
+          <h3 class="create-card-title">Add Person</h3>
+          <p class="create-card-desc">Register a new rescue personnel member in the system with roles, badges, and contact information.</p>
+          <span class="create-card-btn">Add Person &rarr;</span>
+        </a>
+
+        <!-- CARD 2: ADD SCENARIO -->
+        <a href="testing-add-scenario.html" class="create-card" id="cardAddScenario">
+          <div class="create-card-icon">🗺️</div>
+          <h3 class="create-card-title">Add Scenario</h3>
+          <p class="create-card-desc">Create a new disaster scenario with hazard, location coordinates, and victim count information.</p>
+          <span class="create-card-btn">Add Scenario &rarr;</span>
+        </a>
+
+        <!-- CARD 3: ADD RESCUE TEAM -->
+        <a href="testing-add-team.html" class="create-card" id="cardAddTeam">
+          <div class="create-card-icon">👥</div>
+          <h3 class="create-card-title">Add Rescue Team</h3>
+          <p class="create-card-desc">Create a rescue team and assign registered personnel staff as team members with dedicated team roles.</p>
+          <span class="create-card-btn">Create Team &rarr;</span>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- LIVE SIMULATION & MOVEMENT TESTING CONTROLS -->
+    <div class="form-grid-2" style="margin-top: 10px;">
+      
+      <!-- RESCUE TEAM LIVE CONTROL -->
+      <section class="admin-card">
+        <div class="admin-card-head">
+          <h3 class="admin-card-title">🚁 Rescue Team Simulation Control</h3>
+          <p class="admin-card-subtitle">Test redirecting rescue units and testing manual compass movement nudges.</p>
+        </div>
+
+        <div class="rescue-live-status" style="margin-bottom: 14px; background: var(--bg-panel-raised); border: 1px solid var(--border-soft); border-radius: var(--radius); padding: 12px;">
+          <div class="rescue-stat"><span>Current Target:</span><b id="rcCurrentTarget">—</b></div>
+          <div class="rescue-stat"><span>Distance Remaining:</span><b id="rcDistance">—</b></div>
+          <div class="rescue-stat"><span>ETA:</span><b id="rcEta">—</b></div>
+          <div class="rescue-stat"><span>Mode:</span><b id="rcMode">Auto</b></div>
+        </div>
+
+        <form id="setTargetForm" style="margin-bottom: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="rcTargetSelect">Redirect Team Target To:</label>
+            <div style="display: flex; gap: 8px;">
+              <select id="rcTargetSelect" class="form-select"></select>
+              <button type="submit" class="btn btn-primary" style="white-space: nowrap;">🎯 Redirect</button>
+              <button type="button" id="rcClearOverrideBtn" class="btn btn-secondary" style="white-space: nowrap;">↩️ Resume Auto</button>
+            </div>
+          </div>
+          <div id="setTargetMsg" class="admin-msg-box"></div>
+        </form>
+
+        <form id="manualMoveForm">
+          <label class="form-label" style="margin-bottom: 6px;">Manual Movement Simulation (Bearing &amp; Distance):</label>
+          <div class="form-grid-2" style="margin-bottom: 8px;">
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="rcBearing" style="font-size: 11px; color: var(--ink-dim);">Bearing (0°=N, 90°=E, 180°=S, 270°=W)</label>
+              <input type="number" id="rcBearing" class="form-input" min="0" max="359" step="1" value="0" required>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="rcDistanceInput" style="font-size: 11px; color: var(--ink-dim);">Distance (meters)</label>
+              <input type="number" id="rcDistanceInput" class="form-input" min="1" step="1" value="10" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-secondary" style="width: 100%;">🧭 Move Team Manually</button>
+          <div id="manualMoveMsg" class="admin-msg-box"></div>
+        </form>
+      </section>
+
+      <!-- LIVE ROSTER & VICTIM INJECTION CONTROLS -->
+      <section class="admin-card">
+        <div class="admin-card-head">
+          <h3 class="admin-card-title">➕ Live Injection &amp; Roster Testing</h3>
+          <p class="admin-card-subtitle">Inject live persons/victims into running scenarios and adjust live team rosters.</p>
+        </div>
+
+        <!-- Add Victim to Running Scenario Form -->
+        <form id="addVictimForm" style="margin-bottom: 20px;">
+          <h4 style="margin: 0 0 10px; font-size: 13px; font-weight: 700; color: var(--ink);">Inject Person into Active Scenario</h4>
+          <div class="form-grid-3">
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label" for="avVictimId" style="font-size: 11px;">Victim ID</label>
+              <input type="text" id="avVictimId" class="form-input" placeholder="V5" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label" for="avLabel" style="font-size: 11px;">Label</label>
+              <input type="text" id="avLabel" class="form-input" placeholder="East Wall" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label" for="avStatus" style="font-size: 11px;">Triage Priority</label>
+              <select id="avStatus" class="form-select">
+                <option value="HIGH">HIGH</option>
+                <option value="MEDIUM">MEDIUM</option>
+                <option value="LOW">LOW</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid-3">
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label" for="avLat" style="font-size: 11px;">Latitude</label>
+              <input type="number" step="any" id="avLat" class="form-input" placeholder="32.37" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label" for="avLng" style="font-size: 11px;">Longitude</label>
+              <input type="number" step="any" id="avLng" class="form-input" placeholder="77.24" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label" for="avAlt" style="font-size: 11px;">Altitude (m)</label>
+              <input type="number" step="any" id="avAlt" class="form-input" placeholder="3950">
+            </div>
+          </div>
+          <button type="submit" class="btn btn-secondary" style="width: 100%;">➕ Inject Person</button>
+          <div id="addVictimMsg" class="admin-msg-box"></div>
+        </form>
+
+        <!-- Roster Size Adjustment Form -->
+        <form id="rosterForm">
+          <h4 style="margin: 0 0 10px; font-size: 13px; font-weight: 700; color: var(--ink);">Test Live Team Roster Size</h4>
+          <div class="form-grid-2">
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label" for="rosterTeamSelect" style="font-size: 11px;">Select Team</label>
+              <select id="rosterTeamSelect" class="form-select"></select>
+            </div>
+            <div class="form-group" style="margin-bottom: 8px;">
+              <label class="form-label" for="rosterMemberCount" style="font-size: 11px;">New Member Count</label>
+              <input type="number" id="rosterMemberCount" class="form-input" min="0" max="2000" placeholder="e.g. 12" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-secondary" style="width: 100%;">👥 Update Team Roster Size</button>
+          <div id="rosterResult" class="admin-msg-box"></div>
+        </form>
+
+      </section>
+
+      <!-- BAROMETRIC PRESSURE SIMULATION CONTROL -->
+      <section class="admin-card">
+        <div class="admin-card-head">
+          <h3 class="admin-card-title">🌤️ Barometric Pressure Simulation &amp; Test Profiles</h3>
+          <p class="admin-card-subtitle">Select deterministic meteorological pressure profiles to test atmospheric drop and cyclone fusion.</p>
+        </div>
+
+        <form id="pressureProfileForm" style="margin-bottom: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="pressureProfileSelect">Active Meteorological Profile:</label>
+            <div style="display: flex; gap: 8px;">
+              <select id="pressureProfileSelect" class="form-select">
+                <option value="NORMAL_WEATHER">☀️ Normal Weather (1010 - 1014 hPa)</option>
+                <option value="FALLING_PRESSURE">📉 Falling Pressure Front (~1004 hPa)</option>
+                <option value="RAPID_PRESSURE_DROP">⚡ Rapid Pressure Drop (~996 hPa)</option>
+                <option value="CYCLONE">🌀 Cyclone Atmospheric Plunge (~975 hPa)</option>
+                <option value="STORM_SURGE">🌊 Storm Surge Atmospheric Dip (~982 hPa)</option>
+                <option value="FLOOD_WEATHER">🌧️ Flood Weather Correlated (~998 hPa)</option>
+                <option value="MULTI_HAZARD">⚠️ Multi-Hazard Compound Profile</option>
+              </select>
+              <button type="submit" class="btn btn-primary" style="white-space: nowrap;">⚡ Apply Profile</button>
+            </div>
+          </div>
+          <div id="pressureProfileMsg" class="admin-msg-box"></div>
+        </form>
+
+        <form id="manualPressureForm">
+          <label class="form-label" style="margin-bottom: 6px;">Manual Pressure Ingestion (IoT Test):</label>
+          <div class="form-grid-2" style="margin-bottom: 8px;">
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manPressureVal" style="font-size: 11px;">Pressure (hPa)</label>
+              <input type="number" id="manPressureVal" class="form-input" min="850" max="1100" step="0.1" value="1013.2" required>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manPressureStatus" style="font-size: 11px;">Sensor Status</label>
+              <select id="manPressureStatus" class="form-select">
+                <option value="ONLINE">ONLINE</option>
+                <option value="DEGRADED">DEGRADED</option>
+                <option value="OFFLINE">OFFLINE</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-secondary" style="width: 100%;">📡 Ingest Custom Reading</button>
+          <div id="manualPressureMsg" class="admin-msg-box"></div>
+        </form>
+      </section>
+
+      <!-- LANDSLIDE & GEOTECHNICAL SLOPE SIMULATION CONTROL -->
+      <section class="admin-card">
+        <div class="admin-card-head">
+          <h3 class="admin-card-title">🌱 Landslide &amp; Geotechnical Simulation Profiles</h3>
+          <p class="admin-card-subtitle">Select deterministic geotechnical profiles to test Soil Moisture + Tilt multi-node fusion and landslide hazard escalation.</p>
+        </div>
+
+        <form id="landslideProfileForm" style="margin-bottom: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="landslideProfileSelect">Active Landslide Hazard Profile:</label>
+            <div style="display: flex; gap: 8px;">
+              <select id="landslideProfileSelect" class="form-select">
+                <option value="NORMAL">☀️ Normal Slope (35–45% moisture, 0.5–1.5° tilt)</option>
+                <option value="WET_SOIL">💧 Wet Soil (55–65% moisture, stable tilt)</option>
+                <option value="INCREASING_MOISTURE">📈 Increasing Saturation (65–85% rising)</option>
+                <option value="TILT_ANOMALY">📐 Sudden Tilt Shift (3–6° angular deviation)</option>
+                <option value="EARLY_LANDSLIDE">⚠️ Early Landslide (70–80% moisture + 2.5–4.5° tilt)</option>
+                <option value="CRITICAL_LANDSLIDE">🚨 Critical Landslide Hazard (85–95% + 5–9° shear)</option>
+                <option value="SENSOR_FAILURE">❌ Sensor Failure (Probe Offline)</option>
+                <option value="NOISY_SENSOR">〰️ Noisy Telemetry (Single Spikes Debounced)</option>
+                <option value="RECOVERY">🔄 Slope Stabilization / Recovery</option>
+              </select>
+              <button type="submit" class="btn btn-primary" style="white-space: nowrap;">⚡ Apply Profile</button>
+            </div>
+          </div>
+          <div id="landslideProfileMsg" class="admin-msg-box"></div>
+        </form>
+
+        <form id="manualLandslideForm">
+          <label class="form-label" style="margin-bottom: 6px;">Manual IoT Geotechnical Ingestion:</label>
+          <div class="form-grid-3" style="margin-bottom: 8px;">
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manSoilVal" style="font-size: 11px;">Soil Moisture (%)</label>
+              <input type="number" id="manSoilVal" class="form-input" min="0" max="100" step="0.1" value="45.0" required>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manTiltVal" style="font-size: 11px;">Tilt Angle (°)</label>
+              <input type="number" id="manTiltVal" class="form-input" min="0" max="90" step="0.1" value="1.2" required>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manSlopeNode" style="font-size: 11px;">Target Node</label>
+              <select id="manSlopeNode" class="form-select">
+                <option value="SLOPE-NODE-01">SLOPE-NODE-01 (Upper Ridge)</option>
+                <option value="SLOPE-NODE-02">SLOPE-NODE-02 (Mid-Slope)</option>
+                <option value="SLOPE-NODE-03">SLOPE-NODE-03 (Base Slope)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-secondary" style="width: 100%;">📡 Ingest Slope Telemetry</button>
+          <div id="manualLandslideMsg" class="admin-msg-box"></div>
+        </form>
+      </section>
+
+    </div>
+
+    <!-- OPTICAL CAMERA & THERMAL INFRARED SIMULATION CONTROLS -->
+    <div class="form-grid-2" style="margin-top: 10px;">
+      
+      <!-- OPTICAL CAMERA SIMULATION -->
+      <section class="admin-card">
+        <div class="admin-card-head">
+          <h3 class="admin-card-title">📷 Optical Camera Simulation &amp; Test Profiles</h3>
+          <p class="admin-card-subtitle">Select visual detection profiles to test survivor classification, occlusion, debris, and false positive handling.</p>
+        </div>
+
+        <form id="cameraProfileForm" style="margin-bottom: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="cameraProfileSelect">Active Optical Camera Profile:</label>
+            <div style="display: flex; gap: 8px;">
+              <select id="cameraProfileSelect" class="form-select">
+                <option value="AUTO">🤖 Auto (Scenario-Aware Adaptive)</option>
+                <option value="PERSON_DETECTED">👤 Person Detected (High Confidence ~92%)</option>
+                <option value="NO_PERSON">⚪ No Person / Clear Frame (~2%)</option>
+                <option value="MULTIPLE_PERSONS">👥 Multiple Persons Detected (2-3 Survivors)</option>
+                <option value="PARTIAL_PERSON">🔍 Partial Person Visible (Limb/Torso ~55%)</option>
+                <option value="OCCLUDED_PERSON">🧱 Occluded Person (Rubble/Obstruction ~35%)</option>
+                <option value="DEBRIS">🪨 Debris / Mannequin False Target (~65%)</option>
+                <option value="SMOKE">🌫️ Smoke / Heavy Obscuration</option>
+                <option value="FIRE">🔥 Visible Flames / Combustion</option>
+                <option value="LOW_VISIBILITY">🌑 Low Visibility / Dust Storm</option>
+                <option value="CAMERA_FAILURE">❌ Camera Failure (Channel Offline)</option>
+              </select>
+              <button type="submit" class="btn btn-primary" style="white-space: nowrap;">⚡ Apply Profile</button>
+            </div>
+          </div>
+          <div id="cameraProfileMsg" class="admin-msg-box"></div>
+        </form>
+
+        <form id="manualCameraForm">
+          <label class="form-label" style="margin-bottom: 6px;">Manual Optical Telemetry Ingestion (IoT Test):</label>
+          <div class="form-grid-3" style="margin-bottom: 8px;">
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manCamConfidence" style="font-size: 11px;">Confidence (0-1)</label>
+              <input type="number" id="manCamConfidence" class="form-input" min="0" max="1" step="0.05" value="0.90" required>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manCamPersons" style="font-size: 11px;">Person Count</label>
+              <input type="number" id="manCamPersons" class="form-input" min="0" max="10" step="1" value="1" required>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manCamState" style="font-size: 11px;">Detection State</label>
+              <select id="manCamState" class="form-select">
+                <option value="PERSON_DETECTED">PERSON_DETECTED</option>
+                <option value="NO_DETECTION">NO_DETECTION</option>
+                <option value="MULTIPLE_PERSONS">MULTIPLE_PERSONS</option>
+                <option value="PARTIAL_PERSON">PARTIAL_PERSON</option>
+                <option value="OCCLUDED_PERSON">OCCLUDED_PERSON</option>
+                <option value="DEBRIS">DEBRIS</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-secondary" style="width: 100%;">📡 Ingest Camera Reading</button>
+          <div id="manualCameraMsg" class="admin-msg-box"></div>
+        </form>
+      </section>
+
+      <!-- THERMAL CAMERA SIMULATION -->
+      <section class="admin-card">
+        <div class="admin-card-head">
+          <h3 class="admin-card-title">🌡️ Thermal Infrared Simulation Profiles</h3>
+          <p class="admin-card-subtitle">Select Long-Wave Infrared profiles to test human heat signatures, fire hotspots, and obscured survivor detection.</p>
+        </div>
+
+        <form id="thermalProfileForm" style="margin-bottom: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="thermalProfileSelect">Active Thermal Infrared Profile:</label>
+            <div style="display: flex; gap: 8px;">
+              <select id="thermalProfileSelect" class="form-select">
+                <option value="AUTO">🤖 Auto (Scenario-Aware Adaptive)</option>
+                <option value="HUMAN_HEAT">🔥 Strong Human Heat (33.5–36.5°C, Conf ~92%)</option>
+                <option value="NO_HEAT">❄️ Ambient Baseline / No Heat Signature</option>
+                <option value="WEAK_HEAT">🧊 Weak Heat Signature (Buried/Hypothermic)</option>
+                <option value="MULTIPLE_HEAT">👥 Multiple Human Heat Signatures (2-3 clusters)</option>
+                <option value="FIRE_HOTSPOT">🔥 Active Fire Hotspot (65–110°C)</option>
+                <option value="HOT_DEBRIS">☀️ Solar-Heated Debris / Hot Engine (42–55°C)</option>
+                <option value="THERMAL_NOISE">〰️ Thermal Sensor Noise / Calibration Drift</option>
+                <option value="THERMAL_FAILURE">❌ Thermal Imager Failure (Offline)</option>
+              </select>
+              <button type="submit" class="btn btn-primary" style="white-space: nowrap;">⚡ Apply Profile</button>
+            </div>
+          </div>
+          <div id="thermalProfileMsg" class="admin-msg-box"></div>
+        </form>
+
+        <form id="manualThermalForm">
+          <label class="form-label" style="margin-bottom: 6px;">Manual Thermal Ingestion (IoT Test):</label>
+          <div class="form-grid-3" style="margin-bottom: 8px;">
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manThmTemp" style="font-size: 11px;">Est. Temp (°C)</label>
+              <input type="number" id="manThmTemp" class="form-input" min="-30" max="200" step="0.5" value="34.5" required>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manThmConf" style="font-size: 11px;">Thermal Conf (0-1)</label>
+              <input type="number" id="manThmConf" class="form-input" min="0" max="1" step="0.05" value="0.90" required>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manThmType" style="font-size: 11px;">Detection Type</label>
+              <select id="manThmType" class="form-select">
+                <option value="HUMAN_HEAT_SIGNATURE">HUMAN_HEAT_SIGNATURE</option>
+                <option value="NO_HEAT">NO_HEAT</option>
+                <option value="WEAK_HEAT_SIGNATURE">WEAK_HEAT_SIGNATURE</option>
+                <option value="FIRE_HOTSPOT">FIRE_HOTSPOT</option>
+                <option value="HOT_DEBRIS">HOT_DEBRIS</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-secondary" style="width: 100%;">📡 Ingest Thermal Reading</button>
+          <div id="manualThermalMsg" class="admin-msg-box"></div>
+        </form>
+      </section>
+
+      <!-- METEOROLOGICAL RAINFALL & PRECIPITATION SIMULATION -->
+      <section class="admin-card">
+        <div class="admin-card-head">
+          <h3 class="admin-card-title">🌧️ Rainfall Precipitation Simulation Profiles</h3>
+          <p class="admin-card-subtitle">Select meteorological precipitation profiles to test light drizzle, moderate rain, heavy downpour, torrential cloudbursts, and sensor failure.</p>
+        </div>
+
+        <form id="rainfallProfileForm" style="margin-bottom: 16px;">
+          <div class="form-group">
+            <label class="form-label" for="rainfallProfileSelect">Active Rainfall Simulation Profile:</label>
+            <div style="display: flex; gap: 8px;">
+              <select id="rainfallProfileSelect" class="form-select">
+                <option value="AUTO">🤖 Auto (Scenario-Aware Adaptive)</option>
+                <option value="NO_RAIN">☀️ No Rain (0.0 mm/h)</option>
+                <option value="LIGHT">🌦️ Light Rain (0.1–5.0 mm/h)</option>
+                <option value="MODERATE">🌧️ Moderate Rain (5.0–20.0 mm/h)</option>
+                <option value="HEAVY">⛈️ Heavy Rain (20.0–50.0 mm/h)</option>
+                <option value="VERY_HEAVY">🌊 Very Heavy Rain (50.0–100.0 mm/h)</option>
+                <option value="EXTREME">🚨 Extreme Cloudburst (&gt;100.0 mm/h)</option>
+                <option value="TORRENTIAL_MONSOON">🌀 Torrential Monsoon Storm</option>
+                <option value="RAIN_SENSOR_FAILURE">❌ Rainfall Sensor Probe Failure (Offline)</option>
+              </select>
+              <button type="submit" class="btn btn-primary" style="white-space: nowrap;">⚡ Apply Profile</button>
+            </div>
+          </div>
+          <div id="rainfallProfileMsg" class="admin-msg-box"></div>
+        </form>
+
+        <form id="manualRainfallForm">
+          <label class="form-label" style="margin-bottom: 6px;">Manual Rainfall Ingestion (IoT Test):</label>
+          <div class="form-grid-3" style="margin-bottom: 8px;">
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manRainRate" style="font-size: 11px;">Precip. Rate (mm/h)</label>
+              <input type="number" id="manRainRate" class="form-input" min="0" max="500" step="0.1" value="25.4" required>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manRainCumul" style="font-size: 11px;">Cumulative (mm)</label>
+              <input type="number" id="manRainCumul" class="form-input" min="0" max="5000" step="0.1" value="12.5" required>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manRainClass" style="font-size: 11px;">Classification</label>
+              <select id="manRainClass" class="form-select">
+                <option value="HEAVY">HEAVY</option>
+                <option value="NO_RAIN">NO_RAIN</option>
+                <option value="LIGHT">LIGHT</option>
+                <option value="MODERATE">MODERATE</option>
+                <option value="VERY_HEAVY">VERY_HEAVY</option>
+                <option value="EXTREME">EXTREME</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-secondary" style="width: 100%;">📡 Ingest Rainfall Reading</button>
+          <div id="manualRainfallMsg" class="admin-msg-box"></div>
+        </form>
+      </section>
+
+      <!-- AMBIENT TEMPERATURE & HUMIDITY SIMULATION CONTROL -->
+      <section class="admin-card">
+        <div class="admin-card-head">
+          <h3 class="admin-card-title">🌡️ Ambient Temperature &amp; Humidity Simulation Profiles</h3>
+          <p class="admin-card-subtitle">Inject deterministic temperature/humidity profiles and custom environmental sensor readings.</p>
+        </div>
+
+        <form id="tempProfileForm" style="margin-bottom: 14px;">
+          <div class="form-group">
+            <label class="form-label" for="tempProfileSelect">Temperature Profile:</label>
+            <div style="display: flex; gap: 8px;">
+              <select id="tempProfileSelect" class="form-select">
+                <option value="NORMAL">☀️ Normal Climate (15°C - 25°C)</option>
+                <option value="EXTREME_HEAT">🔥 Extreme Heatwave (~48°C)</option>
+                <option value="FIRE">💥 Fire Proximity (~62°C)</option>
+                <option value="COLD">❄️ Cold / Avalanche (~ -12°C)</option>
+                <option value="DEGRADED">⚠️ Degraded Sensor</option>
+                <option value="OFFLINE">🚫 Sensor Offline</option>
+              </select>
+              <button type="submit" class="btn btn-primary" style="white-space: nowrap;">⚡ Apply Temp</button>
+            </div>
+          </div>
+          <div id="tempProfileMsg" class="admin-msg-box"></div>
+        </form>
+
+        <form id="humidProfileForm" style="margin-bottom: 14px;">
+          <div class="form-group">
+            <label class="form-label" for="humidProfileSelect">Relative Humidity Profile:</label>
+            <div style="display: flex; gap: 8px;">
+              <select id="humidProfileSelect" class="form-select">
+                <option value="NORMAL">🌤️ Normal Moisture (~50%)</option>
+                <option value="HEAVY_RAIN">🌧️ Heavy Rain Saturation (~88%)</option>
+                <option value="FLOOD">🌊 Flood Environment (~95%)</option>
+                <option value="CYCLONE">🌀 Cyclone Storm Front (~92%)</option>
+                <option value="ARID">🌵 Arid Wildfire Conditions (~18%)</option>
+                <option value="DEGRADED">⚠️ Degraded Hygrometer</option>
+                <option value="OFFLINE">🚫 Sensor Offline</option>
+              </select>
+              <button type="submit" class="btn btn-primary" style="white-space: nowrap;">⚡ Apply Humid</button>
+            </div>
+          </div>
+          <div id="humidProfileMsg" class="admin-msg-box"></div>
+        </form>
+
+        <form id="manualTempHumidForm">
+          <label class="form-label" style="margin-bottom: 6px;">Manual Sensor Reading Ingestion (IoT Ingest):</label>
+          <div class="form-grid-2" style="margin-bottom: 8px;">
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manTempC" style="font-size: 11px;">Temp (°C)</label>
+              <input type="number" id="manTempC" class="form-input" min="-60" max="100" step="0.1" value="22.5" required>
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label class="form-label" for="manHumidPct" style="font-size: 11px;">Humidity (%)</label>
+              <input type="number" id="manHumidPct" class="form-input" min="0" max="100" step="0.1" value="65.0" required>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-secondary" style="width: 100%;">📡 Ingest Temp &amp; Humidity Readings</button>
+          <div id="manualTempHumidMsg" class="admin-msg-box"></div>
+        </form>
+      </section>
+
+    </div>
+
+    <!-- LEDGER QUICK LINKS -->
+    <section class="admin-card" style="margin-top: 24px;">
+      <div class="admin-card-head" style="margin-bottom: 12px;">
+        <h3 class="admin-card-title">📋 View-Only Testing Ledgers</h3>
+        <p class="admin-card-subtitle">Inspect registered test records. Creation is conducted via the Create Hub cards above.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 14px;">
+        <a href="testing-persons.html" class="btn btn-secondary" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;">
+          <span>👤 Persons Ledger</span>
+          <span style="color: var(--accent-ice); font-weight: bold;">&rarr;</span>
+        </a>
+        <a href="testing-scenarios.html" class="btn btn-secondary" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;">
+          <span>🗺️ Scenarios Ledger</span>
+          <span style="color: var(--accent-ice); font-weight: bold;">&rarr;</span>
+        </a>
+        <a href="testing-teams.html" class="btn btn-secondary" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px;">
+          <span>👥 Rescue Teams Ledger</span>
+          <span style="color: var(--accent-ice); font-weight: bold;">&rarr;</span>
+        </a>
+      </div>
+    </section>
+
+  </main>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/testing-common.js"></script>
+<script src="js/testing.js"></script>
+</body>
+</html>

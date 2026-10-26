@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIDGEWATCH — Notification Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+/* Notification module dedicated styles */
+.notif-container {
+  padding: 18px 24px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.notif-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.notif-kpi-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+.notif-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.notif-kpi-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+}
+.icon-blue { background: rgba(37, 99, 235, 0.12); color: #2563eb; }
+.icon-emerald { background: rgba(16, 185, 129, 0.12); color: #10b981; }
+.icon-green { background: rgba(34, 197, 94, 0.12); color: #16a34a; }
+.icon-amber { background: rgba(245, 158, 11, 0.12); color: #d97706; }
+.icon-rose { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
+
+.notif-kpi-info { display: flex; flex-direction: column; gap: 2px; }
+.notif-kpi-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-dim); }
+.notif-kpi-value { font-family: var(--font-mono); font-size: 1.75rem; font-weight: 700; color: var(--ink); line-height: 1.1; }
+.notif-kpi-sub { font-size: 0.75rem; color: var(--ink-faint); }
+
+.notif-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.notif-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--bg-panel-raised);
+}
+
+.notif-search-wrap {
+  position: relative;
+  min-width: 260px;
+  flex: 1;
+  max-width: 440px;
+}
+.notif-search-input {
+  width: 100%;
+  padding: 8px 12px 8px 34px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  outline: none;
+}
+.notif-search-input:focus {
+  border-color: var(--accent-ice);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+.notif-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--ink-faint);
+  pointer-events: none;
+}
+
+.notif-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.notif-filter-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  color: var(--ink-dim);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.notif-filter-btn:hover {
+  background: #f1f5f9;
+  color: var(--ink);
+}
+.notif-filter-btn.is-active {
+  background: var(--accent-ice);
+  color: #fff;
+  border-color: var(--accent-ice);
+}
+
+/* Table styling */
+.notif-table-wrap {
+  overflow-x: auto;
+}
+.notif-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  text-align: left;
+}
+.notif-table th {
+  padding: 12px 16px;
+  background: var(--bg-panel-raised);
+  color: var(--ink-dim);
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.notif-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-soft);
+  color: var(--ink);
+  vertical-align: middle;
+}
+.notif-table tbody tr {
+  transition: background-color 0.12s ease;
+  cursor: pointer;
+}
+.notif-table tbody tr:hover {
+  background-color: rgba(37, 99, 235, 0.035);
+}
+
+.badge-channel {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.badge-queued { background: rgba(245, 158, 11, 0.14); color: #b45309; border: 1px solid rgba(245, 158, 11, 0.3); }
+.badge-sent { background: rgba(22, 163, 74, 0.14); color: #15803d; border: 1px solid rgba(22, 163, 74, 0.3); }
+.badge-failed { background: rgba(220, 38, 38, 0.14); color: #b91c1c; border: 1px solid rgba(220, 38, 38, 0.3); }
+.badge-mock { background: rgba(100, 116, 139, 0.14); color: #475569; border: 1px solid rgba(100, 116, 139, 0.3); }
+.badge-config-error { background: rgba(234, 88, 12, 0.14); color: #c2410c; border: 1px solid rgba(234, 88, 12, 0.3); }
+
+.badge-priority {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.priority-critical, .priority-high { background: rgba(224, 49, 31, 0.12); color: var(--tri-high); border: 1px solid rgba(224, 49, 31, 0.3); }
+.priority-medium { background: rgba(232, 133, 10, 0.12); color: var(--tri-medium); border: 1px solid rgba(232, 133, 10, 0.3); }
+.priority-low { background: rgba(212, 169, 10, 0.12); color: #a16207; border: 1px solid rgba(212, 169, 10, 0.3); }
+
+.phone-masked {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink);
+  background: rgba(15, 37, 71, 0.05);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+/* Detail Drawer / Modal */
+.notif-drawer-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 37, 71, 0.4);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.notif-drawer-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.notif-drawer {
+  position: fixed;
+  top: 0; right: -560px; bottom: 0;
+  width: 100%;
+  max-width: 540px;
+  background: var(--bg-panel);
+  box-shadow: -4px 0 24px rgba(15, 37, 71, 0.15);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+}
+.notif-drawer.is-open {
+  right: 0;
+}
+
+.notif-drawer-head {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-panel-raised);
+}
+.notif-drawer-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.notif-drawer-sub {
+  font-size: 0.75rem;
+  color: var(--ink-dim);
+  margin-top: 2px;
+}
+.notif-drawer-close {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--ink-dim);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius);
+}
+.notif-drawer-close:hover {
+  background: var(--border-soft);
+  color: var(--ink);
+}
+
+.notif-drawer-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.notif-detail-card {
+  background: var(--bg-panel-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.notif-detail-card-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-dim);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.notif-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.notif-data-item { display: flex; flex-direction: column; gap: 2px; }
+.notif-data-label { font-size: 0.7rem; color: var(--ink-faint); font-weight: 600; text-transform: uppercase; }
+.notif-data-value { font-size: 0.85rem; font-weight: 600; color: var(--ink); font-family: var(--font-mono); }
+
+.channel-status-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+}
+.channel-status-box:last-child { margin-bottom: 0; }
+.channel-title-group { display: flex; align-items: center; gap: 10px; }
+.channel-icon { font-size: 1.2rem; }
+.channel-name { font-weight: 700; font-size: 0.85rem; color: var(--ink); }
+.channel-sub { font-size: 0.72rem; color: var(--ink-faint); }
+
+.btn-gmaps {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--accent-ice);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.btn-gmaps:hover {
+  background: var(--accent-ice);
+  color: #fff;
+}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ============================================================ -->
+  <!-- SIDEBAR NAVIGATION                                           -->
+  <!-- ============================================================ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark" aria-hidden="true">▲</span>
+      <div class="brand-text">
+        <span class="brand-name">RIDGEWATCH</span>
+        <span class="brand-sub">Survivor Detection &amp; Rescue</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="index.html" class="sidebar-link">📡 <span>Dashboard</span></a>
+      <a href="visual.html" class="sidebar-link">🌐 <span>Visual 3D</span></a>
+      <a href="hardware.html" class="sidebar-link">🔧 <span>Hardware</span></a>
+      <a href="logic.html" class="sidebar-link">🧠 <span>Logic</span></a>
+      <a href="testing.html" class="sidebar-link">📊 <span>Testing</span></a>
+      <a href="commander.html" class="sidebar-link">🎖️ <span>Commander</span></a>
+      <a href="doppler.html" class="sidebar-link">💓 <span>Doppler HR</span></a>
+      <a href="watch.html" class="sidebar-link">⌚ <span>Watch</span></a>
+      <a href="alerts.html" class="sidebar-link">🚨 <span>Alerts</span></a>
+      <a href="notification.html" class="sidebar-link is-active" id="navNotification">🔔 <span>Notification</span></a>
+      <a href="analytics.html" class="sidebar-link">📊 <span>Analytics</span></a>
+      <a href="scenarios.html" class="sidebar-link">🗺️ <span>Scenarios</span></a>
+      <a href="victims.html" class="sidebar-link">🧍 <span>Victims</span></a>
+      <a href="teams.html" class="sidebar-link">🚁 <span>Teams</span></a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="sidebar-foot-avatar" aria-hidden="true">R</span>
+      <div class="sidebar-foot-text">
+        <span class="sidebar-foot-name">RidgeWatch Ops</span>
+        <span class="sidebar-foot-role">Demo build · v1.0</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ============================================================ -->
+  <!-- MAIN CONTENT CONTAINER                                       -->
+  <!-- ============================================================ -->
+  <div class="main-content">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="site-tag">
+        <span class="site-tag-label">MODULE</span>
+        <span class="site-tag-value">Notification Center · Multi-Channel Dispatch</span>
+      </div>
+      <div class="topbar-right" style="display: flex; align-items: center; gap: 0.75rem;">
+        <div class="alerts-live-badge" id="notifLiveBadge" style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 3px 10px; border-radius: 999px; border: 1px solid rgba(16, 185, 129, 0.3);">
+          <span class="live-pulse-dot" style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+          <span id="notifLiveStatusText">LIVE STREAM</span>
+        </div>
+        <button type="button" id="notifRefreshBtn" class="btn btn-secondary btn-small" title="Refresh Notifications" style="padding: 4px 10px; font-size: 0.78rem;">
+          🔄 Refresh
+        </button>
+        <span class="topbar-avatar" title="RidgeWatch Ops">R</span>
+      </div>
+    </header>
+
+    <!-- NOTIFICATION CONTENT AREA -->
+    <main class="notif-container">
+
+      <!-- ============================================================ -->
+      <!-- OVERVIEW KPI CARDS                                           -->
+      <!-- ============================================================ -->
+      <section class="notif-kpi-grid">
+        <article class="notif-kpi-card" data-filter="all" id="cardTotalNotifs" title="Click to view all notifications">
+          <div class="notif-kpi-icon icon-blue">🔔</div>
+          <div class="notif-kpi-info">
+            <div class="notif-kpi-label">Total Notifications</div>
+            <div class="notif-kpi-value" id="kpiTotalCount">0</div>
+            <div class="notif-kpi-sub">Dispatched from Rescue Commands</div>
+          </div>
+        </article>
+
+        <article class="notif-kpi-card" data-filter="sms" id="cardSmsSent" title="Click to filter by SMS Sent">
+          <div class="notif-kpi-icon icon-emerald">📱</div>
+          <div class="notif-kpi-info">
+            <div class="notif-kpi-label">SMS Channel Sent</div>
+            <div class="notif-kpi-value" id="kpiSmsCount">0</div>
+            <div class="notif-kpi-sub">Delivered to Rescuer Mobile via SMSGate</div>
+          </div>
+        </article>
+
+        <article class="notif-kpi-card" data-filter="failed" id="cardFailedNotifs" title="Click to filter by Failed/Errors">
+          <div class="notif-kpi-icon icon-amber">⚠️</div>
+          <div class="notif-kpi-info">
+            <div class="notif-kpi-label">Channel Alerts / Issues</div>
+            <div class="notif-kpi-value" id="kpiFailedCount">0</div>
+            <div class="notif-kpi-sub">Carrier Retries / Errors</div>
+          </div>
+        </article>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- NOTIFICATION HISTORY TABLE                                   -->
+      <!-- ============================================================ -->
+      <section class="notif-panel">
+        <div class="notif-toolbar">
+          <div class="notif-search-wrap">
+            <span class="notif-search-icon">🔍</span>
+            <input type="text" id="notifSearchInput" class="notif-search-input" placeholder="Search by Command ID, Member, Survivor, Priority…">
+          </div>
+          <div class="notif-filters">
+            <button type="button" class="notif-filter-btn is-active" data-filter="all">All</button>
+            <button type="button" class="notif-filter-btn" data-filter="sms_sent">SMS Sent</button>
+            <button type="button" class="notif-filter-btn" data-filter="failed">Issues / Failed</button>
+          </div>
+        </div>
+
+        <div class="notif-table-wrap">
+          <table class="notif-table" id="notifTable">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Rescue Command</th>
+                <th>Assigned Member</th>
+                <th>Recipient (Masked)</th>
+                <th>Survivor</th>
+                <th>Priority</th>
+                <th>SMS Status</th>
+                <th>Watch Delivery</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="notifTableBody">
+              <tr>
+                <td colspan="9" style="text-align: center; padding: 32px; color: var(--ink-faint);">
+                  ⏳ Loading multi-channel rescue notifications…
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
+      <!-- RESILIENT OFFLINE COMMUNICATION & LORA MESH SUBSYSTEM       -->
+      <!-- ============================================================ -->
+      <section class="notif-panel" style="border: 1px solid rgba(59, 130, 246, 0.3); background: var(--bg-panel);">
+        <div class="notif-toolbar" style="background: linear-gradient(90deg, rgba(37,99,235,0.08), transparent);">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 1.25rem;">📡</span>
+            <div>
+              <h3 style="margin: 0; font-size: 1rem; font-weight: 700; color: var(--ink);">Resilient Offline Communication &amp; LoRa Mesh</h3>
+              <p style="margin: 0; font-size: 0.75rem; color: var(--ink-dim);">Sub-GHz RF store-and-forward routing with automatic Cloud/SMS synchronization upon reconnect</p>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div id="offlineNetBadge" style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(16, 185, 129, 0.3);">
+              <span id="offlineNetDot" style="width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block;"></span>
+              <span id="offlineNetText">INTERNET ONLINE</span>
+            </div>
+            <button type="button" id="offlineSyncBtn" class="btn btn-primary btn-small" style="padding: 5px 14px; font-size: 0.8rem;">
+              🔄 Sync Queue Now
+            </button>
+          </div>
+        </div>
+
+        <!-- OFFLINE KPI METRICS -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--border-soft); background: var(--bg-panel-raised);">
+          <div class="notif-kpi-card" style="padding: 12px 14px; cursor: default;">
+            <div class="notif-kpi-info">
+              <span class="notif-kpi-label">Local Queue</span>
+              <span class="notif-kpi-value" id="kpiOfflineQueuePending" style="font-size: 1.4rem;">0</span>
+              <span class="notif-kpi-sub">Pending / Stored Local</span>
+            </div>
+          </div>
+          <div class="notif-kpi-card" style="padding: 12px 14px; cursor: default;">
+            <div class="notif-kpi-info">
+              <span class="notif-kpi-label">Synced to Cloud</span>
+              <span class="notif-kpi-value" id="kpiOfflineQueueSynced" style="font-size: 1.4rem; color: #10b981;">0</span>
+              <span class="notif-kpi-sub" id="kpiOfflineLastSyncTime">Last: -</span>
+            </div>
+          </div>
+          <div class="notif-kpi-card" style="padding: 12px 14px; cursor: default;">
+            <div class="notif-kpi-info">
+              <span class="notif-kpi-label">LoRa Gateway Mode</span>
+              <span class="notif-kpi-value" id="kpiLoraMode" style="font-size: 1.15rem; color: var(--accent-ice);">SIMULATOR</span>
+              <span class="notif-kpi-sub" id="kpiLoraFreq">868.0 MHz (SF8)</span>
+            </div>
+          </div>
+          <div class="notif-kpi-card" style="padding: 12px 14px; cursor: default;">
+            <div class="notif-kpi-info">
+              <span class="notif-kpi-label">Mesh Topology</span>
+              <span class="notif-kpi-value" id="kpiRegisteredNodes" style="font-size: 1.4rem;">1</span>
+              <span class="notif-kpi-sub">Active Field Nodes</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2-COLUMN SPLIT: QUEUE TABLE + SIMULATOR CONTROLS -->
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 0; min-height: 380px;">
+          
+          <!-- LEFT: OFFLINE QUEUE TABLE -->
+          <div style="border-right: 1px solid var(--border-soft); padding: 16px 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h4 style="margin: 0; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--ink-dim);">
+                Offline Message Buffer
+              </h4>
+              <span id="offlineQueueCount" style="font-size: 0.75rem; color: var(--ink-faint);">0 records</span>
+            </div>
+
+            <div class="notif-table-wrap" style="max-height: 320px; overflow-y: auto;">
+              <table class="notif-table" style="font-size: 0.78rem;">
+                <thead>
+                  <tr>
+                    <th>Message ID</th>
+                    <th>Type</th>
+                    <th>Priority</th>
+                    <th>Hops</th>
+                    <th>Status</th>
+                    <th>Retries</th>
+                  </tr>
+                </thead>
+                <tbody id="offlineQueueTableBody">
+                  <tr>
+                    <td colspan="6" style="text-align: center; padding: 24px; color: var(--ink-faint);">
+                      Queue is currently empty.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- RIGHT: LORA SIMULATOR CONSOLE -->
+          <div style="padding: 16px 20px; background: var(--bg-panel-raised); display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h4 style="margin: 0; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--ink-dim);">
+                LoRa Packet Simulator
+              </h4>
+              <span style="font-size: 0.7rem; background: rgba(245, 158, 11, 0.15); color: #d97706; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
+                SIMULATOR ONLY
+              </span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div>
+                <label style="font-size: 0.7rem; color: var(--ink-faint); font-weight: 600;">SOURCE NODE</label>
+                <select id="simSourceNode" class="notif-search-input" style="padding: 6px 8px; font-size: 0.78rem;">
+                  <option value="NODE-SURVIVOR-ALPHA">NODE-SURVIVOR-ALPHA (Relay 1)</option>
+                  <option value="SENSOR-VALLEY-03">SENSOR-VALLEY-03 (Debris Node)</option>
+                  <option value="RESCUER-WRIST-07">RESCUER-WRIST-07 (Wearable)</option>
+                  <option value="DRONE-SCOUT-02">DRONE-SCOUT-02 (Airborne)</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 0.7rem; color: var(--ink-faint); font-weight: 600;">DESTINATION</label>
+                <select id="simDestNode" class="notif-search-input" style="padding: 6px 8px; font-size: 0.78rem;">
+                  <option value="GATEWAY-01">GATEWAY-01 (RidgeWatch Base)</option>
+                  <option value="BROADCAST">BROADCAST (All Nodes)</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 8px;">
+              <div>
+                <label style="font-size: 0.7rem; color: var(--ink-faint); font-weight: 600;">MESSAGE TYPE</label>
+                <select id="simMessageType" class="notif-search-input" style="padding: 6px 8px; font-size: 0.78rem;">
+                  <option value="SURVIVOR_DETECTED">SURVIVOR_DETECTED</option>
+                  <option value="MEDICAL_EMERGENCY">MEDICAL_EMERGENCY</option>
+                  <option value="EARTHQUAKE_ALERT">EARTHQUAKE_ALERT</option>
+                  <option value="FLOOD_ALERT">FLOOD_ALERT</option>
+                  <option value="LANDSLIDE_ALERT">LANDSLIDE_ALERT</option>
+                  <option value="RESCUE_ACK">RESCUE_ACK</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 0.7rem; color: var(--ink-faint); font-weight: 600;">DISTANCE (METERS)</label>
+                <input type="number" id="simDistanceM" value="450" min="10" max="10000" class="notif-search-input" style="padding: 6px 8px; font-size: 0.78rem;">
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size: 0.7rem; color: var(--ink-faint); font-weight: 600;">ALERT PAYLOAD (JSON / TEXT)</label>
+              <input type="text" id="simPayloadText" value='{"victim_id": "V-901", "triage": "CRITICAL", "sps": 0.94, "lat": 32.374, "lon": 77.249}' class="notif-search-input" style="padding: 6px 8px; font-size: 0.78rem; font-family: var(--font-mono);">
+            </div>
+
+            <button type="button" id="simSendBtn" class="btn btn-secondary" style="width: 100%; padding: 8px; font-size: 0.82rem; font-weight: 700; background: var(--accent-ice); color: #fff; border: none; border-radius: var(--radius); cursor: pointer;">
+              🚀 Inject Simulated LoRa Packet
+            </button>
+
+            <!-- SIMULATION RF OUTPUT LOG -->
+            <div id="simOutputLog" style="background: #0f172a; color: #38bdf8; font-family: var(--font-mono); font-size: 0.72rem; padding: 10px; border-radius: var(--radius); max-height: 100px; overflow-y: auto; border: 1px solid rgba(56, 189, 248, 0.2);">
+              [RF Terminal Ready] Waiting for packet transmission...
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- NOTIFICATION DETAIL DRAWER                                   -->
+<!-- ============================================================ -->
+<div class="notif-drawer-overlay" id="notifDrawerOverlay"></div>
+<aside class="notif-drawer" id="notifDrawer" aria-label="Notification Details">
+  <div class="notif-drawer-head">
+    <div>
+      <h3 class="notif-drawer-title" id="drawerTitle">Notification Details</h3>
+      <div class="notif-drawer-sub" id="drawerSub">Rescue Command Multi-Channel Audit</div>
+    </div>
+    <button type="button" class="notif-drawer-close" id="drawerCloseBtn" title="Close Drawer">✕</button>
+  </div>
+
+  <div class="notif-drawer-body">
+    
+    <!-- RESCUE COMMAND CONTEXT -->
+    <div class="notif-detail-card">
+      <div class="notif-detail-card-title">
+        <span>Rescue Command Core</span>
+        <span class="badge-priority" id="drawerPriority">HIGH</span>
+      </div>
+      <div class="notif-grid-2">
+        <div class="notif-data-item">
+          <span class="notif-data-label">Notification ID</span>
+          <span class="notif-data-value" id="drawerNotifId">-</span>
+        </div>
+        <div class="notif-data-item">
+          <span class="notif-data-label">Rescue Command ID</span>
+          <span class="notif-data-value" id="drawerCommandId" style="color: var(--accent-ice);">-</span>
+        </div>
+        <div class="notif-data-item">
+          <span class="notif-data-label">Mission ID</span>
+          <span class="notif-data-value" id="drawerMissionId">-</span>
+        </div>
+        <div class="notif-data-item">
+          <span class="notif-data-label">Dispatched Time</span>
+          <span class="notif-data-value" id="drawerTimestamp">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERSONNEL & RECIPIENT -->
+    <div class="notif-detail-card">
+      <div class="notif-detail-card-title">Assigned Personnel &amp; Recipient</div>
+      <div class="notif-grid-2">
+        <div class="notif-data-item">
+          <span class="notif-data-label">Assigned Team</span>
+          <span class="notif-data-value" id="drawerTeam">-</span>
+        </div>
+        <div class="notif-data-item">
+          <span class="notif-data-label">Assigned Member</span>
+          <span class="notif-data-value" id="drawerMember">-</span>
+        </div>
+        <div class="notif-data-item" style="grid-column: span 2;">
+          <span class="notif-data-label">Recipient Phone (Masked)</span>
+          <span class="notif-data-value phone-masked" id="drawerRecipient">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TARGET SURVIVOR & LOCATION -->
+    <div class="notif-detail-card">
+      <div class="notif-detail-card-title">
+        <span>Target Survivor &amp; Triage</span>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="btn-gmaps" id="drawerGmapsLink">
+          📍 Google Maps
+        </a>
+      </div>
+      <div class="notif-grid-2">
+        <div class="notif-data-item">
+          <span class="notif-data-label">Survivor ID</span>
+          <span class="notif-data-value" id="drawerSurvivor">-</span>
+        </div>
+        <div class="notif-data-item">
+          <span class="notif-data-label">SPS (Survival Probability)</span>
+          <span class="notif-data-value" id="drawerSps" style="color: #10b981;">-</span>
+        </div>
+        <div class="notif-data-item">
+          <span class="notif-data-label">Distance</span>
+          <span class="notif-data-value" id="drawerDistance">-</span>
+        </div>
+        <div class="notif-data-item">
+          <span class="notif-data-label">GPS Coordinates</span>
+          <span class="notif-data-value" id="drawerCoords">-</span>
+        </div>
+        <div class="notif-data-item" style="grid-column: span 2; margin-top: 4px;">
+          <span class="notif-data-label">Required Rescue Action</span>
+          <span class="notif-data-value" id="drawerAction" style="font-family: inherit; font-size: 0.82rem;">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- INDEPENDENT CHANNEL STATUS CARDS -->
+    <div class="notif-detail-card">
+      <div class="notif-detail-card-title">Independent Channel Status Breakdown</div>
+      
+      <!-- SMS CHANNEL -->
+      <div class="channel-status-box">
+        <div class="channel-title-group">
+          <span class="channel-icon">📱</span>
+          <div>
+            <div class="channel-name">SMS Dispatch</div>
+            <div class="channel-sub" id="drawerSmsSub">SMSGate Local Gateway Alert</div>
+          </div>
+        </div>
+        <span class="badge-channel" id="drawerSmsBadge">QUEUED</span>
+      </div>
+
+      <!-- WATCH CHANNEL -->
+      <div class="channel-status-box">
+        <div class="channel-title-group">
+          <span class="channel-icon">⌚</span>
+          <div>
+            <div class="channel-name">Wave Call Plus Watch</div>
+            <div class="channel-sub" id="drawerWatchSub">Hardware BLE GATT &amp; Physical ACK</div>
+          </div>
+        </div>
+        <span class="badge-channel" id="drawerWatchBadge">PENDING</span>
+      </div>
+
+    </div>
+
+  </div>
+</aside>
+
+<script src="js/config.js"></script>
+<script src="js/notification.js"></script>
+</body>
+</html>
