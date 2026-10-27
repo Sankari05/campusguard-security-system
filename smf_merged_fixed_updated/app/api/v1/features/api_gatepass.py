@@ -43,6 +43,21 @@ class MarkExitReq(BaseModel):
     remarks: str = Field(default="")
 
 
+class VoiceCommandReq(BaseModel):
+    transcript: str = Field(..., min_length=1)
+    guard_id: str = Field(default="Main Gate Guard")
+    active_pass_id: int | None = Field(default=None)
+
+
+class IncidentLogReq(BaseModel):
+    description: str = Field(..., min_length=2)
+    category: str = Field(default="General")
+    student_id: str = Field(default="")
+    severity: str = Field(default="Medium")
+    guard_id: str = Field(default="Main Gate Guard")
+    voice_transcript: str = Field(default="")
+
+
 # ── Student Auth Dependency ──────────────────────────────────
 def _get_student_user(request: Request) -> dict:
     auth = request.headers.get("Authorization", "")
@@ -63,8 +78,11 @@ def _get_student_user(request: Request) -> dict:
 # ── Faculty Scope & Incharge Helpers ─────────────────────────
 def _resolve_scope(user: dict) -> dict:
     role = (user.get("role") or "").lower()
-    if role in ("admin", "hod"):
+    if role == "admin":
         return {"department": None, "year": None, "section": None}
+    if role == "hod":
+        dept = user.get("dept") or user.get("department") or ""
+        return {"department": dept or None, "year": None, "section": None}
     fac_id = user.get("sub") or user.get("fac_id") or ""
     try:
         from app.database import database_faculty_requests as freq
@@ -127,6 +145,9 @@ def student_get_active_gatepass(user: dict = Depends(_get_student_user)):
 def list_faculty_gatepasses(status: str = None, user: dict = Depends(teacher_required)):
     """List gate pass requests. Faculty sees 'Pending', HOD sees 'Forwarded'."""
     role = (user.get("role") or "").lower()
+    if role == "admin":
+        return {"requests": []}
+
     effective_status = status
     if role == "hod" and status in ("Pending", None):
         effective_status = "Forwarded"
@@ -138,10 +159,24 @@ def list_faculty_gatepasses(status: str = None, user: dict = Depends(teacher_req
     return {"requests": requests}
 
 
+@router.get("/api/faculty/requests/gatepass/{pass_id}")
+def get_faculty_gatepass_detail(pass_id: int, user: dict = Depends(teacher_required)):
+    """Get full details of a specific gate pass request."""
+    rec = gpdb.get_gatepass_by_id(pass_id)
+    if not rec:
+        raise HTTPException(status_code=404, detail="Gate pass not found")
+    return rec
+
+
 @router.post("/api/faculty/requests/gatepass/{pass_id}/approve")
 def approve_gatepass(pass_id: int, payload: DecisionReq = DecisionReq(), user: dict = Depends(teacher_required)):
     """Class Incharge approves -> Forwarded. HOD approves -> Approved + OTP Generated!"""
     role = (user.get("role") or "").lower()
+    if role == "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Admin is not permitted to decide gate passes. Gate pass workflow is handled strictly by Class Incharge and HOD.",
+        )
     actor = user.get("sub") or user.get("name") or "Faculty"
 
     if role == "hod":
@@ -163,6 +198,11 @@ def approve_gatepass(pass_id: int, payload: DecisionReq = DecisionReq(), user: d
 def reject_gatepass(pass_id: int, payload: DecisionReq = DecisionReq(), user: dict = Depends(teacher_required)):
     """Reject gate pass request at either Faculty or HOD level."""
     role = (user.get("role") or "").lower()
+    if role == "admin":
+        raise HTTPException(
+            status_code=403,
+            detail="Admin is not permitted to decide gate passes. Gate pass workflow is handled strictly by Class Incharge and HOD.",
+        )
     actor = user.get("sub") or user.get("name") or "Faculty"
 
     if role == "hod":
@@ -203,3 +243,38 @@ def watchman_mark_exit(payload: MarkExitReq):
 def watchman_recent_exits():
     """Recent exit logs for watchman portal table."""
     return {"exits": gpdb.list_recent_gatepass_exits(limit=25)}
+
+
+@router.post("/api/v1/gatepass/voice-command")
+def watchman_voice_command(payload: VoiceCommandReq):
+    """
+    AI Natural Language & Voice Gateway for Watchman.
+    Processes spoken transcript, recognizes intent (OTP verify, exit confirm, incident report),
+    executes actions, and returns both structured payload and synthesized voice feedback string.
+    """
+    res = gpdb.process_voice_command(
+        transcript=payload.transcript,
+        guard_id=payload.guard_id,
+        active_pass_id=payload.active_pass_id,
+    )
+    return res
+
+
+@router.post("/api/v1/gatepass/incidents")
+def log_gate_incident_api(payload: IncidentLogReq):
+    """Log an incident or spoken situation at the gate."""
+    rec = gpdb.log_gate_incident(
+        guard_id=payload.guard_id,
+        description=payload.description,
+        category=payload.category,
+        student_id=payload.student_id,
+        severity=payload.severity,
+        voice_transcript=payload.voice_transcript,
+    )
+    return {"success": True, "record": rec}
+
+
+@router.get("/api/v1/gatepass/incidents")
+def get_gate_incidents():
+    """List recent gate incidents and voice situation logs."""
+    return {"incidents": gpdb.list_gate_incidents(limit=30)}

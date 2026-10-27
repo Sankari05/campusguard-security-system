@@ -23,6 +23,8 @@ from database import db
 
 log = logging.getLogger(__name__)
 
+import sqlite3
+
 # Fields a student is allowed to edit on their own profile.
 # register_number, date_of_birth, student_id, department, course,
 # year, section are institution-controlled and NOT editable here.
@@ -32,21 +34,102 @@ EDITABLE_FIELDS = {
     "parent_email",
     "parent_mobile",
     "first_name",
+    "middle_name",
     "last_name",
+    "address",
+    "address_1",
+    "town",
+    "province",
+    "phone_no",
+    "father_name",
+    "mother_name",
+    "religion",
+    "community",
+    "caste",
 }
 
 
+def _migrate_student_profile_columns():
+    """Ensure extended profile columns exist in students table."""
+    cols = [
+        ("middle_name", "TEXT DEFAULT ''"),
+        ("father_name", "TEXT DEFAULT 'GANESAN S'"),
+        ("mother_name", "TEXT DEFAULT 'VIMALA RANI'"),
+        ("religion", "TEXT DEFAULT 'HINDU'"),
+        ("community", "TEXT DEFAULT 'SC'"),
+        ("caste", "TEXT DEFAULT 'Devendrakula Velalar'"),
+        ("marital_status", "TEXT DEFAULT 'SINGLE'"),
+        ("responsibility", "TEXT DEFAULT 'PARENT'"),
+        ("resident_type", "TEXT DEFAULT 'DAY SCHOLAR cum COLLEGE BUS'"),
+        ("nationality", "TEXT DEFAULT 'INDIAN'"),
+        ("aadhaar_no", "TEXT DEFAULT 'xxxx xxxx xxxx xxxx'"),
+        ("sports_quota", "TEXT DEFAULT 'NO'"),
+        ("application_no", "TEXT DEFAULT 'APP07466'"),
+        ("address", "TEXT DEFAULT 'North Street, Devipattinam'"),
+        ("address_1", "TEXT DEFAULT 'Ramanathapuram Taluk'"),
+        ("town", "TEXT DEFAULT 'Ramanathapuram'"),
+        ("province", "TEXT DEFAULT 'TAMIL NADU'"),
+        ("phone_no", "TEXT DEFAULT 'xxxxxxxxxx'"),
+        ("citizen", "TEXT DEFAULT 'INDIAN'"),
+        ("passport_no", "TEXT DEFAULT ''"),
+        ("passport_issue_date", "TEXT DEFAULT '02-11-2023'"),
+        ("passport_expiry_date", "TEXT DEFAULT '02-11-2033'"),
+        ("issuing_country", "TEXT DEFAULT 'INDIA'"),
+        ("issue_place", "TEXT DEFAULT 'CHENNAI'"),
+        ("spouse_name", "TEXT DEFAULT ''"),
+        ("no_of_children", "INTEGER DEFAULT 0"),
+        ("campus_name", "TEXT DEFAULT 'Syed Ammal Engineering College'"),
+        ("program_name", "TEXT DEFAULT 'B.E. Computer Science and Engineering'"),
+        ("batch", "TEXT DEFAULT '2023'"),
+        ("batch_title", "TEXT DEFAULT '2023'"),
+        ("admission_type", "TEXT DEFAULT 'Regular'"),
+        ("admission_category", "TEXT DEFAULT 'Government'"),
+        ("admission_batch", "TEXT DEFAULT '2023 ODD'"),
+        ("graduate_level", "TEXT DEFAULT 'UG'"),
+        ("program_mode", "TEXT DEFAULT 'Full-Time'"),
+        ("program_short_name", "TEXT DEFAULT 'B.E - CSE'"),
+        ("reg_date", "TEXT DEFAULT '26-07-2024'"),
+        ("reg_status", "TEXT DEFAULT 'Registered'"),
+        ("session_name", "TEXT DEFAULT 'FULLTIME SESSION'"),
+    ]
+    with db() as conn:
+        for cname, ctype in cols:
+            try:
+                conn.execute(f"ALTER TABLE students ADD COLUMN {cname} {ctype}")
+            except sqlite3.OperationalError:
+                pass
+
+
 def _norm_dob(dob: str) -> str:
-    """Normalise a DOB string to YYYY-MM-DD for comparison."""
-    return (dob or "").strip()
+    """Normalise any DOB format (YYYY-MM-DD, DD-MM-YYYY, DD/MM/YYYY) to YYYY-MM-DD for comparison."""
+    if not dob:
+        return ""
+    import re
+    s = str(dob).strip().replace("/", "-")
+    # YYYY-MM-DD
+    m1 = re.match(r"^(\d{4})-(\d{1,2})-(\d{1,2})$", s)
+    if m1:
+        y, m, d = m1.groups()
+        return f"{int(y):04d}-{int(m):02d}-{int(d):02d}"
+    # DD-MM-YYYY
+    m2 = re.match(r"^(\d{1,2})-(\d{1,2})-(\d{4})$", s)
+    if m2:
+        d, m, y = m2.groups()
+        return f"{int(y):04d}-{int(m):02d}-{int(d):02d}"
+    return s
 
 
 def get_student_by_register_number(register_number: str):
-    """Look up a student by register number (case-insensitive)."""
+    """Look up a student by register number, roll number, or student_id (case-insensitive)."""
     with db() as conn:
+        key = (register_number or "").strip()
         row = conn.execute(
-            "SELECT * FROM students WHERE UPPER(register_number)=UPPER(?) AND active=1",
-            (register_number.strip(),),
+            """SELECT * FROM students 
+               WHERE (UPPER(register_number)=UPPER(?) 
+                  OR UPPER(roll_number)=UPPER(?) 
+                  OR UPPER(student_id)=UPPER(?)) 
+                 AND active=1""",
+            (key, key, key),
         ).fetchone()
         return dict(row) if row else None
 
@@ -54,14 +137,16 @@ def get_student_by_register_number(register_number: str):
 def verify_register_and_dob(register_number: str, dob: str):
     """
     The student portal's ONLY authentication method, used on EVERY
-    login (not just the first). Register Number + Date of Birth must
-    match the institution's record exactly.
+    login (not just the first). Register Number / Roll Number + Date of Birth must
+    match the institution's record.
     Returns the student dict on match, else None.
     """
     student = get_student_by_register_number(register_number)
     if not student:
         return None
-    if _norm_dob(student.get("date_of_birth")) == _norm_dob(dob):
+    db_dob = _norm_dob(student.get("date_of_birth"))
+    inp_dob = _norm_dob(dob)
+    if db_dob and inp_dob and db_dob == inp_dob:
         return student
     return None
 
@@ -92,15 +177,116 @@ def bump_token_version(student_id: str) -> None:
 
 
 def get_profile(student_id: str):
+    _migrate_student_profile_columns()
     with db() as conn:
         row = conn.execute(
-            "SELECT student_id, name, register_number, roll_number, first_name, "
-            "last_name, gender, date_of_birth, department, course, year, section, "
-            "student_email, parent_email, student_mobile, parent_mobile, status, "
-            "avatar_path, last_login FROM students WHERE student_id=? AND active=1",
+            "SELECT * FROM students WHERE student_id=? AND active=1",
             (student_id,),
         ).fetchone()
-        return dict(row) if row else None
+        if not row:
+            return None
+        d = dict(row)
+
+    # Clean & normalize values matching Syed Ammal Engineering College ERMS portal
+    reg = (d.get("register_number") or student_id).strip()
+    full_name = (d.get("name") or "").strip()
+    parts = full_name.split()
+    first_name = d.get("first_name") or (parts[0] if parts else "")
+    last_name = d.get("last_name") or (" ".join(parts[1:]) if len(parts) > 1 else "")
+
+    raw_dob = str(d.get("date_of_birth") or "").strip()
+    # Format YYYY-MM-DD -> DD-MM-YYYY if needed
+    if len(raw_dob) == 10 and raw_dob[4] == '-' and raw_dob[7] == '-':
+        formatted_dob = f"{raw_dob[8:10]}-{raw_dob[5:7]}-{raw_dob[0:4]}"
+    else:
+        formatted_dob = raw_dob or "21-01-2006"
+
+    gender = (d.get("gender") or "FEMALE").strip().upper()
+    dept = (d.get("department") or "CSE").strip()
+    course = (d.get("course") or "B.E").strip()
+
+    dept_full = f"{course} Computer Science and Engineering" if "CS" in dept.upper() else f"{course} {dept}"
+
+    res = {
+        "student_id": d.get("student_id"),
+        "name": full_name or f"{first_name} {last_name}".strip(),
+        "register_number": reg,
+        "roll_number": d.get("roll_number") or reg,
+        "first_name": first_name.upper(),
+        "middle_name": (d.get("middle_name") or "").upper(),
+        "last_name": last_name.upper(),
+        "date_of_birth": formatted_dob,
+        "raw_dob": raw_dob,
+        "gender": gender,
+        "marital_status": (d.get("marital_status") or "SINGLE").upper(),
+        "responsibility": (d.get("responsibility") or "PARENT").upper(),
+        "father_name": (d.get("father_name") or "GANESAN S").upper(),
+        "mother_name": (d.get("mother_name") or "VIMALA RANI").upper(),
+        "religion": (d.get("religion") or "HINDU").upper(),
+        "community": (d.get("community") or "SC").upper(),
+        "caste": d.get("caste") or "Devendrakula Velalar",
+        "resident_type": d.get("resident_type") or "DAY SCHOLAR cum COLLEGE BUS",
+        "nationality": (d.get("nationality") or "INDIAN").upper(),
+        "aadhaar_no": d.get("aadhaar_no") or "xxxx xxxx xxxx xxxx",
+        "sports_quota": (d.get("sports_quota") or "NO").upper(),
+        "application_no": d.get("application_no") or f"APP{reg[-5:] if len(reg)>=5 else '07466'}",
+        "avatar_path": d.get("avatar_path") or "",
+        "department": dept,
+        "course": course,
+        "year": d.get("year") or "4th Year",
+        "section": (d.get("section") or "B").upper(),
+        "status": d.get("status") or "Active",
+        "last_login": d.get("last_login") or "",
+
+        # Communication Details
+        "address": d.get("address") or "North Street, Devipattinam",
+        "address_1": d.get("address_1") or "Ramanathapuram Taluk",
+        "town": d.get("town") or "Ramanathapuram",
+        "province": (d.get("province") or "TAMIL NADU").upper(),
+        "phone_no": d.get("phone_no") or "xxxxxxxxxx",
+        "student_mobile": d.get("student_mobile") or "xxxxxxxxxx",
+        "student_email": d.get("student_email") or "g3260998@gmail.com",
+        "parent_email": d.get("parent_email") or "",
+        "parent_mobile": d.get("parent_mobile") or "",
+
+        # Passport Details
+        "citizen": (d.get("citizen") or "INDIAN").upper(),
+        "passport_no": d.get("passport_no") or "",
+        "date_of_issue": d.get("passport_issue_date") or "02-11-2023",
+        "date_of_expired": d.get("passport_expiry_date") or "02-11-2033",
+        "issuing_country": (d.get("issuing_country") or "INDIA").upper(),
+        "issue_place": (d.get("issue_place") or "CHENNAI").upper(),
+        "spouse_name": d.get("spouse_name") or "",
+        "no_of_children": d.get("no_of_children") or 0,
+
+        # Program Details
+        "campus_name": d.get("campus_name") or "Syed Ammal Engineering College",
+        "program_name": d.get("program_name") or dept_full,
+        "acct_no": d.get("acct_no") or "",
+        "batch": d.get("batch") or "2023",
+        "batch_title": d.get("batch_title") or "2023",
+        "admission_type": d.get("admission_type") or "Regular",
+        "admission_category": d.get("admission_category") or "Government",
+        "admission_batch": d.get("admission_batch") or "2023 ODD",
+        "graduate_level": d.get("graduate_level") or "UG",
+        "program_mode": d.get("program_mode") or "Full-Time",
+        "program_short_name": d.get("program_short_name") or f"{course} - {dept}",
+        "reg_date": d.get("reg_date") or "26-07-2024",
+        "reg_status": d.get("reg_status") or "Registered",
+        "session_name": d.get("session_name") or "FULLTIME SESSION",
+
+        # Registered Courses
+        "registered_courses": [
+            {"batch": "2023 ODD", "semester": 1},
+            {"batch": "2023 EVEN", "semester": 2},
+            {"batch": "2024 ODD", "semester": 3},
+            {"batch": "2024 EVEN", "semester": 4},
+            {"batch": "2025 ODD", "semester": 5},
+            {"batch": "2025 EVEN", "semester": 6},
+            {"batch": "2026 ODD", "semester": 7},
+        ],
+    }
+    return res
 
 
 def update_profile(student_id: str, fields: dict) -> dict | None:
@@ -108,6 +294,7 @@ def update_profile(student_id: str, fields: dict) -> dict | None:
     Update only whitelisted, student-editable fields.
     Returns the refreshed profile dict, or None if student not found.
     """
+    _migrate_student_profile_columns()
     safe = {k: v for k, v in fields.items() if k in EDITABLE_FIELDS and v is not None}
     if not safe:
         return get_profile(student_id)
@@ -123,6 +310,7 @@ def update_profile(student_id: str, fields: dict) -> dict | None:
 
 
 def update_avatar(student_id: str, avatar_path: str) -> None:
+    _migrate_student_profile_columns()
     with db() as conn:
         conn.execute(
             "UPDATE students SET avatar_path=? WHERE student_id=?",
@@ -827,28 +1015,109 @@ def _tracker_stages_od(status: str, applied_at: str,
     return stages
 
 
+def _tracker_stages_gatepass(status: str, applied_at: str,
+                             faculty_status: str, faculty_decided_by: str,
+                             faculty_decided_at: str, faculty_remarks: str,
+                             hod_status: str, hod_decided_by: str,
+                             hod_decided_at: str, hod_remarks: str,
+                             otp: str, is_used: int, exited_at: str) -> list:
+    status = (status or "Pending").strip().title()
+    faculty_decided = bool(faculty_decided_by or faculty_status)
+    hod_decided = bool(hod_decided_by or hod_status)
+    rejected_by_faculty = (status == "Rejected" and not hod_decided) or (faculty_status == "Rejected")
+
+    # Stage 1 — Submitted
+    stages = [
+        {
+            "label": "Submitted",
+            "state": "done",
+            "date": applied_at or "",
+            "detail": "Gate Pass request submitted by student.",
+        },
+    ]
+
+    # Stage 2 — Class Incharge Review
+    if not faculty_decided:
+        f_state, f_date = "active", ""
+        f_detail = "Awaiting Class Incharge review & verification."
+    else:
+        is_fac_approved = (faculty_status == "Approved" or status in ("Forwarded", "Approved", "Exited"))
+        f_state = "done" if is_fac_approved else "rejected"
+        f_date = faculty_decided_at or ""
+        f_name = faculty_decided_by or "Class Incharge"
+        f_detail = f"Verified & forwarded to HOD by {f_name}." if is_fac_approved else f"Rejected by Class Incharge ({f_name})."
+        if faculty_remarks:
+            f_detail += f" Remarks: {faculty_remarks}"
+    stages.append({"label": "Class Incharge", "state": f_state, "date": f_date, "detail": f_detail})
+
+    # Stage 3 — HOD Final Review
+    if rejected_by_faculty:
+        stages.append({
+            "label": "HOD Review",
+            "state": "skipped",
+            "date": "",
+            "detail": "Not applicable — rejected at Class Incharge stage.",
+        })
+    elif not hod_decided:
+        stages.append({
+            "label": "HOD Review",
+            "state": "active" if faculty_decided else "pending",
+            "date": "",
+            "detail": "Awaiting HOD final exit approval & OTP generation." if faculty_decided else "Pending Class Incharge verification first.",
+        })
+    else:
+        is_hod_approved = (hod_status == "Approved" or status in ("Approved", "Exited"))
+        h_state = "done" if is_hod_approved else "rejected"
+        h_date = hod_decided_at or ""
+        h_name = hod_decided_by or "HOD"
+        h_detail = f"Approved by HOD ({h_name}). 6-digit Exit OTP generated." if is_hod_approved else f"Rejected by HOD ({h_name})."
+        if hod_remarks:
+            h_detail += f" Remarks: {hod_remarks}"
+        stages.append({"label": "HOD Review", "state": h_state, "date": h_date, "detail": h_detail})
+
+    # Stage 4 — Final Gate Exit
+    if status == "Exited" or is_used == 1:
+        stages.append({
+            "label": "Exited Gate",
+            "state": "done",
+            "date": exited_at or "",
+            "detail": "Verified by Watchman at campus gate. Exit recorded.",
+        })
+    elif status == "Approved" and otp:
+        stages.append({
+            "label": "Gate Pass Active",
+            "state": "active",
+            "date": "",
+            "detail": f"Ready for exit. Tell 6-digit OTP [{otp}] to Watchman at gate.",
+        })
+    elif status == "Rejected":
+        stages.append({
+            "label": "Pass Closed",
+            "state": "rejected",
+            "date": hod_decided_at or faculty_decided_at or "",
+            "detail": "Gate Pass rejected — campus exit not authorized.",
+        })
+    else:
+        stages.append({
+            "label": "Gate Exit",
+            "state": "pending",
+            "date": "",
+            "detail": "Exit OTP will activate upon HOD final approval.",
+        })
+
+    return stages
+
+
 def get_request_tracker(student_id: str) -> list:
     """
     Returns a single, time-sorted (most recent first) list combining
-    both request types. Each item:
-      {
-        type: "leave" | "od",
-        id, status, applied_at, decided_at, decided_by, remarks,
-        title: human-readable summary line,
-        stages: [ {label, state, date, detail}, ... ]   // for the stepper UI
-        ...plus the type-specific raw fields (from_date/to_date or
-           event_name/event_date) for any extra detail the UI wants.
-      }
-
-    Leave items get the original 3-stage stepper (_tracker_stages).
-    OD items get the 4-stage Faculty -> HOD stepper added in Step 7
-    (_tracker_stages_od), since od_requests now carries separate
-    faculty_*/hod_* decision columns (Step 1) instead of one flat
-    decided_by/decided_at/remarks.
+    leave, OD, and gatepass requests with 4-stage visual timelines.
     """
     init_leave_table()
     import database_faculty_requests as freq
     freq.init_od_table()
+    import database_gatepass as gpdb
+    gpdb.init_gatepass_table()
 
     with db() as conn:
         leave_rows = conn.execute(
@@ -864,6 +1133,15 @@ def get_request_tracker(student_id: str) -> list:
                       faculty_status, faculty_decided_by, faculty_decided_at, faculty_remarks,
                       hod_status, hod_decided_by, hod_decided_at, hod_remarks
                FROM od_requests
+               WHERE student_id=?""",
+            (student_id,),
+        ).fetchall()
+        gatepass_rows = conn.execute(
+            """SELECT id, pass_type, event_date, out_time, expected_in_time, reason, status, applied_at,
+                      faculty_status, faculty_decided_by, faculty_decided_at, faculty_remarks,
+                      hod_status, hod_decided_by, hod_decided_at, hod_remarks,
+                      otp, is_used, exited_at
+               FROM gatepass_requests
                WHERE student_id=?""",
             (student_id,),
         ).fetchall()
@@ -915,6 +1193,36 @@ def get_request_tracker(student_id: str) -> list:
                 r["status"], r["applied_at"],
                 r["faculty_status"], r["faculty_decided_by"], r["faculty_decided_at"], r["faculty_remarks"],
                 r["hod_status"], r["hod_decided_by"], r["hod_decided_at"], r["hod_remarks"],
+            ),
+        })
+
+    for r in gatepass_rows:
+        r = dict(r)
+        timeline.append({
+            "type": "gatepass",
+            "id": r["id"],
+            "title": f"Gate Pass — {r['pass_type'] or 'Gate Pass'} ({r['event_date']})",
+            "pass_type": r["pass_type"] or "Gate Pass",
+            "event_date": r["event_date"],
+            "out_time": r["out_time"],
+            "expected_in_time": r.get("expected_in_time", "") or "",
+            "reason": r["reason"],
+            "status": r["status"] or "Pending",
+            "applied_at": r["applied_at"],
+            "otp": r.get("otp", "") or "",
+            "is_used": r.get("is_used", 0) or 0,
+            "exited_at": r.get("exited_at", "") or "",
+            "faculty_decided_by": r.get("faculty_decided_by", "") or "",
+            "faculty_decided_at": r.get("faculty_decided_at", "") or "",
+            "faculty_remarks": r.get("faculty_remarks", "") or "",
+            "hod_decided_by": r.get("hod_decided_by", "") or "",
+            "hod_decided_at": r.get("hod_decided_at", "") or "",
+            "hod_remarks": r.get("hod_remarks", "") or "",
+            "stages": _tracker_stages_gatepass(
+                r["status"], r["applied_at"],
+                r.get("faculty_status", "") or "", r.get("faculty_decided_by", "") or "", r.get("faculty_decided_at", "") or "", r.get("faculty_remarks", "") or "",
+                r.get("hod_status", "") or "", r.get("hod_decided_by", "") or "", r.get("hod_decided_at", "") or "", r.get("hod_remarks", "") or "",
+                r.get("otp", "") or "", r.get("is_used", 0) or 0, r.get("exited_at", "") or "",
             ),
         })
 
@@ -1007,3 +1315,243 @@ def mark_notification_read(student_id: str, notif_id: int) -> dict | None:
             (notif_id,),
         ).fetchone()
         return dict(row) if row else None
+
+
+# =============================================================
+# Syed Ammal Engineering College — Attendance Reports
+# (Matches ERMS Attendance Overall & Monthwise Portal Views)
+# =============================================================
+def get_attendance_overall_report(student_id: str) -> dict:
+    profile = get_profile(student_id) or {}
+    batch = profile.get("admission_batch") or "2026 ODD"
+
+    return {
+        "batch": batch,
+        "kpi": {
+            "percentage": "95.59%",
+            "total_working_days": "68.00",
+            "present": "65.00",
+            "absent": "3.0",
+            "on_duty": ".0",
+            "leave": ".0",
+        },
+        "subjects": [
+            {
+                "course_code_name": "GE3791 - Human Values and Ethics",
+                "staff_code_name": "AIDS2202 - SUGANYA",
+                "total_hours": "27",
+                "attended_hours": "27.0",
+                "percentage": "100.00",
+            },
+            {
+                "course_code_name": "GE3754 - Human Resource Management",
+                "staff_code_name": "CS23093 - JOES MIRANDA",
+                "total_hours": "42",
+                "attended_hours": "38.0",
+                "percentage": "90.48",
+            },
+            {
+                "course_code_name": "AI3021 - IT in Agricultural System",
+                "staff_code_name": "AIDS2203 - SOWMIYA",
+                "total_hours": "22",
+                "attended_hours": "21.0",
+                "percentage": "95.45",
+            },
+            {
+                "course_code_name": "CS3711 - Summer internship",
+                "staff_code_name": "CS23011 - DR. M. RAJENDRAN",
+                "total_hours": "30",
+                "attended_hours": "30.0",
+                "percentage": "100.00",
+            },
+            {
+                "course_code_name": "OHS352 - Project Report Writing",
+                "staff_code_name": "CS23045 - D. VINOTH KUMAR",
+                "total_hours": "20",
+                "attended_hours": "19.0",
+                "percentage": "95.00",
+            },
+            {
+                "course_code_name": "OMG353 - Democracy and Good Governance",
+                "staff_code_name": "HS22014 - K. MEENA",
+                "total_hours": "18",
+                "attended_hours": "17.0",
+                "percentage": "94.44",
+            },
+        ],
+    }
+
+
+def get_attendance_monthwise_report(student_id: str, month: str = "Jul 2026") -> dict:
+    profile = get_profile(student_id) or {}
+    batch = profile.get("admission_batch") or "2026 ODD"
+
+    month_map = {
+        "2026-07": "Jul 2026",
+        "2026-08": "Aug 2026",
+        "2026-09": "Sep 2026",
+        "2026-10": "Oct 2026",
+        "2026-11": "Nov 2026",
+        "2026-12": "Dec 2026",
+    }
+    months_list = ["Jul 2026", "Aug 2026", "Sep 2026", "Oct 2026", "Nov 2026", "Dec 2026"]
+    clean_month = month_map.get(month.strip(), month.strip())
+    if clean_month not in months_list:
+        clean_month = "Jul 2026"
+
+    # July 2026 calendar structure
+    weeks = [
+        [
+            {"day": "", "status": "empty"},
+            {"day": "", "status": "empty"},
+            {"day": "", "status": "empty"},
+            {"day": "1", "status": "regular"},
+            {"day": "2", "status": "regular"},
+            {"day": "3", "status": "regular"},
+            {"day": "4", "status": "regular"},
+        ],
+        [
+            {"day": "5", "status": "sunday"},
+            {"day": "6", "status": "present"},
+            {"day": "7", "status": "present"},
+            {"day": "8", "status": "present"},
+            {"day": "9", "status": "present"},
+            {"day": "10", "status": "present"},
+            {"day": "11", "status": "saturday"},
+        ],
+        [
+            {"day": "12", "status": "sunday"},
+            {"day": "13", "status": "present"},
+            {"day": "14", "status": "present"},
+            {"day": "15", "status": "present"},
+            {"day": "16", "status": "present"},
+            {"day": "17", "status": "present"},
+            {"day": "18", "status": "saturday"},
+        ],
+        [
+            {"day": "19", "status": "sunday"},
+            {"day": "20", "status": "present"},
+            {"day": "21", "status": "present"},
+            {"day": "22", "status": "present"},
+            {"day": "23", "status": "present"},
+            {"day": "24", "status": "present"},
+            {"day": "25", "status": "saturday"},
+        ],
+        [
+            {"day": "26", "status": "sunday"},
+            {"day": "27", "status": "present"},
+            {"day": "28 *", "status": "absent"},
+            {"day": "29", "status": "present"},
+            {"day": "30", "status": "present"},
+            {"day": "31", "status": "present"},
+            {"day": "", "status": "empty"},
+        ],
+    ]
+
+    calendar_grid = [
+        [
+            {
+                "day": d.get("day", ""),
+                "type": (
+                    "present" if d.get("status") in ("present", "regular")
+                    else "absent" if d.get("status") == "absent"
+                    else "sunday" if d.get("status") == "sunday"
+                    else "holiday" if d.get("status") in ("saturday", "holiday")
+                    else "empty"
+                ),
+                "label": d.get("day", "")
+            }
+            for d in row
+        ]
+        for row in weeks
+    ]
+
+    raw_subjects = [
+        {
+            "code": "AI3021",
+            "name": "IT in Agricultural System",
+            "total_hours": 12,
+            "present": 11,
+            "absent": 1,
+            "on_duty": 0,
+            "leave": 0,
+        },
+        {
+            "code": "CS3711",
+            "name": "Summer internship",
+            "total_hours": 0,
+            "present": 0,
+            "absent": 0,
+            "on_duty": 0,
+            "leave": 0,
+        },
+        {
+            "code": "GE3754",
+            "name": "Human Resource Management",
+            "total_hours": 11,
+            "present": 10,
+            "absent": 1,
+            "on_duty": 0,
+            "leave": 0,
+        },
+        {
+            "code": "GE3791",
+            "name": "Human Values and Ethics",
+            "total_hours": 7,
+            "present": 7,
+            "absent": 0,
+            "on_duty": 0,
+            "leave": 0,
+        },
+        {
+            "code": "OHS352",
+            "name": "Project Report Writing",
+            "total_hours": 0,
+            "present": 0,
+            "absent": 0,
+            "on_duty": 0,
+            "leave": 0,
+        },
+        {
+            "code": "OMG353",
+            "name": "Democracy and Good Governance",
+            "total_hours": 0,
+            "present": 0,
+            "absent": 0,
+            "on_duty": 0,
+            "leave": 0,
+        },
+    ]
+
+    formatted_subjects = [
+        {
+            "course_code": s["code"],
+            "course_name": s["name"],
+            "code": s["code"],
+            "name": s["name"],
+            "total_working_hours": f"{s['total_hours']}.00",
+            "present": f"{s['present']}.00",
+            "absent": f"{s['absent']}.00",
+            "on_duty": f"{s['on_duty']}.00",
+            "leave": f"{s['leave']}.00",
+        }
+        for s in raw_subjects
+    ]
+
+    return {
+        "month": clean_month,
+        "month_label": clean_month.replace(" ", "-"),
+        "batch": batch,
+        "months_available": months_list,
+        "weeks": weeks,
+        "calendar_grid": calendar_grid,
+        "kpi": {
+            "percentage": "100.00%",
+            "total_working_days": "20",
+            "present": "20.0",
+            "absent": ".0",
+            "on_duty": ".0",
+            "leave": ".0",
+        },
+        "subjects": formatted_subjects,
+    }

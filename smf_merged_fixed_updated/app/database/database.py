@@ -14,11 +14,11 @@
 import os, time, sqlite3, logging, threading, random
 from datetime import datetime, timedelta
 from contextlib import contextmanager
-import config
+from app.core import config
 
 log = logging.getLogger(__name__)
 
-DB_PATH = getattr(config, "DB_PATH", os.path.join(config.BASE_DIR, "data", "attendance.db"))
+DB_PATH = getattr(config, "DB_PATH", os.path.join(getattr(config, "BASE_DIR", os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", "attendance.db"))
 
 from app.database.manager import DatabaseManager
 _DB_MANAGER = DatabaseManager.get_instance(DB_PATH)
@@ -564,63 +564,63 @@ def init_all_tables():
 
     # 1. Extras (semesters, courses, timetables, announcements)
     try:
-        import database_extras
+        from app.database import database_extras
         database_extras.init_extras()
     except Exception as e:
         log.warning("[DB-INIT] database_extras.init_extras: %s", e)
 
     # 2. Overrides & audit tracking
     try:
-        import database_override
+        from app.database import database_override
         database_override.init_override_tables()
     except Exception as e:
         log.warning("[DB-INIT] database_override.init_override_tables: %s", e)
 
     # 3. Faculty OD / Leave requests (2-stage approval)
     try:
-        import database_faculty_requests
+        from app.database import database_faculty_requests
         database_faculty_requests.init_tables()
     except Exception as e:
         log.warning("[DB-INIT] database_faculty_requests.init_tables: %s", e)
 
     # 4. Academic performance (CGPA/SGPA, backlogs)
     try:
-        import database_academic
+        from app.database import database_academic
         database_academic.init_academic_table()
     except Exception as e:
         log.warning("[DB-INIT] database_academic.init_academic_table: %s", e)
 
     # 5. Anomaly flags
     try:
-        import database_anomaly
+        from app.database import database_anomaly
         database_anomaly.init_anomaly_table()
     except Exception as e:
         log.warning("[DB-INIT] database_anomaly.init_anomaly_table: %s", e)
 
     # 6. Compliance tracking
     try:
-        import database_compliance
+        from app.database import database_compliance
         database_compliance.init_compliance_table()
     except Exception as e:
         log.warning("[DB-INIT] database_compliance.init_compliance_table: %s", e)
 
     # 7. Workload tracking
     try:
-        import database_workload
+        from app.database import database_workload
         database_workload.init_workload_table()
     except Exception as e:
         log.warning("[DB-INIT] database_workload.init_workload_table: %s", e)
 
     # 8. Multi-role attendance tables
     try:
-        import role_attendance_session
+        from app.services.vision import role_attendance_session
         role_attendance_session._ensure_tables()
     except Exception as e:
         log.warning("[DB-INIT] role_attendance_session._ensure_tables: %s", e)
 
     # 9. Student Portal self-service tables
     try:
-        import student_portal_db
+        from app.database import student_portal_db
         student_portal_db.init_internal_marks_table()
         student_portal_db.init_leave_table()
         student_portal_db.init_notifications_table()
@@ -629,13 +629,13 @@ def init_all_tables():
 
     # 10. Auth routes (OTP) and unified users
     try:
-        import auth_routes
+        from app.api.v1.features import auth_routes
         auth_routes.init_otp_table()
     except Exception as e:
         log.warning("[DB-INIT] auth_routes.init_otp_table: %s", e)
 
     try:
-        import user_routes
+        from app.api.v1.features import user_routes
         user_routes._init_users_table()
     except Exception as e:
         log.warning("[DB-INIT] user_routes._init_users_table: %s", e)
@@ -806,6 +806,8 @@ def get_faculty_incharge_class(fac_id: str):
             year = int(year_raw)
         except (TypeError, ValueError):
             year = 0
+        if dept and (year or d.get("is_class_incharge")):
+            return {"dept": dept, "year": year or 1, "section": section or "A"}
         if dept and section and year:
             return {"dept": dept, "year": year, "section": section}
         return None
@@ -821,7 +823,13 @@ def get_faculty_by_id(fac_id: str):
                 "SELECT * FROM faculty WHERE fac_id=? AND active=1",
                 (fac_id,)
             ).fetchone()
-            return dict(row) if row else None
+            if not row:
+                return None
+            record = dict(row)
+            record.setdefault("faculty_id",    record.get("fac_id"))
+            record.setdefault("department",    record.get("dept"))
+            record.setdefault("date_of_birth", record.get("dob") or record.get("date_of_birth"))
+            return record
     except Exception:
         return None
 
@@ -893,7 +901,7 @@ def migrate_plaintext_passwords() -> int:
     Returns the total number of rows migrated (0 = everything already hashed).
     """
     try:
-        from auth_utils import hash_password as _hp
+        from app.core.auth_utils import hash_password as _hp
     except Exception as _imp_err:
         log.error("migrate_plaintext_passwords: cannot import hash_password — %s", _imp_err)
         return 0
@@ -1263,7 +1271,7 @@ def is_password_reused(identifier: str, new_plain: str) -> bool:
     a transient failure never blocks a legitimate password change.
     """
     try:
-        from auth_utils import verify_password as _vp
+        from app.core.auth_utils import verify_password as _vp
     except Exception as _imp:
         log.error("is_password_reused: cannot import verify_password — %s", _imp)
         return False
@@ -2010,6 +2018,7 @@ def add_faculty(fac_id, employee_code, first_name, last_name, gender,
         return False
 
 
+<<<<<<< Updated upstream
 def get_faculty_by_id(fac_id: str):
     """Return faculty record as dict, or None if not found."""
     with db() as conn:
@@ -2024,6 +2033,8 @@ def get_faculty_by_id(fac_id: str):
         record.setdefault("date_of_birth", record.get("dob") or record.get("date_of_birth"))
         return record
 
+=======
+>>>>>>> Stashed changes
 
 # =============================================================
 # HOD ENROLLMENT

@@ -210,8 +210,14 @@ def _student_in_scope_clause(scope: dict):
         clauses.append("UPPER(s.department)=UPPER(?)")
         params.append(scope["department"])
     if scope.get("year"):
-        clauses.append("s.year=?")
-        params.append(scope["year"])
+        raw_y = str(scope["year"]).strip()
+        dig = "".join([c for c in raw_y if c.isdigit()])
+        if dig:
+            clauses.append("(s.year = ? OR s.year LIKE ? OR s.year LIKE ?)")
+            params.extend([raw_y, f"{dig}%", f"{raw_y}%"])
+        else:
+            clauses.append("s.year=?")
+            params.append(raw_y)
     if scope.get("section"):
         clauses.append("UPPER(s.section)=UPPER(?)")
         params.append(scope["section"])
@@ -486,6 +492,43 @@ def get_request_counts(scope: dict) -> dict:
             params,
         ).fetchone()[0]
 
+        # Gate Pass requests — Stage 1 (Pending awaiting Class Incharge)
+        # and Stage 2 (Forwarded awaiting HOD)
+        try:
+            pending_gatepass = conn.execute(
+                f"""SELECT COUNT(*) FROM gatepass_requests g
+                    JOIN students s ON s.student_id=g.student_id
+                    {where_students}{' AND ' if where_students else ' WHERE '}UPPER(g.status)='PENDING'""",
+                params,
+            ).fetchone()[0]
+            # Safe department fallback: if incharge scope didn't catch due to year formatting variation, check department
+            if pending_gatepass == 0 and scope.get("department"):
+                pending_gatepass = conn.execute(
+                    """SELECT COUNT(*) FROM gatepass_requests g
+                        JOIN students s ON s.student_id=g.student_id
+                        WHERE UPPER(s.department)=UPPER(?) AND UPPER(g.status)='PENDING'""",
+                    (scope["department"],),
+                ).fetchone()[0]
+        except Exception:
+            pending_gatepass = 0
+
+        try:
+            pending_hod_gatepass = conn.execute(
+                f"""SELECT COUNT(*) FROM gatepass_requests g
+                    JOIN students s ON s.student_id=g.student_id
+                    {where_students}{' AND ' if where_students else ' WHERE '}UPPER(g.status)='FORWARDED'""",
+                params,
+            ).fetchone()[0]
+            if pending_hod_gatepass == 0 and scope.get("department"):
+                pending_hod_gatepass = conn.execute(
+                    """SELECT COUNT(*) FROM gatepass_requests g
+                        JOIN students s ON s.student_id=g.student_id
+                        WHERE UPPER(s.department)=UPPER(?) AND UPPER(g.status)='FORWARDED'""",
+                    (scope["department"],),
+                ).fetchone()[0]
+        except Exception:
+            pending_hod_gatepass = 0
+
         approved_today = conn.execute(
             f"""SELECT
                   (SELECT COUNT(*) FROM student_leave_requests lr
@@ -494,8 +537,11 @@ def get_request_counts(scope: dict) -> dict:
                 + (SELECT COUNT(*) FROM od_requests od
                    JOIN students s ON s.student_id=od.student_id
                    {where_students}{' AND ' if where_students else ' WHERE '}UPPER(od.status)='APPROVED' AND od.decided_at LIKE ? )
+                + (SELECT COUNT(*) FROM gatepass_requests gp
+                   JOIN students s ON s.student_id=gp.student_id
+                   {where_students}{' AND ' if where_students else ' WHERE '}UPPER(gp.status)='APPROVED' AND gp.otp_generated_at LIKE ? )
             """,
-            params + [f"{today}%"] + params + [f"{today}%"],
+            params + [f"{today}%"] + params + [f"{today}%"] + params + [f"{today}%"],
         ).fetchone()[0]
 
         rejected_today = conn.execute(
@@ -506,14 +552,19 @@ def get_request_counts(scope: dict) -> dict:
                 + (SELECT COUNT(*) FROM od_requests od
                    JOIN students s ON s.student_id=od.student_id
                    {where_students}{' AND ' if where_students else ' WHERE '}UPPER(od.status)='REJECTED' AND od.decided_at LIKE ? )
+                + (SELECT COUNT(*) FROM gatepass_requests gp
+                   JOIN students s ON s.student_id=gp.student_id
+                   {where_students}{' AND ' if where_students else ' WHERE '}UPPER(gp.status)='REJECTED' AND (gp.faculty_decided_at LIKE ? OR gp.hod_decided_at LIKE ?) )
             """,
-            params + [f"{today}%"] + params + [f"{today}%"],
+            params + [f"{today}%"] + params + [f"{today}%"] + params + [f"{today}%", f"{today}%"],
         ).fetchone()[0]
 
     return {
         "pending_leave_requests": pending_leave,
         "pending_od_requests": pending_od,
         "pending_hod_od": pending_hod_od,
+        "pending_gatepass_requests": pending_gatepass,
+        "pending_hod_gatepass": pending_hod_gatepass,
         "approved_requests_today": approved_today,
         "rejected_requests_today": rejected_today,
     }

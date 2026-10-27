@@ -41,25 +41,29 @@ def _serve_portal(subpath: str = ""):
 # ── Portal HTML Routes (Authentic Light Theme) ─────────────────
 @router.get("/admin", response_class=HTMLResponse)
 @router.get("/admin.html", response_class=HTMLResponse)
-def serve_admin():
+@router.get("/admin/{subpath:path}", response_class=HTMLResponse)
+def serve_admin(subpath: str = ""):
     return _serve_file("admin.html", "text/html")
 
 
 @router.get("/hod", response_class=HTMLResponse)
 @router.get("/hod.html", response_class=HTMLResponse)
-def serve_hod():
+@router.get("/hod/{subpath:path}", response_class=HTMLResponse)
+def serve_hod(subpath: str = ""):
     return _serve_file("hod.html", "text/html")
 
 
 @router.get("/faculty", response_class=HTMLResponse)
 @router.get("/faculty.html", response_class=HTMLResponse)
-def serve_faculty():
+@router.get("/faculty/{subpath:path}", response_class=HTMLResponse)
+def serve_faculty(subpath: str = ""):
     return _serve_file("faculty.html", "text/html")
 
 
 @router.get("/attendance", response_class=HTMLResponse)
 @router.get("/attendance.html", response_class=HTMLResponse)
-def serve_attendance_html():
+@router.get("/attendance/{subpath:path}", response_class=HTMLResponse)
+def serve_attendance_html(subpath: str = ""):
     return _serve_file("attendance.html", "text/html")
 
 

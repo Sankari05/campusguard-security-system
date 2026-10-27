@@ -77,6 +77,21 @@ def init_gatepass_table():
         conn.execute("""
             CREATE INDEX IF NOT EXISTS idx_gp_status ON gatepass_requests(status)
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS gate_incidents (
+                id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+                guard_id            TEXT DEFAULT 'Main Gate Guard',
+                category            TEXT DEFAULT 'General',
+                description         TEXT NOT NULL,
+                student_id          TEXT DEFAULT '',
+                severity            TEXT DEFAULT 'Medium',
+                voice_transcript    TEXT DEFAULT '',
+                logged_at           TEXT NOT NULL
+            )
+        """)
+        conn.execute("""
+            CREATE INDEX IF NOT EXISTS idx_gi_logged_at ON gate_incidents(logged_at)
+        """)
 
 
 # ── Student Actions ──────────────────────────────────────────
@@ -104,7 +119,10 @@ def apply_gatepass(
         row = conn.execute(
             "SELECT * FROM gatepass_requests WHERE id = ?", (new_id,)
         ).fetchone()
-        return dict(row)
+        rec = dict(row)
+
+    _notify_student(student_id, f"Gate Pass #{new_id} submitted! Sent to Class Incharge for approval.")
+    return rec
 
 
 def list_student_gatepasses(student_id: str) -> list[dict]:
@@ -162,23 +180,46 @@ def list_faculty_gatepasses(scope: dict, status: str = None) -> list[dict]:
     """
     params = []
     if scope.get("department"):
-        query += " AND s.department = ?"
+        query += " AND UPPER(s.department) = UPPER(?)"
         params.append(scope["department"])
     if scope.get("year"):
-        query += " AND s.year = ?"
-        params.append(str(scope["year"]))
+        raw_y = str(scope["year"]).strip()
+        dig = "".join([c for c in raw_y if c.isdigit()])
+        if dig:
+            query += " AND (s.year = ? OR s.year LIKE ? OR s.year LIKE ?)"
+            params.extend([raw_y, f"{dig}%", f"{raw_y}%"])
+        else:
+            query += " AND s.year = ?"
+            params.append(raw_y)
     if scope.get("section"):
-        query += " AND s.section = ?"
+        query += " AND UPPER(s.section) = UPPER(?)"
         params.append(scope["section"])
 
     if status:
-        query += " AND g.status = ?"
+        query += " AND UPPER(g.status) = UPPER(?)"
         params.append(status)
 
     query += " ORDER BY g.id DESC"
 
     with db() as conn:
         rows = conn.execute(query, params).fetchall()
+        # Fallback: If scoped by year/section returned empty, but faculty has department,
+        # check if there are pending/relevant requests in the department to avoid orphan requests
+        if not rows and (scope.get("year") or scope.get("section")) and scope.get("department"):
+            dept_query = """
+                SELECT g.*, s.name, s.register_number, s.roll_number, s.department,
+                       s.year, s.section
+                FROM gatepass_requests g
+                LEFT JOIN students s ON g.student_id = s.student_id
+                WHERE UPPER(s.department) = UPPER(?)
+            """
+            dparams = [scope["department"]]
+            if status:
+                dept_query += " AND UPPER(g.status) = UPPER(?)"
+                dparams.append(status)
+            dept_query += " ORDER BY g.id DESC"
+            rows = conn.execute(dept_query, dparams).fetchall()
+
         out = []
         for r in rows:
             d = dict(r)
@@ -211,8 +252,8 @@ def faculty_decide_gatepass(pass_id: int, decision: str, decided_by: str, remark
         record = dict(row) if row else None
 
     if record:
-        msg = f"Your Gate Pass request has been approved by Class Incharge ({decided_by}) and forwarded to HOD." if decision == "Approved" \
-              else f"Your Gate Pass request was rejected by Class Incharge. Remarks: {remarks}"
+        msg = f"Your Gate Pass #{pass_id} has been verified and approved by Class Incharge ({decided_by}) and forwarded to HOD for final exit authorization." if decision == "Approved" \
+              else f"Your Gate Pass #{pass_id} request was rejected by Class Incharge ({decided_by}). Remarks: {remarks}"
         _notify_student(record["student_id"], msg)
 
     return record
@@ -392,3 +433,293 @@ def list_recent_gatepass_exits(limit: int = 20) -> list[dict]:
             (limit,),
         ).fetchall()
         return [dict(r) for r in rows]
+
+
+# ── Gate Incident / Voice Situation Logging ──────────────────
+def log_gate_incident(
+    guard_id: str = "Main Gate Guard",
+    description: str = "",
+    category: str = "General",
+    student_id: str = "",
+    severity: str = "Medium",
+    voice_transcript: str = "",
+) -> dict:
+    """Watchman speaks a situation or logs an incident at the gate."""
+    init_gatepass_table()
+    now = datetime.now().isoformat(timespec="seconds")
+    with db() as conn:
+        cur = conn.execute(
+            """INSERT INTO gate_incidents
+               (guard_id, category, description, student_id, severity, voice_transcript, logged_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            (guard_id, category, description, student_id, severity, voice_transcript, now),
+        )
+        inc_id = cur.lastrowid
+        row = conn.execute("SELECT * FROM gate_incidents WHERE id = ?", (inc_id,)).fetchone()
+        return dict(row) if row else {}
+
+
+def list_gate_incidents(limit: int = 25) -> list[dict]:
+    """List recent gate incidents and voice situation logs."""
+    init_gatepass_table()
+    with db() as conn:
+        rows = conn.execute(
+            """SELECT * FROM gate_incidents ORDER BY logged_at DESC LIMIT ?""",
+            (limit,),
+        ).fetchall()
+        return [dict(r) for r in rows]
+
+
+# ── Voice Command & Natural Language Intelligence Engine ────
+# Supports:
+#   1. English: "seven four five seven four three", "double seven"
+#   2. Tamil Unicode: "ஏழு நான்கு ஐந்து ஏழு நான்கு மூன்று"
+#   3. Tanglish (Romanized Tamil): "ezhu naalu anju ezhu naalu moonu", "onnu rendu moonu"
+#   4. Mixed code-switching: "student OTP ezhu 4 anju 7 நாலு three check pannunga"
+_NUMBER_MAP = {
+    # ── English digits & spoken numbers ──
+    "zero": "0", "one": "1", "two": "2", "three": "3", "four": "4",
+    "five": "5", "six": "6", "seven": "7", "eight": "8", "nine": "9", "oh": "0",
+
+    # ── Tamil Unicode script ──
+    "பூஜ்ஜியம்": "0", "ஜீரோ": "0", "சுழியம்": "0",
+    "ஒன்று": "1", "ஒன்னு": "1", "ஒரு": "1",
+    "இரண்டு": "2", "ரெண்டு": "2", "ரண்டு": "2",
+    "மூன்று": "3", "மூணு": "3",
+    "நான்கு": "4", "நாலு": "4",
+    "ஐந்து": "5", "அஞ்சு": "5",
+    "ஆறு": "6",
+    "ஏழு": "7",
+    "எட்டு": "8",
+    "ஒன்பது": "9",
+    "பத்து": "10",
+
+    # ── Tanglish (Tamil words written in English / Transliteration) ──
+    # 0:
+    "poojiyam": "0", "poojyam": "0", "pujiyam": "0", "jeero": "0", "jiro": "0", "sunna": "0", "suzhiyam": "0",
+    # 1:
+    "onnu": "1", "onru": "1", "ondru": "1", "oru": "1", "oone": "1",
+    # 2:
+    "rendu": "2", "irandu": "2", "irandhu": "2", "randu": "2", "reandu": "2",
+    # 3:
+    "moonu": "3", "moondru": "3", "moondhu": "3", "munu": "3", "monu": "3",
+    # 4:
+    "naalu": "4", "naangu": "4", "nalu": "4", "nangu": "4", "nal": "4",
+    # 5:
+    "anju": "5", "ainthu": "5", "aindhu": "5", "anchu": "5", "anji": "5",
+    # 6:
+    "aaru": "6", "aru": "6", "aara": "6",
+    # 7:
+    "ezhu": "7", "yezhu": "7", "elu": "7", "yelu": "7", "yealu": "7", "yelhu": "7", "ezh": "7",
+    # 8:
+    "ettu": "8", "yeatu": "8", "yettu": "8", "etu": "8", "eattu": "8",
+    # 9:
+    "onbadhu": "9", "onbathu": "9", "ombodhu": "9", "ombothu": "9", "onpathu": "9", "onbadu": "9",
+    # 10:
+    "pathu": "10", "padhu": "10",
+}
+
+
+def process_voice_command(
+    transcript: str,
+    guard_id: str = "Main Gate Guard",
+    active_pass_id: int | None = None,
+) -> dict:
+    """
+    Process watchman spoken voice command with full Tamil, English & Tanglish support:
+      1. Phonetic & Code-Switch Normalizer (PCN)
+      2. Multi-Intent Classifier (MIR-KDC)
+      3. Entity / OTP Extraction
+      4. Database Transaction
+      5. Synthesized Acoustic Speech Feedback (for Text-To-Speech)
+    """
+    raw = (transcript or "").strip()
+    if not raw:
+        return {
+            "success": False,
+            "intent": "EMPTY",
+            "action_taken": "NO_ACTION",
+            "spoken_feedback": "No speech detected. Please speak into the microphone.",
+            "data": None,
+        }
+
+    lower = raw.lower()
+
+    # 1. Normalize numbers in transcript (Tamil + English + Tanglish)
+    tokens = lower.split()
+    normalized_tokens = []
+    i = 0
+    while i < len(tokens):
+        tok = tokens[i]
+        # Handle 'double X', 'irattai X', 'triple X'
+        if tok in ("double", "irattai") and i + 1 < len(tokens):
+            next_num = _NUMBER_MAP.get(tokens[i + 1])
+            if next_num:
+                normalized_tokens.extend([next_num, next_num])
+                i += 2
+                continue
+        elif tok in ("triple", "mummurai") and i + 1 < len(tokens):
+            next_num = _NUMBER_MAP.get(tokens[i + 1])
+            if next_num:
+                normalized_tokens.extend([next_num, next_num, next_num])
+                i += 2
+                continue
+
+        if tok in _NUMBER_MAP:
+            normalized_tokens.append(_NUMBER_MAP[tok])
+        else:
+            # Check if token is already pure digits
+            if tok.isdigit():
+                normalized_tokens.append(tok)
+            else:
+                # Clean punctuation for keyword matching
+                clean_tok = "".join(ch for ch in tok if ch.isalnum())
+                if clean_tok:
+                    if clean_tok in _NUMBER_MAP:
+                        normalized_tokens.append(_NUMBER_MAP[clean_tok])
+                    else:
+                        normalized_tokens.append(clean_tok)
+        i += 1
+
+    combined_text = " ".join(normalized_tokens)
+
+    # 2. Extract 6-digit OTP using continuous or spaced digit sliding window
+    import re
+    otp_candidate = None
+    direct_match = re.search(r"\b\d{6}\b", combined_text)
+    if direct_match:
+        otp_candidate = direct_match.group(0)
+    else:
+        # Check digit sequences
+        digits_only = re.sub(r"\D", "", combined_text)
+        if len(digits_only) >= 6:
+            otp_candidate = digits_only[:6]
+
+    # ── Intent Route A: VERIFY_OTP ──────────────────────────────
+    if otp_candidate:
+        verify_res = verify_gatepass_otp(otp_candidate)
+        if verify_res.get("valid"):
+            name = verify_res.get("student_name", "Student")
+            dept = verify_res.get("department", "")
+            return {
+                "success": True,
+                "intent": "VERIFY_OTP",
+                "extracted_otp": otp_candidate,
+                "action_taken": "VERIFIED_APPROVED",
+                "spoken_feedback": f"Gate pass approved for {name}. {dept}. Say 'Confirm' or 'Veliya pogalam' to allow exit.",
+                "data": verify_res,
+            }
+        else:
+            msg = verify_res.get("message", "Invalid pass")
+            return {
+                "success": False,
+                "intent": "VERIFY_OTP",
+                "extracted_otp": otp_candidate,
+                "action_taken": "VERIFIED_DENIED",
+                "spoken_feedback": f"Gate pass denied: {msg}",
+                "data": verify_res,
+            }
+
+    def _matches_any(trigger_list: list[str], text: str) -> bool:
+        for t in trigger_list:
+            if " " in t:
+                if t in text:
+                    return True
+            else:
+                # Whole word match to avoid subword collision (e.g. 'sari' in 'sariyilla')
+                if re.search(r"\b" + re.escape(t) + r"\b", text):
+                    return True
+        return False
+
+    # ── Intent Route B: LOG_INCIDENT / SITUATION REPORT (High Priority) ──
+    incident_triggers = [
+        # English
+        "incident", "problem", "emergency", "medical", "hospital", "ambulance",
+        "unauthorized", "accident", "damage", "complaint", "stopped", "fight", "theft",
+        # Tamil Unicode
+        "பிரச்சனை", "மருத்துவமனை", "ஆம்புலன்ஸ்", "சண்டை", "விபத்து",
+        # Tanglish
+        "udambu sariyilla", "udambu mudiyala", "faint", "mayakkam", "mayangi", "vizhunthutan", "adi patturuku",
+        "sanda", "sandai", "thagaraaru", "thagararu", "vambu", "argue", "vaakuvaadham",
+        "illama", "no id", "id card", "id illa", "card illa", "permission illama",
+        "gate jump", "wall yeri", "kudhichu", "thappikka", "cross panna", "cross",
+        "thaduthu", "thaduthom", "hold pannirukom", "pudichom",
+        "parent kooda", "parent vandhurukaanga", "family vandhurukaanga"
+    ]
+    if _matches_any(incident_triggers, lower):
+        category = "Security Incident"
+        severity = "Medium"
+        if any(w in lower for w in [
+            "medical", "hospital", "maruthuvamanai", "ambulance", "accident",
+            "udambu sariyilla", "udambu mudiyala", "faint", "mayakkam", "mayangi", "adi patturuku", "விபத்து"
+        ]):
+            category = "Medical Emergency"
+            severity = "High"
+        elif any(w in lower for w in [
+            "no id", "id card", "illama", "id illa", "card illa", "unauthorized",
+            "permission illama", "gate jump", "wall yeri", "kudhichu", "thappikka"
+        ]):
+            category = "Unauthorized / Missing ID"
+            severity = "Low"
+        elif any(w in lower for w in ["sanda", "sandai", "fight", "thagaraaru", "argue", "vaakuvaadham", "சண்டை"]):
+            category = "Dispute / Misconduct"
+            severity = "High"
+        elif any(w in lower for w in ["parent", "family", "kooda"]):
+            category = "Parent / Visitor Checkout"
+            severity = "Low"
+
+        inc_rec = log_gate_incident(
+            guard_id=guard_id,
+            description=raw,
+            category=category,
+            severity=severity,
+            voice_transcript=raw,
+        )
+        return {
+            "success": True,
+            "intent": "LOG_INCIDENT",
+            "action_taken": "INCIDENT_LOGGED",
+            "spoken_feedback": f"Situation logged under {category}. Incident recorded to security registry.",
+            "data": inc_rec,
+        }
+
+    # ── Intent Route C: CONFIRM_EXIT (Tanglish + Tamil + English) ───────────
+    exit_triggers = [
+        # English
+        "confirm", "allow", "exit", "left", "passed", "yes", "okay", "ok",
+        # Tamil Unicode
+        "வெளிய", "போகலாம்", "அனுப்பு", "விடு", "சரி", "திற",
+        # Tanglish
+        "veliya", "velila", "veliye", "pogalam", "pogattum", "poraaru", "poran", "poranga",
+        "anuppu", "anupu", "anupunga", "anuppunga", "vidu", "vidunga",
+        "allow pannu", "exit pannu", "confirm pannu", "panni vidu",
+        "gate open", "gate thora", "gate theranthudu", "gate thorandhu",
+        "sari", "seri", "kelambattum", "kelambalam"
+    ]
+    if _matches_any(exit_triggers, lower):
+        if active_pass_id:
+            exit_rec = mark_gatepass_exit(active_pass_id, guard_id, "Voice command confirmed exit")
+            return {
+                "success": True,
+                "intent": "CONFIRM_EXIT",
+                "action_taken": "EXIT_CONFIRMED",
+                "spoken_feedback": "Exit confirmed. Student is cleared to leave the campus.",
+                "data": exit_rec,
+            }
+        else:
+            return {
+                "success": False,
+                "intent": "CONFIRM_EXIT",
+                "action_taken": "NO_PASS_SELECTED",
+                "spoken_feedback": "Please speak or verify the student OTP first before confirming exit.",
+                "data": None,
+            }
+
+    # ── Fallback Route: UNKNOWN INTENT ──────────────────────────
+    return {
+        "success": False,
+        "intent": "UNKNOWN",
+        "action_taken": "UNRECOGNIZED",
+        "spoken_feedback": "Command not understood. Please speak a 6-digit OTP, say 'Confirm' or 'Veliya pogalam', or describe an incident.",
+        "data": {"raw_transcript": raw},
+    }

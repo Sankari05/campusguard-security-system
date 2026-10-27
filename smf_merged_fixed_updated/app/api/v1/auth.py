@@ -126,6 +126,7 @@ def api_login(req: FrontendLoginReq, request: Request):
         else:
             db.reset_login_fail(_bf_identifier)
 
+<<<<<<< Updated upstream
     # 2. Faculty portal login (fac_id provided)
     if req.fac_id and req.fac_id.strip():
         fac_id = req.fac_id.strip().upper()
@@ -133,6 +134,58 @@ def api_login(req: FrontendLoginReq, request: Request):
         if not fac:
             db.log_audit(fac_id, "login_fail", "", "unknown_fac_id", ip)
             db.increment_login_fail(fac_id)
+=======
+    # 2. Faculty portal login (fac_id provided or portal is faculty)
+    fac_identifier = (req.fac_id or (req.email if req_portal in ("faculty", "teacher") else "")).strip()
+    if fac_identifier or req_portal in ("faculty", "teacher"):
+        search_id = fac_identifier or (req.email or getattr(req, "username", "")).strip()
+        fac = db.get_faculty_by_id(search_id)
+        if fac:
+            real_fac_id = fac.get("fac_id") or search_id.upper()
+            if fac.get("is_active") is not None and not fac.get("is_active"):
+                raise HTTPException(status_code=403, detail="Faculty account is deactivated.")
+
+            stored_hash = fac.get("password_hash") or ""
+            stored_plain = fac.get("password") or ""
+            is_valid_pw = False
+            if stored_hash and config.is_bcrypt(stored_hash) and _verify_password(req.password, stored_hash):
+                is_valid_pw = True
+            elif stored_plain and config.is_bcrypt(stored_plain) and _verify_password(req.password, stored_plain):
+                is_valid_pw = True
+            elif (stored_plain and req.password == stored_plain) or (req.password == config.FACULTY_DEFAULT_PASSWORD and (stored_plain == config.FACULTY_DEFAULT_PASSWORD or not stored_hash)):
+                is_valid_pw = True
+                db.update_faculty_password(real_fac_id, _hash_password(req.password))
+
+            if not is_valid_pw:
+                db.log_audit(real_fac_id, "login_fail", "", "wrong_password", ip)
+                db.increment_login_fail(real_fac_id)
+                raise HTTPException(status_code=401, detail="Invalid username or password.")
+
+            db.reset_login_fail(real_fac_id)
+            _fac_name = fac.get("name") or fac.get("full_name") or real_fac_id
+            dept_name = fac.get("department") or fac.get("dept") or ""
+            db.log_audit(real_fac_id, "login_success", "faculty", "", ip)
+            token = _auth_create_token({
+                "sub": real_fac_id,
+                "role": "faculty",
+                "name": _fac_name,
+                "email": fac.get("email", ""),
+                "department": dept_name,
+            })
+            return {
+                "access_token": token,
+                "token_type": "bearer",
+                "role": "faculty",
+                "username": _fac_name,
+                "name": _fac_name,
+                "fac_id": real_fac_id,
+                "dept": dept_name,
+                "department": dept_name,
+            }
+        elif req.fac_id and req.fac_id.strip():
+            db.log_audit(req.fac_id, "login_fail", "", "unknown_fac_id", ip)
+            db.increment_login_fail(req.fac_id)
+>>>>>>> Stashed changes
             raise HTTPException(status_code=401, detail="Invalid username or password.")
 
         if fac.get("is_active") is not None and not fac.get("is_active"):
@@ -174,6 +227,9 @@ def api_login(req: FrontendLoginReq, request: Request):
 
     # 3. Admin / HOD login
     email = (req.email or getattr(req, "username", "") or "").strip().lower()
+    # Pre-initialize HOD-specific vars so admin path never causes NameError
+    hod_dept = ""
+    hod_id_val = ""
     admin_email_configured = getattr(config, "ADMIN_EMAIL", os.environ.get("ADMIN_EMAIL", "admin@college.edu")).strip().lower()
     ALLOWED_ADMIN_EMAILS = {
         admin_email_configured,

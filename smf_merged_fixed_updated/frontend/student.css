@@ -60,6 +60,7 @@ form input[type=text], form input[type=date], form input[type=password],
 form input[type=email], form input[type=tel], form textarea{
   width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);
   font-size:14.5px;transition:var(--t);font-family:inherit;resize:vertical;
+  box-sizing:border-box;word-break:break-word;overflow-wrap:anywhere;
 }
 form input:focus, form textarea:focus{border-color:var(--sky);outline:none}
 .hint{font-size:12px;color:var(--text3);margin-top:6px}
@@ -110,7 +111,8 @@ form input:focus, form textarea:focus{border-color:var(--sky);outline:none}
 
 .card{
   background:var(--white);border-radius:var(--r-lg);box-shadow:var(--shadow);
-  padding:24px;
+  padding:24px;min-width:0;max-width:100%;box-sizing:border-box;
+  overflow:hidden;word-break:break-word;overflow-wrap:anywhere;
 }
 .card h3{font-size:15px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px}
 .badge{
@@ -258,30 +260,33 @@ form input:focus, form textarea:focus{border-color:var(--sky);outline:none}
 }
 
 /* ── Leave/OD request history list ── */
-.request-list{display:flex;flex-direction:column;gap:10px}
+.request-list{display:flex;flex-direction:column;gap:10px;min-width:0;width:100%;box-sizing:border-box;}
 .request-item{
   display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
   padding:12px 14px;border:1px solid var(--border);border-radius:var(--r-sm);flex-wrap:wrap;
+  min-width:0;max-width:100%;box-sizing:border-box;word-break:break-word;overflow-wrap:anywhere;
 }
-.request-item-main{display:flex;flex-direction:column;gap:3px}
-.request-dates{font-size:13.5px;font-weight:700;color:var(--text)}
-.request-reason{font-size:12.5px;color:var(--text2)}
+.request-item-main{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1;word-break:break-word;overflow-wrap:anywhere;}
+.request-dates{font-size:13.5px;font-weight:700;color:var(--text);word-break:break-word;overflow-wrap:anywhere;}
+.request-reason{font-size:12.5px;color:var(--text2);word-break:break-word;overflow-wrap:anywhere;}
 .request-applied{font-size:11px;color:var(--text3)}
 
 .status-tag{
   font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.03em;
-  padding:4px 11px;border-radius:99px;white-space:nowrap;
+  padding:4px 11px;border-radius:99px;white-space:nowrap;flex-shrink:0;
 }
 .status-pending{background:var(--amber-l);color:var(--amber-d)}
 .status-approved{background:var(--mint-l);color:var(--mint-d)}
 .status-rejected{background:var(--coral-l);color:var(--coral-d)}
 
 /* ── Request Tracker (📌) — stepper/timeline per request ── */
-.tracker-list{display:flex;flex-direction:column;gap:18px}
+.tracker-list{display:flex;flex-direction:column;gap:18px;min-width:0;width:100%;box-sizing:border-box;}
 
 .tracker-card{
   border:1px solid var(--border);border-radius:var(--r-sm);padding:16px 18px;
+  min-width:0;max-width:100%;box-sizing:border-box;word-break:break-word;overflow-wrap:anywhere;
 }
+.tracker-card-reason{word-break:break-word;overflow-wrap:anywhere;}
 .tracker-card-head{
   display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px;
 }
@@ -372,3 +377,502 @@ form input:focus, form textarea:focus{border-color:var(--sky);outline:none}
   white-space:nowrap;
 }
 .notif-mark-btn:hover{background:var(--sky-l);border-color:var(--sky)}
+
+/* ==========================================================================
+   SYED AMMAL ENGINEERING COLLEGE - ERMS THEME & COMPONENT STYLES
+   ========================================================================== */
+
+/* ── Topbar Brand ── */
+.sa-brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sa-brand-logo {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+.sa-brand-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0e4b8a;
+  letter-spacing: 0.5px;
+}
+.btn-sa-logout {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+.btn-sa-logout:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+/* ── Sidebar Student Mini Profile Widget ── */
+.sidebar-student-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.side-avatar-box {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #ffffff;
+  border: 2px solid #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.side-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.side-avatar-placeholder {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0e4b8a;
+}
+.side-student-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.side-student-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.side-student-dept {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+}
+.side-student-reg {
+  font-size: 11px;
+  color: #7dd3fc;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* ── Sidebar Accordion Navigation ── */
+.nav-accordion {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.nav-accordion-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.accordion-arrow {
+  margin-left: auto;
+  font-size: 13px;
+  transition: transform 0.2s ease;
+  color: var(--text3);
+}
+.nav-accordion.open .accordion-arrow {
+  transform: rotate(90deg);
+}
+.nav-sub-menu {
+  display: flex;
+  flex-direction: column;
+  padding-left: 28px;
+  gap: 2px;
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+.nav-sub-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text2);
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--t);
+}
+.nav-sub-item:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+.nav-sub-item.active {
+  background: linear-gradient(135deg, var(--mint-l), var(--sky-l));
+  color: var(--sky-d);
+  font-weight: 700;
+}
+
+/* ── Syed Ammal ERMS Container & Header ── */
+.sa-card-container {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  padding: 16px 20px 24px;
+}
+.sa-page-bar {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0e4b8a;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sa-page-icon {
+  font-size: 15px;
+}
+.sa-dashed-head {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1e3a8a;
+  padding-bottom: 6px;
+  margin-bottom: 14px;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+/* ── Profile Tab Navigation ── */
+.sa-tab-nav {
+  display: flex;
+  border-bottom: 2px solid #0e4b8a;
+  margin-bottom: 16px;
+  gap: 4px;
+}
+.sa-tab-item {
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-bottom: none;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.sa-tab-item:hover {
+  background: #e2e8f0;
+  color: #0e4b8a;
+}
+.sa-tab-item.active {
+  background: #0e4b8a;
+  color: #ffffff;
+  border-color: #0e4b8a;
+  font-weight: 700;
+}
+
+/* ── Striped ERMS Table ── */
+.sa-erm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  border: 1px solid #e2e8f0;
+}
+.sa-erm-table td {
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+.sa-erm-table .sa-label {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #334155;
+  width: 15%;
+}
+.sa-erm-table .sa-val {
+  background: #ffffff;
+  font-weight: 700;
+  color: #0f172a;
+  width: 18%;
+}
+
+/* ── Personal layout with right photo box ── */
+.sa-personal-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.sa-personal-left {
+  flex: 1;
+  min-width: 0;
+}
+.sa-personal-right {
+  width: 190px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.sa-app-badge {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0e4b8a;
+  text-align: center;
+  width: 100%;
+}
+.sa-photo-circle-box {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f8fafc;
+  border: 4px solid #38bdf8;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sa-photo-circle {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sa-photo-circle-placeholder {
+  font-size: 54px;
+  font-weight: 800;
+  color: #94a3b8;
+}
+
+/* ── Communication layout ── */
+.sa-comm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+@media(max-width: 768px) {
+  .sa-personal-layout { flex-direction: column-reverse; }
+  .sa-personal-right { width: 100%; align-items: center; }
+  .sa-comm-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Blue Solid Header Table (DataTables ERMS Style) ── */
+.sa-blue-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  border: 1px solid #cbd5e1;
+}
+.sa-blue-table thead tr {
+  background: #0e4b8a;
+  color: #ffffff;
+}
+.sa-blue-table th {
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  border: 1px solid #1e3a8a;
+  letter-spacing: 0.3px;
+}
+.sa-blue-table td {
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  text-align: center;
+  color: #1e293b;
+}
+.sa-blue-table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+.sa-blue-table tbody tr:hover {
+  background: #eff6ff;
+}
+
+/* ── Controls above blue tables (Show entries / Search) ── */
+.sa-dt-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #475569;
+}
+.sa-select-inline {
+  padding: 4px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 12px;
+  background: #ffffff;
+}
+.sa-input-inline {
+  padding: 4px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 12px;
+  width: 180px;
+}
+.sa-dt-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #64748b;
+}
+.sa-pager {
+  display: flex;
+  gap: 4px;
+}
+.sa-pg-btn {
+  padding: 4px 10px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  border-radius: 4px;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+.sa-pg-btn.active {
+  background: #0e4b8a;
+  color: #ffffff;
+  border-color: #0e4b8a;
+  font-weight: 700;
+}
+
+/* ── Month Navigation Pills ── */
+.sa-month-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.sa-mtab-btn {
+  padding: 6px 14px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  border-radius: 4px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.sa-mtab-btn:hover {
+  background: #e2e8f0;
+}
+.sa-mtab-btn.active {
+  background: #0e4b8a;
+  color: #ffffff;
+  border-color: #0e4b8a;
+  font-weight: 700;
+}
+
+/* ── 7-Col Month Attendance Calendar ── */
+.sa-cal-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  border: 1px solid #cbd5e1;
+}
+.sa-cal-table th {
+  padding: 8px 6px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  color: #334155;
+}
+.sa-cal-table td {
+  height: 52px;
+  border: 1px solid #cbd5e1;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 14px;
+  font-weight: 700;
+}
+.cal-day-present {
+  background: #0e8345 !important;
+  color: #ffffff !important;
+}
+.cal-day-absent {
+  background: #dc2626 !important;
+  color: #ffffff !important;
+}
+.cal-day-sunday {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.cal-day-holiday {
+  background: #f8fafc;
+  color: #94a3b8;
+}
+.cal-day-empty {
+  background: #f1f5f9;
+}
+
+/* ── Alert banner for closed window ── */
+.sa-alert-banner {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Global ERMS Footer ── */
+.sa-footer {
+  margin-top: 40px;
+  padding: 18px 0;
+  border-top: 1px solid #e2e8f0;
+  font-size: 12px;
+  color: #64748b;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  text-align: center;
+}
+.sa-footer-login {
+  font-weight: 600;
+  color: #475569;
+}
+.sa-footer-copy {
+  color: #94a3b8;
+}
+

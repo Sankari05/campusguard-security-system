@@ -94,13 +94,22 @@ npm run dev
      - Big OTP: **`745743`**
      - QR Token code
 
-5. **Watchman verifies OTP at the Gate:**
+5. **Watchman verifies via Voice Assistant (Hands-Free):**
    - In the Watchman App (`http://localhost:5173/student-gatepass`):
-   - Watchman enters `745743` and clicks **Verify Gate Pass**.
-   - System immediately displays:
-     - **Student Photo**
-     - Student Name, Register Number, Department
-     - Green Badge: **✅ GATE PASS APPROVED — ALLOW EXIT**
-     - Verification trail: Class Incharge name + HOD approval
-   - Watchman clicks **🚪 Confirm Exit & Open Gate**.
-   - The exit timestamp is recorded in the database, and the pass is marked as used (cannot be reused by anyone else).
+   - Watchman clicks **🎙️ START VOICE GUARD** (or simply presses **Spacebar**).
+   - Audio feedback speaks: *"Voice Guard active. Speak OTP or gate situation."*
+   - Watchman speaks:
+     - In Tamil: *"OTP ஏழு நாலு ஐந்து ஏழு நான்கு மூன்று"*
+     - Or in English: *"Seven four five seven four three"*
+     - Or in Tanglish: *"Student OTP 745743 check pannu"*
+   - The system plays an acoustic chime, normalizes Tamil numbers to `745743`, verifies status in <150ms, displays the student photo and profile, and speaks:
+     *"Gate pass approved for [Student Name]. Say 'Confirm' or click allow."*
+   - Watchman simply speaks: *"Confirm"* or *"Veliya pogalam"* $\rightarrow$ system automatically records exit and speaks: *"Exit confirmed. Have a safe journey."*
+
+6. **Watchman Voice Situation / Incident Auto-Logging:**
+   - Watchman can verbally report any gate incident or situation:
+     - Example: *"3 students ID card illama gate cross panna try pannanga"*
+     - Example: *"Medical emergency, ambulance vanthuruku student hospital ku poranga"*
+   - The system routes the spoken utterance to `POST /api/v1/gatepass/voice-command`.
+   - The system automatically categorizes the incident (e.g. *Medical Emergency*, *Unauthorized / Missing ID*), writes it into the `gate_incidents` database registry, updates the **Voice Incidents** tab in real-time, and confirms verbally:
+     *"Situation logged under Medical Emergency. Incident recorded to security registry."*

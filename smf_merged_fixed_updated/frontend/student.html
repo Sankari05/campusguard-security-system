@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Portal — EduTrack Pro</title>
+<title>SYED AMMAL ENGINEERING COLLEGE — Student Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/student.css">
+<link rel="stylesheet" href="/student.css?v=20261027_08">
 <style>
 /* Suppress duplicate native browser password reveal icon (Edge ::-ms-reveal) */
 input[type="password"]::-ms-reveal,
@@ -51,70 +51,104 @@ input::-ms-clear {
   <header class="topbar">
     <div class="topbar-brand">
       <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle menu">☰</button>
-      Student Portal
+      <div class="sa-brand-wrapper">
+        <svg class="sa-crest-icon" viewBox="0 0 100 100" width="34" height="34" style="flex-shrink:0;">
+          <circle cx="50" cy="50" r="46" fill="#ffffff" stroke="#c0392b" stroke-width="4"/>
+          <circle cx="50" cy="50" r="40" fill="none" stroke="#0d47a1" stroke-width="3"/>
+          <path d="M50 18 L76 30 L76 60 C76 74 50 84 50 84 C50 84 24 74 24 60 L24 30 Z" fill="#0d47a1"/>
+          <circle cx="50" cy="46" r="10" fill="#f1c40f"/>
+          <path d="M38 64 Q50 56 62 64 L50 72 Z" fill="#ffffff"/>
+        </svg>
+        <span class="sa-brand-title">SYED AMMAL ENGINEERING COLLEGE</span>
+      </div>
     </div>
     <div class="topbar-user">
       <button class="bell-btn" id="bellBtn" aria-label="Notifications">
         🔔<span class="bell-badge dn" id="bellBadge">0</span>
       </button>
-      <span id="topUserName"></span>
-      <button class="btn-ghost" id="logoutBtn">Log out</button>
+      <span id="topUserName" class="top-user-name">SUGANYA G</span>
+      <button class="btn-sa-logout" id="logoutBtn" title="Logout">Logout <span style="font-size:13px;margin-left:2px;">↪</span></button>
     </div>
   </header>
 
   <div class="app-shell">
-    <!-- ============ SIDEBAR ============ -->
+    <!-- ============ INITIAL SIDEBAR (with Attendance Module Attached) ============ -->
     <nav class="sidebar" id="sidebar">
       <button class="nav-item active" data-panel="dashboard">
         <span class="nav-icon">🏠</span><span class="nav-label">Dashboard</span>
       </button>
+
       <button class="nav-item" data-panel="profile">
         <span class="nav-icon">👤</span><span class="nav-label">Profile</span>
       </button>
-      <button class="nav-item" data-panel="attendance">
-        <span class="nav-icon">📅</span><span class="nav-label">Attendance</span>
-      </button>
+
+      <!-- Attendance Module attached with Over All and Month wise -->
+      <div class="nav-accordion" id="navAttendanceAccordion">
+        <button class="nav-item nav-accordion-btn" id="navAttendanceBtn" type="button">
+          <span class="nav-icon">📅</span><span class="nav-label">Attendance</span>
+          <span class="accordion-arrow">›</span>
+        </button>
+        <div class="nav-sub-menu dn" id="navAttendanceSub">
+          <button class="nav-sub-item" data-panel="attendance-overall">» Over All</button>
+          <button class="nav-sub-item" data-panel="attendance-monthwise">» Month wise</button>
+        </div>
+      </div>
+
       <button class="nav-item" data-panel="marks">
         <span class="nav-icon">📊</span><span class="nav-label">Marks</span>
       </button>
+
       <button class="nav-item" data-panel="results">
         <span class="nav-icon">📈</span><span class="nav-label">Semester Results</span>
       </button>
+
       <button class="nav-item" data-panel="timetable">
         <span class="nav-icon">🕒</span><span class="nav-label">Timetable</span>
       </button>
+
       <button class="nav-item" data-panel="assignments">
         <span class="nav-icon">📝</span><span class="nav-label">Assignments</span>
       </button>
+
       <button class="nav-item" data-panel="materials">
         <span class="nav-icon">📚</span><span class="nav-label">Materials</span>
       </button>
-      <button class="nav-item" data-panel="leave">
-        <span class="nav-icon">🏖</span><span class="nav-label">Leave Request</span>
-      </button>
-      <button class="nav-item" data-panel="od">
-        <span class="nav-icon">🎓</span><span class="nav-label">OD Request</span>
-      </button>
+
+      <!-- Campus Security & Requests -->
       <button class="nav-item" data-panel="gatepass">
         <span class="nav-icon">🚪</span><span class="nav-label">Gate Pass</span>
         <span class="nav-badge dn" id="navGatepassBadge" style="background:#10b981;color:#fff;">OTP</span>
       </button>
+
+      <button class="nav-item" data-panel="leave">
+        <span class="nav-icon">🏖</span><span class="nav-label">Leave Request</span>
+      </button>
+
+      <button class="nav-item" data-panel="od">
+        <span class="nav-icon">🎓</span><span class="nav-label">OD Request</span>
+      </button>
+
       <button class="nav-item" data-panel="tracker">
         <span class="nav-icon">📌</span><span class="nav-label">Request Tracker</span>
       </button>
+
       <button class="nav-item" data-panel="notifications">
         <span class="nav-icon">🔔</span><span class="nav-label">Notifications</span>
         <span class="nav-badge dn" id="navNotifBadge">0</span>
       </button>
+
       <button class="nav-item" data-panel="placement">
         <span class="nav-icon">💼</span><span class="nav-label">Placement</span>
       </button>
+
       <button class="nav-item" data-panel="events">
         <span class="nav-icon">🎉</span><span class="nav-label">Events</span>
       </button>
+
       <button class="nav-item" data-panel="certificates">
         <span class="nav-icon">📄</span><span class="nav-label">Certificates</span>
       </button>
+
       <button class="nav-item" data-panel="settings">
         <span class="nav-icon">⚙</span><span class="nav-label">Settings</span>
       </button>
@@ -157,112 +191,391 @@ input::-ms-clear {
         </div>
       </section>
 
-      <!-- ---- Profile panel (existing functionality, unchanged) ---- -->
+      <!-- ---- Profile panel (Syed Ammal ERMS Style) ---- -->
       <section class="panel dn" id="panel-profile">
-        <h2 class="page-title">My Profile</h2>
-        <p class="page-sub">View your academic record and manage your editable contact details.</p>
+        <div class="sa-card-container">
+          <div class="sa-page-bar">
+            <span class="sa-page-icon">✎</span> Profile Details
+          </div>
 
-        <div class="profile-grid">
-          <!-- Avatar card -->
-          <div class="card avatar-card">
-            <div class="avatar-wrap">
-              <img id="avatarImg" src="" alt="" class="dn">
-              <div id="avatarPlaceholder" class="avatar-placeholder">?</div>
+          <!-- Profile Tabs -->
+          <div class="sa-tab-nav" id="profileTabs">
+            <button type="button" class="sa-tab-item active" data-ptab="personal">Personal</button>
+            <button type="button" class="sa-tab-item" data-ptab="communication">Communication</button>
+            <button type="button" class="sa-tab-item" data-ptab="program">Program Info</button>
+            <button type="button" class="sa-tab-item" data-ptab="photo">Update Profile Photo</button>
+          </div>
+
+          <!-- Tab Content: Personal -->
+          <div class="sa-tab-pane" id="ptab-personal">
+            <div class="sa-dashed-head">Personal Details</div>
+            
+            <div class="sa-personal-layout">
+              <!-- Left: 6-row striped details table -->
+              <div class="sa-personal-left">
+                <table class="sa-erm-table">
+                  <tbody>
+                    <tr>
+                      <td class="sa-label">First Name</td>
+                      <td class="sa-val" id="pFirstName">SUGANYA</td>
+                      <td class="sa-label">Middle Name</td>
+                      <td class="sa-val" id="pMiddleName">—</td>
+                      <td class="sa-label">Last Name</td>
+                      <td class="sa-val" id="pLastName">G</td>
+                    </tr>
+                    <tr>
+                      <td class="sa-label">Date of Birth</td>
+                      <td class="sa-val" id="pDob">21-01-2006</td>
+                      <td class="sa-label">Gender</td>
+                      <td class="sa-val" id="pGender">FEMALE</td>
+                      <td class="sa-label">Marital Status</td>
+                      <td class="sa-val" id="pMarital">Single</td>
+                    </tr>
+                    <tr>
+                      <td class="sa-label">Responsibility</td>
+                      <td class="sa-val" id="pResponsibility">Student</td>
+                      <td class="sa-label">Father Name</td>
+                      <td class="sa-val" id="pFather">GANESAN S</td>
+                      <td class="sa-label">Mother Name</td>
+                      <td class="sa-val" id="pMother">SARANYA G</td>
+                    </tr>
+                    <tr>
+                      <td class="sa-label">Religion</td>
+                      <td class="sa-val" id="pReligion">HINDU</td>
+                      <td class="sa-label">Community</td>
+                      <td class="sa-val" id="pCommunity">BC</td>
+                      <td class="sa-label">Caste</td>
+                      <td class="sa-val" id="pCaste">AGAMUDAIYAR</td>
+                    </tr>
+                    <tr>
+                      <td class="sa-label">Resident</td>
+                      <td class="sa-val" id="pResident">Day Scholar</td>
+                      <td class="sa-label">Nationality</td>
+                      <td class="sa-val" id="pNationality">INDIAN</td>
+                      <td class="sa-label">Aadhaar No</td>
+                      <td class="sa-val" id="pAadhaar">XXXX-XXXX-4086</td>
+                    </tr>
+                    <tr>
+                      <td class="sa-label">Sports Quota</td>
+                      <td class="sa-val" colspan="5" id="pSports">NO</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Right: App Card + Circular Avatar -->
+              <div class="sa-personal-right">
+                <div class="sa-app-badge">Application No : <span id="pAppNo">APP07466</span></div>
+                <div class="sa-photo-circle-box">
+                  <img id="pPhotoImg" src="" alt="Student Photo" class="sa-photo-circle dn">
+                  <div id="pPhotoPlaceholder" class="sa-photo-circle-placeholder">S</div>
+                </div>
+              </div>
             </div>
-            <button class="btn-secondary" id="changePhotoBtn">Change Photo</button>
-            <input type="file" id="photoInput" accept="image/png,image/jpeg,image/webp" class="dn">
-            <div id="photoMsg" class="msg dn"></div>
           </div>
 
-          <!-- Read-only academic info -->
-          <div class="card">
-            <h3>Academic Details <span class="badge">Read-only</span></h3>
-            <div class="kv"><span>Name</span><b id="vName">—</b></div>
-            <div class="kv"><span>Register Number</span><b id="vRegNo">—</b></div>
-            <div class="kv"><span>Department</span><b id="vDept">—</b></div>
-            <div class="kv"><span>Course</span><b id="vCourse">—</b></div>
-            <div class="kv"><span>Year / Section</span><b id="vYearSec">—</b></div>
-            <div class="kv"><span>Date of Birth</span><b id="vDob">—</b></div>
-            <div class="kv"><span>Status</span><b id="vStatus">—</b></div>
+          <!-- Tab Content: Communication -->
+          <div class="sa-tab-pane dn" id="ptab-communication">
+            <div class="sa-comm-grid">
+              <!-- Column 1: Communication Details -->
+              <div class="sa-comm-col">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border-bottom:1px dashed #cbd5e1;padding-bottom:6px;">
+                  <div style="font-size:13.5px;font-weight:700;color:#1e3a8a;">Communication Details</div>
+                  <button type="button" id="btnToggleCommEdit" class="btn-secondary" style="padding:4px 10px;font-size:11.5px;font-weight:700;cursor:pointer;">✎ Edit Details</button>
+                </div>
+
+                <!-- Editable form (toggleable anytime) -->
+                <div id="commEditFormBox" class="dn" style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;padding:14px;margin-bottom:14px;">
+                  <form id="commEditForm">
+                    <label style="font-size:11.5px;font-weight:700;margin:4px 0 2px;">Mobile Number</label>
+                    <input type="tel" id="editMobile" style="margin-bottom:8px;padding:6px 10px;font-size:13px;">
+                    
+                    <label style="font-size:11.5px;font-weight:700;margin:4px 0 2px;">Student Email</label>
+                    <input type="email" id="editEmail" style="margin-bottom:8px;padding:6px 10px;font-size:13px;">
+
+                    <label style="font-size:11.5px;font-weight:700;margin:4px 0 2px;">Address</label>
+                    <input type="text" id="editAddress" style="margin-bottom:8px;padding:6px 10px;font-size:13px;">
+
+                    <label style="font-size:11.5px;font-weight:700;margin:4px 0 2px;">Town</label>
+                    <input type="text" id="editTown" style="margin-bottom:8px;padding:6px 10px;font-size:13px;">
+
+                    <div id="commEditMsg" class="msg dn" style="margin-bottom:8px;"></div>
+                    <div style="display:flex;gap:8px;margin-top:6px;">
+                      <button type="submit" class="btn-primary" style="width:auto;margin:0;padding:6px 16px;font-size:12px;background:#0e4b8a;color:#fff;">Save</button>
+                      <button type="button" id="btnCancelCommEdit" class="btn-secondary" style="padding:6px 14px;font-size:12px;">Cancel</button>
+                    </div>
+                  </form>
+                </div>
+
+                <table class="sa-erm-table">
+                  <tbody>
+                    <tr><td class="sa-label" style="width:38%;">Address</td><td class="sa-val" id="cAddress">12/4, NORTH STREET, RAMANATHAPURAM</td></tr>
+                    <tr><td class="sa-label">Town</td><td class="sa-val" id="cTown">RAMANATHAPURAM</td></tr>
+                    <tr><td class="sa-label">Province</td><td class="sa-val" id="cProvince">TAMIL NADU</td></tr>
+                    <tr><td class="sa-label">Country</td><td class="sa-val" id="cCountry">INDIA</td></tr>
+                    <tr><td class="sa-label">Post Code</td><td class="sa-val" id="cPostCode">623501</td></tr>
+                    <tr><td class="sa-label">Mobile Number</td><td class="sa-val" id="cMobile">9876543210</td></tr>
+                    <tr><td class="sa-label">Phone Number</td><td class="sa-val" id="cPhone">04567-222333</td></tr>
+                    <tr><td class="sa-label">Student Email</td><td class="sa-val" id="cEmail">suganya.cse@saec.ac.in</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Column 2: Passport Details -->
+              <div class="sa-comm-col">
+                <div class="sa-dashed-head">Passport Details</div>
+                <table class="sa-erm-table">
+                  <tbody>
+                    <tr><td class="sa-label" style="width:38%;">Passport No</td><td class="sa-val" id="passNo">—</td></tr>
+                    <tr><td class="sa-label">Issue Date</td><td class="sa-val" id="passIssue">—</td></tr>
+                    <tr><td class="sa-label">Expiry Date</td><td class="sa-val" id="passExpiry">—</td></tr>
+                    <tr><td class="sa-label">Place of Issue</td><td class="sa-val" id="passPlace">—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
 
-          <!-- Editable contact info -->
-          <div class="card">
-            <h3>Contact Details <span class="badge badge-edit">Editable</span></h3>
-            <form id="profileForm">
-              <label>First Name</label>
-              <input type="text" id="fFirstName">
+          <!-- Tab Content: Program Info -->
+          <div class="sa-tab-pane dn" id="ptab-program">
+            <div class="sa-dashed-head">Program Details</div>
+            <table class="sa-erm-table" style="margin-bottom:20px;">
+              <tbody>
+                <tr>
+                  <td class="sa-label">Campus Name</td><td class="sa-val" id="prCampus">SYED AMMAL ENGINEERING COLLEGE</td>
+                  <td class="sa-label">Program Name</td><td class="sa-val" id="prProgram">B.E - COMPUTER SCIENCE AND ENGINEERING</td>
+                </tr>
+                <tr>
+                  <td class="sa-label">Acct No</td><td class="sa-val" id="prAcct">912823104086</td>
+                  <td class="sa-label">Batch</td><td class="sa-val" id="prBatch">2023 - 2027</td>
+                </tr>
+                <tr>
+                  <td class="sa-label">Admission Type</td><td class="sa-val" id="prAdmType">REGULAR</td>
+                  <td class="sa-label">Admission Category</td><td class="sa-val" id="prAdmCat">GENERAL</td>
+                </tr>
+                <tr>
+                  <td class="sa-label">Admission Batch</td><td class="sa-val" id="prAdmBatch">2026 ODD</td>
+                  <td class="sa-label">Graduate Level</td><td class="sa-val" id="prGradLevel">UNDER GRADUATE</td>
+                </tr>
+                <tr>
+                  <td class="sa-label">Program Mode</td><td class="sa-val" id="prProgMode">FULL TIME</td>
+                  <td class="sa-label">Program Short Name</td><td class="sa-val" id="prProgShort">B.E - CSE</td>
+                </tr>
+                <tr>
+                  <td class="sa-label">Regn No</td><td class="sa-val" id="prRegn">912823104086</td>
+                  <td class="sa-label">Reg Date</td><td class="sa-val" id="prRegDate">18-08-2023</td>
+                </tr>
+                <tr>
+                  <td class="sa-label">Status</td><td class="sa-val" id="prStatus"><span style="color:#15803d;font-weight:700;">ACTIVE</span></td>
+                  <td class="sa-label">Section / Session</td><td class="sa-val" id="prSecSession">A / 2026-2027</td>
+                </tr>
+              </tbody>
+            </table>
 
-              <label>Last Name</label>
-              <input type="text" id="fLastName">
+            <div class="sa-dashed-head">Registered Courses</div>
+            <div class="sa-dt-controls">
+              <div>Show <select class="sa-select-inline"><option>10</option><option>25</option><option>50</option></select> entries</div>
+              <div>Search: <input type="text" class="sa-input-inline" id="courseSearchInput" placeholder="Filter courses..."></div>
+            </div>
+            <div class="table-wrap">
+              <table class="sa-blue-table" id="coursesTable">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Batch</th>
+                    <th>Course Code</th>
+                    <th>Course Name</th>
+                    <th>Course Type</th>
+                    <th>Credits</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="coursesTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+            <div class="sa-dt-info" style="margin-top:8px;">
+              <span>Showing 1 to <span id="courseCount">7</span> of <span id="courseTotal">7</span> entries</span>
+              <div class="sa-pager">
+                <button type="button" class="sa-pg-btn" disabled>Previous</button>
+                <button type="button" class="sa-pg-btn active">1</button>
+                <button type="button" class="sa-pg-btn" disabled>Next</button>
+              </div>
+            </div>
+          </div>
 
-              <label>Student Email</label>
-              <input type="email" id="fStudentEmail">
+          <!-- Tab Content: Update Profile Photo -->
+          <div class="sa-tab-pane dn" id="ptab-photo">
+            <div class="sa-dashed-head">Profile Photo</div>
+            <div style="background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d;padding:12px 16px;border-radius:6px;font-size:13.5px;font-weight:600;margin-bottom:18px;display:flex;align-items:center;gap:10px;">
+              <span style="font-size:16px;">✓</span> Photo Upload Open: You can update your profile photo at any time without restrictions.
+            </div>
 
-              <label>Student Mobile</label>
-              <input type="tel" id="fStudentMobile">
-
-              <label>Parent Email</label>
-              <input type="email" id="fParentEmail">
-
-              <label>Parent Mobile</label>
-              <input type="tel" id="fParentMobile">
-
-              <div id="profileMsg" class="msg dn"></div>
-              <button type="submit" class="btn-primary">Save Changes</button>
-            </form>
+            <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:24px;max-width:620px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+              <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;">
+                <div class="sa-photo-circle-box" style="width:130px;height:130px;flex-shrink:0;">
+                  <img id="uploadPreviewImg" src="" alt="Photo Preview" class="sa-photo-circle dn">
+                  <div id="uploadPreviewPlaceholder" class="sa-photo-circle-placeholder">S</div>
+                </div>
+                <div style="flex:1;min-width:260px;">
+                  <p style="font-size:13px;color:#475569;margin-bottom:12px;line-height:1.5;">
+                    Upload a formal, clear passport photograph with a plain white or light background.<br>
+                    <span style="font-size:12px;color:#64748b;">(Supported formats: JPG, JPEG, PNG, WEBP &bull; Max size: 5MB)</span>
+                  </p>
+                  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+                    <input type="file" id="saPhotoFile" accept="image/png,image/jpeg,image/webp" style="font-size:13px;">
+                    <button type="button" id="saUploadPhotoBtn" class="btn-primary" style="width:auto;margin:0;padding:9px 20px;background:#0e4b8a;color:#fff;">Upload Photo</button>
+                  </div>
+                  <div id="saPhotoMsg" class="msg dn"></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- ---- Placeholder panels for upcoming modules ---- -->
-      <section class="panel dn" id="panel-attendance">
-        <h2 class="page-title">Attendance</h2>
-        <p class="page-sub">Your overall and subject-wise attendance.</p>
+      <!-- ---- Attendance: Over All Panel (Image 1 Style) ---- -->
+      <section class="panel dn" id="panel-attendance-overall">
+        <div class="sa-card-container">
+          <div class="sa-page-bar">
+            <span class="sa-page-icon">✎</span> Attendance Details » Admission Batch : 2026 ODD
+          </div>
 
-        <!-- Summary stat cards -->
-        <div class="att-stat-grid">
-          <div class="card att-stat-card">
-            <div class="dash-label">Overall %</div>
-            <div class="att-overall-value" id="attOverallValue">—</div>
-          </div>
-          <div class="card att-stat-card">
-            <div class="dash-label">Present</div>
-            <div class="att-overall-value att-present-color" id="attPresentCount">—</div>
-          </div>
-          <div class="card att-stat-card">
-            <div class="dash-label">Absent</div>
-            <div class="att-overall-value att-absent-color" id="attAbsentCount">—</div>
-          </div>
-          <div class="card att-stat-card">
-            <div class="dash-label">Total Classes</div>
-            <div class="att-overall-value" id="attTotalCount">—</div>
-          </div>
-        </div>
-
-        <div class="card att-subjects-card">
-          <h3>Subject-wise Attendance</h3>
-          <div id="attBars" class="att-bars">
-            <p class="placeholder-text">Loading attendance…</p>
-          </div>
-        </div>
-
-        <!-- Day-by-day detail log -->
-        <div class="card">
-          <h3 style="margin-bottom:14px">Day-by-Day Log</h3>
-          <div class="table-wrap">
-            <table class="data-table" id="attDetailTable">
+          <!-- Section 1: Over all Attendance Report -->
+          <div class="sa-dashed-head">Over all Attendance Report</div>
+          <div class="table-wrap" style="margin-bottom:24px;">
+            <table class="sa-blue-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Period</th>
-                  <th>Subject</th>
-                  <th>Time</th>
-                  <th>Status</th>
+                  <th>Percentage</th>
+                  <th>Total Working Days</th>
+                  <th>Present</th>
+                  <th>Absent</th>
+                  <th>On Duty</th>
+                  <th>Leave</th>
                 </tr>
               </thead>
-              <tbody id="attDetailBody">
-                <tr><td colspan="5" class="placeholder-text">Loading…</td></tr>
+              <tbody id="attOverallKpiBody">
+                <tr>
+                  <td style="font-weight:700;color:#0e8345;font-size:15px;" id="ovPercentage">95.59%</td>
+                  <td id="ovTotal">68.00</td>
+                  <td id="ovPresent">65.00</td>
+                  <td style="color:#dc2626;font-weight:700;" id="ovAbsent">3.0</td>
+                  <td id="ovOd">.0</td>
+                  <td id="ovLeave">.0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Section 2: Over all Subject wise Attendance Report -->
+          <div class="sa-dashed-head">Over all Subject wise Attendance Report</div>
+          <div class="table-wrap">
+            <table class="sa-blue-table" id="attOverallSubjectTable">
+              <thead>
+                <tr>
+                  <th style="text-align:left;">Course Code Name</th>
+                  <th style="text-align:left;">Staff Code Name</th>
+                  <th>Total Hours</th>
+                  <th>Attended Hours</th>
+                  <th>Percentage</th>
+                </tr>
+              </thead>
+              <tbody id="attOverallSubjectBody">
+                <!-- Loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---- Attendance: Month wise Panel (Images 2 & 3 Style) ---- -->
+      <section class="panel dn" id="panel-attendance-monthwise">
+        <div class="sa-card-container">
+          <div class="sa-page-bar">
+            <span class="sa-page-icon">✎</span> Attendance Details » Admission Batch : 2026 ODD
+          </div>
+
+          <!-- Month Selector Tabs -->
+          <div class="sa-month-tabs" id="monthTabs">
+            <button type="button" class="sa-mtab-btn active" data-month="2026-07">Jul 2026</button>
+            <button type="button" class="sa-mtab-btn" data-month="2026-08">Aug 2026</button>
+            <button type="button" class="sa-mtab-btn" data-month="2026-09">Sep 2026</button>
+            <button type="button" class="sa-mtab-btn" data-month="2026-10">Oct 2026</button>
+            <button type="button" class="sa-mtab-btn" data-month="2026-11">Nov 2026</button>
+            <button type="button" class="sa-mtab-btn" data-month="2026-12">Dec 2026</button>
+          </div>
+
+          <!-- Section 1: Month Attendance Calendar -->
+          <div class="sa-dashed-head">Month Attendance Calendar » <span id="calHeaderMonth">Jul-2026</span></div>
+          <div class="table-wrap" style="margin-bottom:24px;">
+            <table class="sa-cal-table" id="monthCalendarTable">
+              <thead>
+                <tr>
+                  <th style="color:#b91c1c;background:#fee2e2;">Sun</th>
+                  <th>Mon</th>
+                  <th>Tue</th>
+                  <th>Wed</th>
+                  <th>Thu</th>
+                  <th>Fri</th>
+                  <th>Sat</th>
+                </tr>
+              </thead>
+              <tbody id="calBody">
+                <!-- Generated dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Section 2: Month Attendance Report -->
+          <div class="sa-dashed-head">Month Attendance Report » <span id="repHeaderMonth">Jul-2026</span></div>
+          <div class="table-wrap" style="margin-bottom:24px;">
+            <table class="sa-blue-table">
+              <thead>
+                <tr>
+                  <th>Percentage</th>
+                  <th>Total Working Days</th>
+                  <th>Present</th>
+                  <th>Absent</th>
+                  <th>On Duty</th>
+                  <th>Leave</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight:700;color:#0e8345;font-size:15px;" id="mPercentage">100.00%</td>
+                  <td id="mTotal">20</td>
+                  <td id="mPresent">20.0</td>
+                  <td id="mAbsent">.0</td>
+                  <td id="mOd">.0</td>
+                  <td id="mLeave">.0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Section 3: Subjectwise Attendance Report -->
+          <div class="sa-dashed-head">Subjectwise Attendance Report » <span id="subjHeaderMonth">Jul-2026</span></div>
+          <div class="sa-dt-controls">
+            <div>Show <select class="sa-select-inline"><option>10</option><option>25</option></select> entries</div>
+            <div>Search: <input type="text" class="sa-input-inline" id="mSubjSearch" placeholder="Search subjects..."></div>
+          </div>
+          <div class="table-wrap">
+            <table class="sa-blue-table" id="monthSubjectTable">
+              <thead>
+                <tr>
+                  <th style="text-align:left;">Course Code ⇅</th>
+                  <th style="text-align:left;">Course Name ⇅</th>
+                  <th>Total Working Hours ⇅</th>
+                  <th>Present ⇅</th>
+                  <th>Absent ⇅</th>
+                  <th>On Duty ⇅</th>
+                  <th>Leave ⇅</th>
+                </tr>
+              </thead>
+              <tbody id="monthSubjectBody">
+                <!-- Generated dynamically -->
               </tbody>
             </table>
           </div>
@@ -428,7 +741,7 @@ input::-ms-clear {
                 🟢 GATE PASS APPROVED — READY FOR EXIT
               </span>
               <h3 style="font-size: 1.3rem; margin: 10px 0 4px; color:#065f46;">Main Gate Exit Pass</h3>
-              <p style="font-size: 0.88rem; color:#047857;" id="gpActiveReason">—</p>
+              <p style="font-size: 0.88rem; color:#047857; word-break:break-word; overflow-wrap:anywhere;" id="gpActiveReason">—</p>
             </div>
             <div style="text-align:right;">
               <span style="font-size: 0.78rem; color:#6b7280; font-weight: 600;">Valid on:</span>
@@ -574,11 +887,19 @@ input::-ms-clear {
         <div class="placeholder-card"><p>Coming soon.</p></div>
       </section>
 
+      <!-- Global Syed Ammal ERMS Footer -->
+      <footer class="sa-footer">
+        <div class="sa-footer-login" id="saFooterLogin">Last Login : 13-10-2026 08:57 PM</div>
+        <div class="sa-footer-copy">
+          ::Flair - ERMS:: SYED AMMAL ENGINEERING COLLEGE - Student Portal &copy; 2026 All Rights Reserved. Version 2.0 | <a href="#" style="color:#0284c7;text-decoration:none;">Online Payment Terms &amp; Conditions</a>
+        </div>
+      </footer>
+
     </main>
   </div>
 </div>
 
 <script type="module" src="js/main.js"></script>
-<script src="/student.js"></script>
+<script src="/student.js?v=20261027_12"></script>
 </body>
 </html>

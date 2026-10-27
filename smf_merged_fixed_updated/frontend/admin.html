@@ -392,6 +392,7 @@ input::-ms-clear {
             <select class="sel" id="ttDept" onchange="ttOnDeptChange()">
               <option value="">Department</option>
               <option value="CSE">CSE</option>
+              <option value="IT">IT</option>
               <option value="AIDS">AIDS</option>
               <option value="CSBS">CSBS</option>
               <option value="ECE">ECE</option>
@@ -414,9 +415,8 @@ input::-ms-clear {
               <option value="">Section</option>
               <option value="A">Section A</option>
               <option value="B">Section B</option>
-              <option value="C">Section C</option>
             </select>
-            <button class="btn-sm" onclick="renderSeedTimetablePanel()" title="Seed full timetable data"><i class="fa fa-database"></i> Seed DB</button>
+            <button class="btn-primary" onclick="generateCollegeCPSATTimetable()" title="Generate clash-free college timetable via Google OR-Tools CP-SAT" style="background:linear-gradient(135deg,#059669,#10b981);color:#fff;font-weight:600;padding:6px 12px;border-radius:6px;border:none;cursor:pointer;"><i class="fa fa-wand-magic-sparkles"></i> ⚡ Generate AI Timetable (CP-SAT)</button>
           </div>
         </div>
         <div id="ttContent">
@@ -1141,6 +1141,16 @@ input::-ms-clear {
       </style>
 
 
+      <!-- ╔══════════════════════════════════╗
+           ║  REQUEST MANAGEMENT PAGES        ║
+           ╚══════════════════════════════════╝ -->
+      <div id="pg-fac-leave-approvals" class="page dn"></div>
+      <div id="pg-fac-od-approvals" class="page dn"></div>
+      <div id="pg-fac-gatepass-approvals" class="page dn"></div>
+      <div id="pg-hod_approvals" class="page dn"></div>
+      <div id="pg-hod-od-approvals" class="page dn"></div>
+      <div id="pg-hod-gatepass-approvals" class="page dn"></div>
+
     </div><!-- /page-area -->
   </div><!-- /app-main -->
 </div><!-- /app-shell -->
@@ -1148,10 +1158,11 @@ input::-ms-clear {
 <!-- ═══════════════════ SHARED ENTERPRISE MODALS (DRY) ═══════════════════ -->
 <!-- Managed centrally by js/components/modals.js -->
 <div id="sharedModalsContainer"></div>
+<div id="toastContainer"></div>
 
 <!-- Enterprise Modular ES6 Architecture -->
 <script type="module" src="js/main.js"></script>
-<script src="app.js?v=20261024_04"></script>
+<script src="app.js?v=20261027_05"></script>
 <script src="hod_students.js?v=20261024_02" onerror="console.error('[CRITICAL] hod_students.js failed to load. If you see a MIME-type error above, the API server is likely STALE — restart it and confirm the browser URL matches the port printed in the server console.'); window._hsScriptFailed = true;"></script>
 <script src="features.js?v=20260609"></script>
 <script src="academics.js?v=20260609"></script>

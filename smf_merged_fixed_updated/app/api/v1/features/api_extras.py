@@ -345,4 +345,29 @@ def register_extra_routes(app, get_current_user, teacher_required, admin_require
             return {"faculty": 0, "student_slots": 0, "faculty_slots": 0,
                     "seeded": False, "error": str(e)}
 
-    log.info("Extra routes registered (courses, electives, timetable, full-seed)")
+    # ── CP-SAT College Timetable Generator ───────────────────
+    @app.post("/api/timetable/generate-cpsat")
+    def generate_college_cpsat_timetable(user: dict = Depends(admin_required)):
+        """
+        Generates and saves a zero-clash college timetable for all departments
+        (CSE A & B, IT, AIDS, CSBS, ECE, EEE, MECH, CIVIL, BME) using Google OR-Tools CP-SAT.
+        """
+        try:
+            from app.services.timetable.college_cpsat_scheduler import generate_and_commit_timetable
+            res = generate_and_commit_timetable()
+            if not res.get("success"):
+                raise HTTPException(status_code=422, detail=res)
+            return {
+                "status": "ok",
+                "message": "College Timetable successfully generated via Google OR-Tools CP-SAT!",
+                "placed": res.get("total_slots_placed"),
+                "saved": res.get("saved_count"),
+                "classes": res.get("total_classes"),
+            }
+        except HTTPException:
+            raise
+        except Exception as exc:
+            log.exception("CP-SAT generation error: %s", exc)
+            raise HTTPException(status_code=500, detail=str(exc))
+
+    log.info("Extra routes registered (courses, electives, timetable, full-seed, cp-sat)")

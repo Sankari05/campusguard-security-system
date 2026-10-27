@@ -8,8 +8,13 @@
 # =============================================================
 import os, sqlite3, logging
 from datetime import datetime, date, timedelta
-from contextlib import contextmanager
-import config
+try:
+    from app.core import config
+except ImportError:
+    try:
+        from smf_merged_fixed_updated.app.core import config
+    except ImportError:
+        import config
 
 log = logging.getLogger(__name__)
 from database import db as _db, get_db_connection, DB_PATH
