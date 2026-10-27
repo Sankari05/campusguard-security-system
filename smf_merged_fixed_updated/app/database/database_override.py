@@ -27,10 +27,16 @@
 import os, sqlite3, logging, json
 from datetime import datetime
 from contextlib import contextmanager
-import config
+try:
+    from app.core import config
+except ImportError:
+    try:
+        from smf_merged_fixed_updated.app.core import config
+    except ImportError:
+        import config
 
 log = logging.getLogger(__name__)
-DB_PATH = getattr(config, "DB_PATH", os.path.join(config.BASE_DIR, "data", "attendance.db"))
+DB_PATH = getattr(config, "DB_PATH", os.path.join(getattr(config, "BASE_DIR", os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", "attendance.db"))
 
 # =============================================================
 # STRICT ROLE HIERARCHY — Single source of truth

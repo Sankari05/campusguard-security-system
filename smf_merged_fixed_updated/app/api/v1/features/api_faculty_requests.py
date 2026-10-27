@@ -32,7 +32,10 @@ import logging
 from fastapi import Depends, HTTPException
 from pydantic import BaseModel, Field
 
-import database_faculty_requests as freq
+try:
+    from app.database import database_faculty_requests as freq
+except ImportError:
+    import database_faculty_requests as freq
 
 log = logging.getLogger(__name__)
 
@@ -54,17 +57,30 @@ def _resolve_scope(user: dict) -> dict:
 def _is_class_incharge(user: dict) -> bool:
     """Admin/HOD are always treated as authorized. Faculty/teacher roles
     must be the registered Class In-Charge of a class to view or decide
-    student leave/OD requests — plain subject-teacher faculty are not."""
+    student leave/OD/gatepass requests."""
     role = (user.get("role") or "").lower()
-    if role in ("admin", "hod"):
+    if role in ("admin", "hod", "classincharge"):
         return True
     fac_id = user.get("sub") or user.get("fac_id") or ""
     try:
-        import database as db
+        from app.database import database as db
+        with db.db() as conn:
+            row = conn.execute(
+                "SELECT is_class_incharge, class_incharge_dept, incharge_department FROM faculty WHERE fac_id=? AND active=1",
+                (fac_id,)
+            ).fetchone()
+            if row:
+                r = dict(row)
+                if r.get("is_class_incharge") or r.get("class_incharge_dept") or r.get("incharge_department"):
+                    return True
         return bool(db.get_faculty_incharge_class(fac_id))
     except Exception:
-        log.exception("class-incharge check failed")
-        return False
+        try:
+            from app.database import database as db
+            return bool(db.get_faculty_incharge_class(fac_id))
+        except Exception:
+            log.exception("class-incharge check failed")
+            return False
 
 
 def _require_class_incharge(user: dict):
@@ -210,16 +226,19 @@ def register_faculty_request_routes(app, get_current_user, teacher_required, _un
             role = (user.get("role") or "").lower()
             if not _is_class_incharge(user):
                 # Subject-teacher-only faculty have no approval queue at all.
-                return {"pending_leave_requests": 0, "pending_od_requests": 0,
-                        "pending_hod_od": 0, "approved_requests_today": 0,
-                        "rejected_requests_today": 0}
+                return {
+                    "pending_leave_requests": 0, "pending_od_requests": 0,
+                    "pending_hod_od": 0, "pending_gatepass_requests": 0,
+                    "pending_hod_gatepass": 0, "approved_requests_today": 0,
+                    "rejected_requests_today": 0
+                }
             scope = _resolve_scope(user)
             counts = freq.get_request_counts(scope)
             if role == "hod":
-                # HOD's "pending OD" KPI should mean "awaiting my decision"
-                # (status='Forwarded'), not the global Pending (stage 1,
-                # awaiting faculty) count.
+                # HOD's "pending OD" and "pending Gate Pass" KPI should mean "awaiting my decision"
+                # (status='Forwarded'), not the global Pending (stage 1, awaiting faculty) count.
                 counts["pending_od_requests"] = counts["pending_hod_od"]
+                counts["pending_gatepass_requests"] = counts.get("pending_hod_gatepass", 0)
             return counts
         except Exception as exc:
             log.exception("faculty_request_dashboard_counts failed")

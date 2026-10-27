@@ -65,11 +65,22 @@ class StudentLoginReq(BaseModel):
 
 class ProfileUpdateReq(BaseModel):
     first_name: str | None = None
+    middle_name: str | None = None
     last_name: str | None = None
     student_email: str | None = None
     student_mobile: str | None = None
     parent_email: str | None = None
     parent_mobile: str | None = None
+    address: str | None = None
+    address_1: str | None = None
+    town: str | None = None
+    province: str | None = None
+    phone_no: str | None = None
+    father_name: str | None = None
+    mother_name: str | None = None
+    religion: str | None = None
+    community: str | None = None
+    caste: str | None = None
 
 
 class LeaveApplyReq(BaseModel):
@@ -160,6 +171,18 @@ def get_attendance(user: dict = Depends(student_required)):
     """Overall + subject-wise attendance % for the logged-in student,
     computed from the existing student_attendance table."""
     return spdb.get_attendance_summary(user["sub"])
+
+
+@router.get("/attendance/overall")
+def get_attendance_overall(user: dict = Depends(student_required)):
+    """Overall Attendance Report matching Syed Ammal ERMS portal."""
+    return spdb.get_attendance_overall_report(user["sub"])
+
+
+@router.get("/attendance/monthwise")
+def get_attendance_monthwise(month: str = "Jul 2026", user: dict = Depends(student_required)):
+    """Month-wise Attendance Report & Calendar matching Syed Ammal ERMS portal."""
+    return spdb.get_attendance_monthwise_report(user["sub"], month)
 
 
 @router.get("/attendance/detail")
@@ -299,3 +322,16 @@ async def upload_avatar(
     rel_path = f"/static/avatars/{filename}"
     spdb.update_avatar(student_id, rel_path)
     return {"message": "Profile photo updated.", "avatar_path": rel_path}
+
+
+@router.get("/attendance/overall")
+def get_attendance_overall(user: dict = Depends(student_required)):
+    """Over all Attendance Report & Subject wise Attendance Report (Syed Ammal ERMS Image 1)"""
+    return spdb.get_attendance_overall_report(user["sub"])
+
+
+@router.get("/attendance/monthwise")
+def get_attendance_monthwise(month: str = "Jul 2026", user: dict = Depends(student_required)):
+    """Month Attendance Calendar, Month Attendance Report & Subjectwise Report (Syed Ammal ERMS Images 2 & 3)"""
+    return spdb.get_attendance_monthwise_report(user["sub"], month)
+

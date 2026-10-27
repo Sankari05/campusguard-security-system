@@ -839,12 +839,14 @@ const PAGE_TITLES = {
   alerts:'Smart Alerts',settings:'System Settings',train:'Train Models',
   'fac-dashboard':'My Dashboard',
   'fac-leave-approvals':'Leave Approvals','fac-od-approvals':'OD Approvals',
+  'fac-gatepass-approvals':'Gate Pass Approvals',
   departments:'Department Analytics',faculty:'Faculty Management',
   courses:'Courses & Electives',
   'manage-hod':'HOD Management',
   'correction':'Request Attendance Correction',
   'hod_approvals':'HOD Approval Dashboard',
   'hod-od-approvals':'OD Approval Queue',
+  'hod-gatepass-approvals':'Gate Pass Approval Queue',
   'audit_log':'Attendance Audit Log',
   'academics':'Academics — CGPA & Backlogs',
   'compliance':'NBA / NAAC Compliance Tracker',
@@ -872,8 +874,10 @@ const PAGE_TO_SLUG = {
   'my-timetable': 'my-timetable',
   'fac-leave-approvals': 'leave-approvals',
   'fac-od-approvals': 'od-approvals',
+  'fac-gatepass-approvals': 'gatepass-approvals',
   'hod_approvals': 'approvals',
   'hod-od-approvals': 'od-approvals',
+  'hod-gatepass-approvals': 'gatepass-approvals',
   'correction': 'correction',
   'courses': 'courses'
 };
@@ -901,6 +905,8 @@ const SLUG_TO_PAGE = {
   'my-timetable': 'my-timetable',
   'leave-approvals': 'fac-leave-approvals',
   'od-approvals': 'fac-od-approvals',
+  'gatepass-approvals': 'fac-gatepass-approvals',
+  'gatepass': 'fac-gatepass-approvals',
   'approvals': 'hod_approvals',
   'correction': 'correction',
   'courses': 'courses'
@@ -916,7 +922,13 @@ function getPageFromUrl() {
 
       if (portal === 'faculty' && slug === 'dashboard') return 'fac-dashboard';
       if (portal === 'faculty' && (slug === 'od-approvals' || slug === 'od')) return 'fac-od-approvals';
+      if (portal === 'faculty' && (slug === 'gatepass-approvals' || slug === 'gatepass')) return 'fac-gatepass-approvals';
+      if (portal === 'faculty' && (slug === 'leave-approvals' || slug === 'leave')) return 'fac-leave-approvals';
+      if (portal === 'faculty' && (slug === 'timetable' || slug === 'my-timetable')) return 'my-timetable';
       if (portal === 'hod' && (slug === 'od-approvals' || slug === 'od')) return 'hod-od-approvals';
+      if (portal === 'hod' && (slug === 'gatepass-approvals' || slug === 'gatepass')) return 'hod-gatepass-approvals';
+      if (portal === 'hod' && (slug === 'leave-approvals' || slug === 'leave' || slug === 'approvals')) return 'hod_approvals';
+      if (portal === 'admin' && (slug === 'gatepass-approvals' || slug === 'gatepass')) return 'dashboard';
 
       if (SLUG_TO_PAGE[slug]) return SLUG_TO_PAGE[slug];
       if (PAGE_TITLES && PAGE_TITLES[slug]) return slug;
@@ -1040,16 +1052,22 @@ function showPage(pid, skipPush = false) {
     toast('Access denied: Students Management is restricted to Admin, HOD, and Faculty.', 'error');
     pid = APP.role === 'faculty' ? 'fac-dashboard' : 'dashboard';
   }
-  // ── HOD OD APPROVAL QUEUE ROUTE GUARD: hod only ──
-  if (pid === 'hod-od-approvals' && APP.role !== 'hod') {
-    console.warn('[RouteGuard] OD Approval Queue blocked — role:', APP.role);
-    toast('Access denied: OD Approval Queue is restricted to HOD.', 'error');
-    pid = APP.role === 'faculty' ? 'fac-dashboard' : 'dashboard';
+  // ── GATE PASS APPROVALS ROUTE GUARD: Restricted to HOD only (Admin strictly blocked) ──
+  if (pid === 'hod-gatepass-approvals' && APP.role !== 'hod') {
+    console.warn('[RouteGuard] Gate Pass Approvals blocked for role:', APP.role);
+    toast('Access denied: Final Gate Pass Approval is restricted to HOD only.', 'error');
+    pid = APP.role === 'admin' ? 'dashboard' : (['faculty', 'teacher', 'classincharge'].includes(APP.role) ? 'fac-dashboard' : 'dashboard');
+  }
+  // ── HOD OD APPROVAL QUEUE ROUTE GUARD: hod and admin only ──
+  if (pid === 'hod-od-approvals' && !['hod', 'admin'].includes(APP.role)) {
+    console.warn('[RouteGuard] Approval Queue blocked — role:', APP.role);
+    toast('Access denied: Approval Queue is restricted to HOD and Admin.', 'error');
+    pid = ['faculty', 'teacher', 'classincharge'].includes(APP.role) ? 'fac-dashboard' : 'dashboard';
   }
 
   // ── STRICT CROSS-ROLE PAGE GUARDS ──
-  if (APP.role === 'faculty') {
-    const facultyPages = ['fac-dashboard', 'my-timetable', 'timetable', 'reports', 'fac-leave-approvals', 'fac-od-approvals'];
+  if (['faculty', 'teacher', 'classincharge'].includes(APP.role)) {
+    const facultyPages = ['fac-dashboard', 'my-timetable', 'timetable', 'reports', 'fac-leave-approvals', 'fac-od-approvals', 'fac-gatepass-approvals'];
     if (!facultyPages.includes(pid)) {
       console.warn('[RouteGuard] Faculty restricted page blocked:', pid);
       toast('Access denied: Page restricted to Admin/HOD.', 'error');
@@ -1097,6 +1115,8 @@ function showPage(pid, skipPush = false) {
     compliance:renderCompliancePage,
     };
   init[pid]?.();
+  const pgAfter = document.getElementById('pg-'+pid);
+  if (pgAfter) pgAfter.classList.remove('dn');
 }
 
 function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); }
@@ -1294,7 +1314,7 @@ async function renderSessionStatus() {
   }
 }
 
-function resetAttSession() { renderSessionStatus(); }
+// resetAttSession defined above at line 1216
 // openOverrideFromAtt defined in v10.1 block
 
 async function exportTodayCSV() {
@@ -3577,17 +3597,8 @@ async function enrollConfirmUpdate() { await doEnrollStudent(true); }
 function enrollCheckExists()  { checkEnrollExists('student'); }
 
 
-// ── TIMETABLE ─────────────────────────────────────────────────
-async function renderTimetablePage() {
-  const ttCont=document.getElementById('ttContent');
-  if(!ttCont) return;
-  ttCont.innerHTML='<div class="empty-msg"><i class="fa fa-spinner fa-spin"></i><p>Loading...</p></div>';
-  try {
-    const periods=await api.timetable();
-    if(!periods.length){ttCont.innerHTML='<div class="empty-msg"><i class="fa fa-calendar-days"></i><p>No timetable configured. Add periods in config.py DEFAULT_PERIODS.</p></div>';return;}
-    ttCont.innerHTML='<div class="card"><div class="card-head"><h4><i class="fa fa-calendar-week"></i> Configured Periods</h4></div><div class="table-scroll"><table class="data-tbl"><thead><tr><th>#</th><th>Period Name</th><th>Start</th><th>End</th><th>Status</th></tr></thead><tbody>'+periods.map((p,i)=>'<tr><td style="font-family:var(--mono)">'+(i+1)+'</td><td><strong>'+(p.period_name||p.name||'?')+'</strong></td><td style="font-family:var(--mono)">'+(p.start_time||'—')+'</td><td style="font-family:var(--mono)">'+(p.end_time||'—')+'</td><td>'+(p.active?'<span class="badge b-g">Active</span>':'<span class="badge b-w">Inactive</span>')+'</td></tr>').join('')+'</tbody></table></div></div>';
-  } catch(e){ttCont.innerHTML='<div class="empty-msg"><i class="fa fa-triangle-exclamation"></i><p>'+e.message+'</p></div>';}
-}
+// ── TIMETABLE (Primary implementation at line 7358) ───────────
+
 
 // ── OVERRIDES ─────────────────────────────────────────────────
 // ── OVERRIDE v10.1 ─────────────────────────────────────────────
@@ -6819,6 +6830,7 @@ async function renderFacDashboard() {
     // ── Pending requests preview ─────────────────────────────
     const pendingLeave = counts.pending_leave_requests ?? 0;
     const pendingOD = counts.pending_od_requests ?? 0;
+    const pendingGatepass = counts.pending_gatepass_requests ?? 0;
     const approvedToday = counts.approved_requests_today ?? 0;
     const rejectedToday = counts.rejected_requests_today ?? 0;
 
@@ -6850,11 +6862,16 @@ async function renderFacDashboard() {
            was a duplicate. -->
 
       <!-- KPI Strip -->
-      <div class="fac-mini-kpis">
+      <div class="fac-mini-kpis" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
         ${miniKpi('Present Today', totalPresent, 'fa-circle-check', '#4ecba8')}
         ${miniKpi('Unique Students', uniqueStudents, 'fa-users', '#4da6f5')}
         ${miniKpi('Pending Leave', pendingLeave, 'fa-umbrella-beach', '#ffb347')}
         ${miniKpi('Pending OD', pendingOD, 'fa-id-badge', '#e05454')}
+        <div class="fac-mini-kpi" style="--mk:#8b5cf6;cursor:pointer" onclick="showPage('fac-gatepass-approvals')">
+          <div class="fac-mk-icon" style="color:#8b5cf6"><i class="fa fa-door-open"></i></div>
+          <div class="fac-mk-val" style="color:#6d28d9">${pendingGatepass}</div>
+          <div class="fac-mk-lbl">Pending Gate Pass</div>
+        </div>
       </div>
 
       <!-- Now class banner -->
@@ -6879,10 +6896,10 @@ async function renderFacDashboard() {
           <div class="card" style="overflow:hidden">
             <div class="card-head">
               <h4><i class="fa fa-inbox"></i> Request Summary</h4>
-              <button class="fac-refresh-btn" onclick="showPage('fac-leave-approvals')">Manage →</button>
+              <button class="fac-refresh-btn" onclick="showPage('fac-gatepass-approvals')">Manage →</button>
             </div>
             <div style="padding:14px 16px">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
                 <div style="background:var(--amber-l);border-radius:var(--r-sm);padding:12px;text-align:center;cursor:pointer" onclick="showPage('fac-leave-approvals')">
                   <div style="font-size:1.6rem;font-weight:900;color:var(--amber-d)">${pendingLeave}</div>
                   <div style="font-size:.72rem;font-weight:700;color:var(--amber-d);text-transform:uppercase;letter-spacing:.5px">Pending Leave</div>
@@ -6890,6 +6907,10 @@ async function renderFacDashboard() {
                 <div style="background:var(--sky-l);border-radius:var(--r-sm);padding:12px;text-align:center;cursor:pointer" onclick="showPage('fac-od-approvals')">
                   <div style="font-size:1.6rem;font-weight:900;color:var(--sky-d)">${pendingOD}</div>
                   <div style="font-size:.72rem;font-weight:700;color:var(--sky-d);text-transform:uppercase;letter-spacing:.5px">Pending OD</div>
+                </div>
+                <div style="background:#ede9fe;border-radius:var(--r-sm);padding:12px;text-align:center;cursor:pointer" onclick="showPage('fac-gatepass-approvals')">
+                  <div style="font-size:1.6rem;font-weight:900;color:#6d28d9">${pendingGatepass}</div>
+                  <div style="font-size:.72rem;font-weight:700;color:#6d28d9;text-transform:uppercase;letter-spacing:.5px">Pending Gate Pass</div>
                 </div>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
@@ -7003,13 +7024,13 @@ function initials(name){return(name||'').split(' ').map(n=>n[0]).join('').toUppe
 // approve/reject action so the count updates instantly instead of
 // waiting for the next poll.
 // =============================================================
-var _notifBreakdown = { lowAttendance: 0, pendingLeave: 0, pendingOD: 0, pendingOverrides: 0 };
+var _notifBreakdown = { lowAttendance: 0, pendingLeave: 0, pendingOD: 0, pendingOverrides: 0, pendingGatepass: 0 };
 var _notifCount = 0;
 var _notifPollMs = 45000;
 
 async function refreshNotificationCount() {
   if (!_token) return;
-  var counts = { lowAttendance: 0, pendingLeave: 0, pendingOD: 0, pendingOverrides: 0 };
+  var counts = { lowAttendance: 0, pendingLeave: 0, pendingOD: 0, pendingOverrides: 0, pendingGatepass: 0 };
 
   // Low-attendance alerts — admin / hod / classincharge only (the
   // roles that actually have an "Alerts" page in their nav).
@@ -7031,18 +7052,19 @@ async function refreshNotificationCount() {
     }
   } catch (e) { /* non-fatal */ }
 
-  // Pending Leave + OD requests — faculty (their own queue) and HOD
+  // Pending Leave + OD + Gate Pass requests — faculty (their own queue) and HOD
   // (department-wide queue); same endpoint, scoped server-side by role.
   try {
     if (APP.role === 'faculty' || APP.role === 'hod') {
       var c = await apiFetch('/api/faculty/requests/dashboard-counts');
-      counts.pendingLeave = c.pending_leave_requests ?? 0;
-      counts.pendingOD    = c.pending_od_requests ?? 0;
+      counts.pendingLeave    = c.pending_leave_requests ?? 0;
+      counts.pendingOD       = c.pending_od_requests ?? 0;
+      counts.pendingGatepass = c.pending_gatepass_requests ?? 0;
     }
   } catch (e) { /* non-fatal */ }
 
   _notifBreakdown = counts;
-  _notifCount = counts.lowAttendance + counts.pendingLeave + counts.pendingOD + counts.pendingOverrides;
+  _notifCount = counts.lowAttendance + counts.pendingLeave + counts.pendingOD + counts.pendingOverrides + counts.pendingGatepass;
   _paintNotifBadges(_notifCount);
 }
 
@@ -7057,6 +7079,26 @@ function _paintNotifBadges(count) {
     pill.textContent = count;
     pill.style.display = count > 0 ? 'flex' : 'none';
   }
+
+  // Sidebar Gate Pass badge for Faculty or HOD
+  var gpPage = APP.role === 'hod' ? 'hod-gatepass-approvals' : 'fac-gatepass-approvals';
+  var gpNav = document.querySelector('[data-page="' + gpPage + '"]');
+  if (gpNav) {
+    var gpBadge = gpNav.querySelector('.gp-badge');
+    var gpCount = _notifBreakdown.pendingGatepass || 0;
+    if (gpCount > 0) {
+      if (!gpBadge) {
+        gpBadge = document.createElement('span');
+        gpBadge.className = 'nav-pill alert gp-badge';
+        gpBadge.style.cssText = 'background:#8b5cf6;color:#fff;margin-left:auto;font-size:.7rem;padding:2px 7px;border-radius:10px;font-weight:700';
+        gpNav.appendChild(gpBadge);
+      }
+      gpBadge.textContent = gpCount;
+      gpBadge.style.display = 'inline-block';
+    } else if (gpBadge) {
+      gpBadge.style.display = 'none';
+    }
+  }
 }
 
 function startNotificationPolling() {
@@ -7068,7 +7110,7 @@ function startNotificationPolling() {
 function stopNotificationPolling() {
   if (APP.notifPollTimer) clearInterval(APP.notifPollTimer);
   APP.notifPollTimer = null;
-  _notifBreakdown = { lowAttendance: 0, pendingLeave: 0, pendingOD: 0, pendingOverrides: 0 };
+  _notifBreakdown = { lowAttendance: 0, pendingLeave: 0, pendingOD: 0, pendingOverrides: 0, pendingGatepass: 0 };
   _notifCount = 0;
   _paintNotifBadges(0);
 }
@@ -7078,10 +7120,16 @@ function stopNotificationPolling() {
 function openNotificationCenter() {
   var b = _notifBreakdown;
   if (APP.role === 'faculty') {
-    showPage(b.pendingOD > b.pendingLeave ? 'fac-od-approvals' : 'fac-leave-approvals');
+    if (b.pendingGatepass > 0) { showPage('fac-gatepass-approvals'); return; }
+    if (b.pendingOD > 0 || b.pendingLeave > 0) {
+      showPage(b.pendingOD > b.pendingLeave ? 'fac-od-approvals' : 'fac-leave-approvals');
+      return;
+    }
+    showPage('fac-dashboard');
     return;
   }
   if (APP.role === 'hod') {
+    if (b.pendingGatepass > 0) { showPage('hod-gatepass-approvals'); return; }
     if (b.pendingOverrides > 0) { showPage('hod_approvals'); return; }
     if (b.pendingOD > 0 || b.pendingLeave > 0) { showPage('hod-od-approvals'); return; }
     showPage('alerts');
@@ -7092,7 +7140,20 @@ function openNotificationCenter() {
 
 function setEl(id,val){const el=document.getElementById(id);if(el)el.innerHTML=val;}
 function closeModal(id){document.getElementById(id)?.classList.add('dn');}
-function toast(msg,type){const icons={success:'fa-circle-check',error:'fa-circle-exclamation',info:'fa-circle-info',warn:'fa-triangle-exclamation'};const z=document.getElementById('toastContainer');if(!z)return;const el=document.createElement('div');el.className='toast '+(type||'info');el.innerHTML='<i class="fa '+(icons[type||'info']||'fa-circle-info')+'"></i><span>'+msg+'</span>';z.appendChild(el);setTimeout(()=>{el.classList.add('toast-out');setTimeout(()=>el.remove(),300);},4000);}
+function toast(msg,type){
+  const icons={success:'fa-circle-check',error:'fa-circle-exclamation',info:'fa-circle-info',warn:'fa-triangle-exclamation'};
+  let z=document.getElementById('toastContainer');
+  if(!z){
+    z=document.createElement('div');
+    z.id='toastContainer';
+    document.body.appendChild(z);
+  }
+  const el=document.createElement('div');
+  el.className='toast '+(type||'info');
+  el.innerHTML='<i class="fa '+(icons[type||'info']||'fa-circle-info')+'"></i><span>'+msg+'</span>';
+  z.appendChild(el);
+  setTimeout(()=>{el.classList.add('toast-out');setTimeout(()=>el.remove(),300);},4000);
+}
 
 // Stubs for HTML-referenced functions
 // ── Stub functions (overridden by features.js after DOMContentLoaded) ──────────
@@ -7110,9 +7171,7 @@ async function attOnCourseChange() {
 async function attOnYearChange() {
   if (typeof ATT !== 'undefined') return;
 }
-function ttOnDeptChange(){}
-function ttOnCourseChange(){}
-function renderTimetable(){}
+// ttOnDeptChange, ttOnCourseChange, renderTimetable defined below in timetable section
 function renderCIPage(){}
 function loadCIData(){}
 function ciAlert(){}
@@ -8285,6 +8344,7 @@ Object.assign(apiEx, {
 
 const ALL_DEPTS = [
   {key:'CSE',  name:'CSE – Computer Science & Engineering'},
+  {key:'IT',   name:'IT – Information Technology'},
   {key:'AIDS', name:'AIDS – Artificial Intelligence & Data Science'},
   {key:'CSBS', name:'CSBS – CS & Business Systems'},
   {key:'ECE',  name:'ECE – Electronics & Communication'},
@@ -8295,18 +8355,18 @@ const ALL_DEPTS = [
 ];
 
 const PERIOD_TIMES = [
-  {no:1,label:'P1',time:'9:00–10:00'},
-  {no:2,label:'P2',time:'10:00–11:00'},
-  {no:3,label:'P3',time:'11:15–12:15'},
-  {no:4,label:'P4',time:'12:15–1:15'},
-  {no:5,label:'P5',time:'2:00–3:00'},
-  {no:6,label:'P6',time:'3:00–4:00'},
-  {no:7,label:'P7',time:'4:00–5:00'},
+  {no:1,label:'P1',time:'8:55–9:45'},
+  {no:2,label:'P2',time:'9:45–10:35'},
+  {no:3,label:'P3',time:'10:55–11:45'},
+  {no:4,label:'P4',time:'11:45–12:35'},
+  {no:5,label:'P5',time:'1:35–2:25'},
+  {no:6,label:'P6',time:'2:25–3:15'},
+  {no:7,label:'P7',time:'3:15–4:05'},
 ];
-const BREAK_AFTER = 2;   // break after period 2
-const LUNCH_AFTER = 4;   // lunch after period 4
-const ALL_DAYS = ['MON','TUE','WED','THU','FRI'];
-const DAY_FULL = {MON:'Monday',TUE:'Tuesday',WED:'Wednesday',THU:'Thursday',FRI:'Friday'};
+const BREAK_AFTER = 2;   // Tea Break: 10:35 - 10:55 AM
+const LUNCH_AFTER = 4;   // Lunch Break: 12:35 - 1:35 PM
+const ALL_DAYS = ['MON','TUE','WED','THU','FRI','SAT'];
+const DAY_FULL = {MON:'Monday',TUE:'Tuesday',WED:'Wednesday',THU:'Thursday',FRI:'Friday',SAT:'Saturday (1st & 3rd)'};
 
 // Subject type color coding
 function _ttCellClass(row) {
@@ -8779,9 +8839,50 @@ async function doSeedTimetable(force) {
   if (btn) btn.disabled = false;
 }
 
+// ── CP-SAT College Timetable Generator Trigger ───────────────
+async function generateCollegeCPSATTimetable() {
+  const confirmed = confirm(
+    "Generate Syed Ammal Engineering College Timetable via Google OR-Tools CP-SAT?\n\n" +
+    "• Departments: CSE (Sections A & B), IT, AIDS, CSBS, ECE, EEE, MECH, CIVIL, BME\n" +
+    "• Odd Semesters: 1, 3, 5, 7\n" +
+    "• 7 Periods/Day with Tea Break & Lunch Break\n" +
+    "• Guarantee: 100% Zero-Clash for Students & Faculty\n" +
+    "• Direct sync with Face Recognition attendance system\n\n" +
+    "Do you want to proceed?"
+  );
+  if (!confirmed) return;
+
+  const btn = event?.currentTarget || document.querySelector('button[onclick*="generateCollegeCPSATTimetable"]');
+  const originalHtml = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Solving with CP-SAT...';
+  }
+
+  try {
+    toast('Running Google OR-Tools CP-SAT engine... Please wait 5-10 seconds.', 'info');
+    const res = await apiFetch('/api/timetable/generate-cpsat', { method: 'POST' });
+    toast(`✅ Success: ${res.placed} timetable slots placed with 0 conflicts!`, 'success');
+    
+    // Refresh timetable view if on Timetable page
+    if (typeof renderTimetable === 'function') {
+      renderTimetable();
+    } else if (typeof renderTimetablePage === 'function') {
+      renderTimetablePage();
+    }
+  } catch (err) {
+    toast('CP-SAT generation error: ' + (err.message || err), 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = originalHtml || '<i class="fa fa-wand-magic-sparkles"></i> ⚡ Generate AI Timetable (CP-SAT)';
+    }
+  }
+}
+
 // ── Override renderTimetablePage to use full seeded data ─────
 const _origRenderTimetablePage = renderTimetablePage;
-async function renderTimetablePage() {
+renderTimetablePage = async function() {
   const ttCont = document.getElementById('ttContent');
   if (!ttCont) return;
 
@@ -8863,7 +8964,7 @@ function ttSwitchTabFull(tab, btn) {
 
 // Override renderTimetable to use full seeded version for student tab
 const _origRenderTimetable = renderTimetable;
-async function renderTimetable() {
+renderTimetable = async function() {
   if (window._ttActiveTab === 'faculty') { renderFullFacultyTimetable(); return; }
   if (window._ttActiveTab === 'manage') { renderTimetableManager(); return; }
   return renderFullStudentTimetable();
@@ -9149,9 +9250,10 @@ async function renderFacLeaveApprovalsPage() {
   if (!pg) {
     pg = document.createElement('div');
     pg.id = 'pg-fac-leave-approvals';
-    pg.className = 'page dn';
+    pg.className = 'page';
     document.getElementById('pageArea')?.appendChild(pg);
   }
+  pg.classList.remove('dn');
   pg.innerHTML = _facReqPageShell('leave', 'Leave Approvals', 'fa-umbrella-beach',
     'Review and action student leave requests');
   _facReqLoadList('leave', _facReqTab.leave);
@@ -9163,9 +9265,10 @@ async function renderFacODApprovalsPage() {
   if (!pg) {
     pg = document.createElement('div');
     pg.id = 'pg-fac-od-approvals';
-    pg.className = 'page dn';
+    pg.className = 'page';
     document.getElementById('pageArea')?.appendChild(pg);
   }
+  pg.classList.remove('dn');
   pg.innerHTML = _facReqPageShell('od', 'OD Approvals', 'fa-id-badge',
     'Review and action student on-duty (OD) requests');
   _facReqLoadList('od', _facReqTab.od);
@@ -9177,9 +9280,10 @@ async function renderFacGatepassApprovalsPage() {
   if (!pg) {
     pg = document.createElement('div');
     pg.id = 'pg-fac-gatepass-approvals';
-    pg.className = 'page dn';
+    pg.className = 'page';
     document.getElementById('pageArea')?.appendChild(pg);
   }
+  pg.classList.remove('dn');
   pg.innerHTML = _facReqPageShell('gatepass', 'Gate Pass Approvals', 'fa-door-open',
     'Review student gate pass applications and forward approved passes to HOD');
   _facReqLoadList('gatepass', _facReqTab.gatepass || 'Pending');
@@ -9286,7 +9390,7 @@ async function _facReqLoadList(kind, status) {
         + '<td style="padding:9px 11px;font-size:.84rem;color:var(--text2)">' + (r.year || '—') + '</td>'
         + '<td style="padding:9px 11px;font-size:.84rem;color:var(--text2)">' + (r.section || '—') + '</td>'
         + '<td style="padding:9px 11px;font-size:.84rem;color:var(--text2)">' + (r.from_date || '—') + ' → ' + (r.to_date || '—') + '</td>'
-        + '<td style="padding:9px 11px;font-size:.82rem;color:var(--text2);max-width:160px" title="' + (r.reason || '') + '">' + reasonTrunc + '</td>'
+        + '<td style="padding:9px 11px;font-size:.82rem;color:var(--text2);max-width:160px;overflow-wrap:anywhere;word-break:break-word" title="' + (r.reason || '') + '">' + reasonTrunc + '</td>'
         + '<td style="padding:9px 11px;font-size:.8rem;color:var(--text3)">' + submitted + '</td>'
         + '<td style="padding:9px 11px">' + (isPending ? statusBadge : '') + '</td>'
         + '<td style="padding:9px 11px;white-space:nowrap">' + actionsHtml + '</td>'
@@ -9298,7 +9402,7 @@ async function _facReqLoadList(kind, status) {
         + '<td style="padding:9px 11px;font-size:.84rem;color:var(--text2)"><code>' + (r.register_number || '—') + '</code></td>'
         + '<td style="padding:9px 11px;font-size:.84rem;color:var(--text2)">' + (r.pass_type || 'Gate Pass') + '</td>'
         + '<td style="padding:9px 11px;font-size:.84rem;color:var(--text2)"><strong>' + (r.event_date || '—') + '</strong> (' + (r.out_time || '—') + ')</td>'
-        + '<td style="padding:9px 11px;font-size:.82rem;color:var(--text2);max-width:160px" title="' + (r.reason || '') + '">' + reasonTrunc + '</td>'
+        + '<td style="padding:9px 11px;font-size:.82rem;color:var(--text2);max-width:160px;overflow-wrap:anywhere;word-break:break-word" title="' + (r.reason || '') + '">' + reasonTrunc + '</td>'
         + '<td style="padding:9px 11px;font-size:.8rem;color:var(--text3)">' + submitted + '</td>'
         + '<td style="padding:9px 11px">' + statusBadge + (r.otp ? '<br><span style="color:#059669;font-weight:800;font-family:monospace;font-size:.78rem">OTP: ' + r.otp + '</span>' : '') + '</td>'
         + '<td style="padding:9px 11px;white-space:nowrap">' + actionsHtml + '</td>'
@@ -9311,7 +9415,7 @@ async function _facReqLoadList(kind, status) {
       + '<td style="padding:9px 11px;font-size:.84rem;color:var(--text2)"><code>' + (r.register_number || '—') + '</code></td>'
       + '<td style="padding:9px 11px;font-size:.84rem;color:var(--text2)">' + (r.event_name || '—') + '</td>'
       + '<td style="padding:9px 11px;font-size:.84rem;color:var(--text2)">' + (r.event_date || '—') + '</td>'
-      + '<td style="padding:9px 11px;font-size:.82rem;color:var(--text2);max-width:160px" title="' + (r.reason || '') + '">' + reasonTrunc + '</td>'
+      + '<td style="padding:9px 11px;font-size:.82rem;color:var(--text2);max-width:160px;overflow-wrap:anywhere;word-break:break-word" title="' + (r.reason || '') + '">' + reasonTrunc + '</td>'
       + '<td style="padding:9px 11px;font-size:.82rem">' + attach + '</td>'
       + '<td style="padding:9px 11px">' + (isPending ? statusBadge : '') + '</td>'
       + '<td style="padding:9px 11px;white-space:nowrap">' + actionsHtml + '</td>'
@@ -9410,14 +9514,6 @@ async function _facReqApproveSubmit(kind, id) {
     var successMsg = kind === 'leave'
       ? 'Leave request #' + id + ' approved ✓'
       : (kind === 'gatepass' ? 'Gate Pass #' + id + ' approved and forwarded to HOD' : 'OD request #' + id + ' approved and forwarded to HOD for final decision');
-    toast(successMsg, 'success');
-    _facReqLoadList(kind, _facReqTab[kind]);
-    refreshNotificationCount();
-    if (document.getElementById('pg-fac-dashboard') && !document.getElementById('pg-fac-dashboard').classList.contains('dn')) renderFacDashboard();
-  } catch (e) {
-    toast('Approve failed: ' + (e.message || 'Error'), 'error');
-  }
-}
     toast(successMsg, 'success');
     _facReqLoadList(kind, _facReqTab[kind]);
     refreshNotificationCount();
@@ -9737,9 +9833,10 @@ async function renderHODGatepassApprovalsPage() {
   if (!pg) {
     pg = document.createElement('div');
     pg.id = 'pg-hod-gatepass-approvals';
-    pg.className = 'page dn';
+    pg.className = 'page';
     document.getElementById('pageArea')?.appendChild(pg);
   }
+  pg.classList.remove('dn');
 
   pg.innerHTML = [
     '<div class="page-header">',

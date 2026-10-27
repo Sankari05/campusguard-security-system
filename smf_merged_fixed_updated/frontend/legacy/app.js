@@ -8281,6 +8281,7 @@ Object.assign(apiEx, {
 
 const ALL_DEPTS = [
   {key:'CSE',  name:'CSE – Computer Science & Engineering'},
+  {key:'IT',   name:'IT – Information Technology'},
   {key:'AIDS', name:'AIDS – Artificial Intelligence & Data Science'},
   {key:'CSBS', name:'CSBS – CS & Business Systems'},
   {key:'ECE',  name:'ECE – Electronics & Communication'},
@@ -8291,18 +8292,18 @@ const ALL_DEPTS = [
 ];
 
 const PERIOD_TIMES = [
-  {no:1,label:'P1',time:'9:00–10:00'},
-  {no:2,label:'P2',time:'10:00–11:00'},
-  {no:3,label:'P3',time:'11:15–12:15'},
-  {no:4,label:'P4',time:'12:15–1:15'},
-  {no:5,label:'P5',time:'2:00–3:00'},
-  {no:6,label:'P6',time:'3:00–4:00'},
-  {no:7,label:'P7',time:'4:00–5:00'},
+  {no:1,label:'P1',time:'8:55–9:45'},
+  {no:2,label:'P2',time:'9:45–10:35'},
+  {no:3,label:'P3',time:'10:55–11:45'},
+  {no:4,label:'P4',time:'11:45–12:35'},
+  {no:5,label:'P5',time:'1:35–2:25'},
+  {no:6,label:'P6',time:'2:25–3:15'},
+  {no:7,label:'P7',time:'3:15–4:05'},
 ];
-const BREAK_AFTER = 2;   // break after period 2
-const LUNCH_AFTER = 4;   // lunch after period 4
-const ALL_DAYS = ['MON','TUE','WED','THU','FRI'];
-const DAY_FULL = {MON:'Monday',TUE:'Tuesday',WED:'Wednesday',THU:'Thursday',FRI:'Friday'};
+const BREAK_AFTER = 2;   // Tea Break: 10:35 - 10:55 AM
+const LUNCH_AFTER = 4;   // Lunch Break: 12:35 - 1:35 PM
+const ALL_DAYS = ['MON','TUE','WED','THU','FRI','SAT'];
+const DAY_FULL = {MON:'Monday',TUE:'Tuesday',WED:'Wednesday',THU:'Thursday',FRI:'Friday',SAT:'Saturday (1st & 3rd)'};
 
 // Subject type color coding
 function _ttCellClass(row) {

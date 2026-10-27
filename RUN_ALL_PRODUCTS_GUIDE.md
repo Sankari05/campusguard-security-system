@@ -166,3 +166,4 @@ cmd /c "npm run dev -- --port 3000 --host"
 | [http://localhost:5173/#gate-kiosk](http://localhost:5173/#gate-kiosk) | `/gate-kiosk` \| `/gate` | **Gate Ingress/Egress Kiosk (மெயின் கேட் Kiosk)** | விரைவான மாணவர் ஐடி கார்டு ஸ்கேனிங் & தானியங்கி தடுப்புத் திறப்பு |
 | [http://localhost:5173/#out-pass](http://localhost:5173/#out-pass) | `/out-pass` \| `/outpass` | **Student Out-Pass (மாணவர் அவுட்பாஸ் மேலாண்மை)** | வார்டன் / HOD அனுமதித்த அவுட்பாஸ் சரிபார்த்து கேட் வெளியேற்றம் பதிவு செய்தல் |
 
+
