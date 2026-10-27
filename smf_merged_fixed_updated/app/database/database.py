@@ -2018,7 +2018,6 @@ def add_faculty(fac_id, employee_code, first_name, last_name, gender,
         return False
 
 
-<<<<<<< Updated upstream
 def get_faculty_by_id(fac_id: str):
     """Return faculty record as dict, or None if not found."""
     with db() as conn:
@@ -2032,9 +2031,6 @@ def get_faculty_by_id(fac_id: str):
         record.setdefault("department",    record.get("dept"))
         record.setdefault("date_of_birth", record.get("dob") or record.get("date_of_birth"))
         return record
-
-=======
->>>>>>> Stashed changes
 
 # =============================================================
 # HOD ENROLLMENT

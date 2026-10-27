@@ -126,15 +126,6 @@ def api_login(req: FrontendLoginReq, request: Request):
         else:
             db.reset_login_fail(_bf_identifier)
 
-<<<<<<< Updated upstream
-    # 2. Faculty portal login (fac_id provided)
-    if req.fac_id and req.fac_id.strip():
-        fac_id = req.fac_id.strip().upper()
-        fac = db.get_faculty_by_id(fac_id)
-        if not fac:
-            db.log_audit(fac_id, "login_fail", "", "unknown_fac_id", ip)
-            db.increment_login_fail(fac_id)
-=======
     # 2. Faculty portal login (fac_id provided or portal is faculty)
     fac_identifier = (req.fac_id or (req.email if req_portal in ("faculty", "teacher") else "")).strip()
     if fac_identifier or req_portal in ("faculty", "teacher"):
@@ -185,45 +176,7 @@ def api_login(req: FrontendLoginReq, request: Request):
         elif req.fac_id and req.fac_id.strip():
             db.log_audit(req.fac_id, "login_fail", "", "unknown_fac_id", ip)
             db.increment_login_fail(req.fac_id)
->>>>>>> Stashed changes
             raise HTTPException(status_code=401, detail="Invalid username or password.")
-
-        if fac.get("is_active") is not None and not fac.get("is_active"):
-            raise HTTPException(status_code=403, detail="Faculty account is deactivated.")
-
-        stored_pw = fac.get("password") or ""
-        is_valid_pw = False
-        if _verify_password(req.password, stored_pw):
-            is_valid_pw = True
-        elif not config.is_bcrypt(stored_pw) and stored_pw and req.password == stored_pw:
-            # Auto-upgrade legacy plain text in DB to secure BCrypt
-            is_valid_pw = True
-            db.update_faculty_password(fac_id, _hash_password(req.password))
-        elif stored_pw == config.FACULTY_DEFAULT_PASSWORD and req.password == config.FACULTY_DEFAULT_PASSWORD:
-            is_valid_pw = True
-            db.update_faculty_password(fac_id, _hash_password(req.password))
-
-        if not is_valid_pw:
-            db.log_audit(fac_id, "login_fail", "", "wrong_password", ip)
-            db.increment_login_fail(fac_id)
-            raise HTTPException(status_code=401, detail="Invalid username or password.")
-
-        db.reset_login_fail(fac_id)
-        _fac_name = fac.get("name") or fac.get("full_name") or fac_id
-        db.log_audit(fac_id, "login_success", "faculty", "", ip)
-        token = _auth_create_token({
-            "sub": fac_id,
-            "role": "faculty",
-            "name": _fac_name,
-            "email": fac.get("email", ""),
-            "department": fac.get("department", ""),
-        })
-        return {
-            "access_token": token,
-            "token_type": "bearer",
-            "role": "faculty",
-            "username": _fac_name,
-        }
 
     # 3. Admin / HOD login
     email = (req.email or getattr(req, "username", "") or "").strip().lower()
